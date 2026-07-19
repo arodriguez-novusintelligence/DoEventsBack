@@ -167,8 +167,9 @@ const score = (e, ctx) => {
   const distanceWeight = ctx.userLocationProvided
     ? W.distanceHigh
     : W.distanceLow;
+  const interestWeight = inter ? W.interestHigh : W.interestLow;
   return (
-    W.interest * inter +
+    interestWeight * inter +
     (ctx.hasLocation ? distanceWeight * km : 0) +
     W.recency * rec +
     W.starts * sIn
