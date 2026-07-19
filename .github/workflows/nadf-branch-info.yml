@@ -1,0 +1,15 @@
+# NADF-GUIDE
+# Propósito: Marca la rama NADF en DoEventsBack (agente trabaja aquí desde Issues WEB).
+# Configuración: No borrar; mantener alineada con feature/NovusAIDevelopmentFramework.
+name: NADF branch marker
+
+on:
+  workflow_dispatch:
+
+jobs:
+  info:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "DoEventsBack rama NADF: feature/NovusAIDevelopmentFramework"
+          echo "Intake de issues: DoEventsWEB (label nadf)"
