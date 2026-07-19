@@ -1,0 +1,105 @@
+openapi: 3.0.1
+info:
+  title: "Contact Us Web API"
+  description: "API para guardar y consultar mensajes enviados por usuarios desde el formulario web de contacto."
+  version: "1.0.0"
+
+paths:
+  /contact-us:
+    post:
+      operationId: createContact
+      summary: Crear mensaje de contacto
+      description: Crea un nuevo mensaje de contacto, lo guarda en DynamoDB y envía una notificación por correo electrónico.
+      tags:
+        - Contacto
+      requestBody:
+        description: Datos enviados por el usuario desde el formulario web
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContactRequest'
+            example:
+              nombre: "Juan"
+              apellido: "Pérez"
+              email: "juan.perez@example.com"
+              telefono: "3001234567"
+              mensaje: "Quiero más información sobre sus servicios."
+      responses:
+        '200':
+          description: Contacto creado exitosamente y correo enviado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+        '500':
+          description: Error al guardar el contacto o enviar el correo
+
+    get:
+      operationId: getContacts
+      summary: Obtener mensajes de contacto
+      description: Devuelve todos los mensajes guardados en la tabla Contactanosweb.
+      tags:
+        - Contacto
+      responses:
+        '200':
+          description: Lista de contactos recuperada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetContactsResponse'
+        '500':
+          description: Error al obtener los mensajes
+
+components:
+  schemas:
+    CreateContactRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+        apellido:
+          type: string
+        email:
+          type: string
+        telefono:
+          type: string
+        mensaje:
+          type: string
+      required:
+        - nombre
+        - apellido
+        - email
+        - mensaje
+
+    GetContactsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              nombre:
+                type: string
+              apellido:
+                type: string
+              email:
+                type: string
+              telefono:
+                type: string
+              mensaje:
+                type: string

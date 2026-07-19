@@ -1,0 +1,13 @@
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+# Parches manuales / artefactos locales de deploy
+_lambda_patch
+_patch_search
+.deploy-getuser
+*.zip
+_bundle_test

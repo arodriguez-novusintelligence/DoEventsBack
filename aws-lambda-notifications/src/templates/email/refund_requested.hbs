@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitud de Reembolso - {{eventName}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .info-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .ticket-detail {
+            border-bottom: 1px solid #e9ecef;
+            padding: 10px 0;
+        }
+        .ticket-detail:last-child {
+            border-bottom: none;
+        }
+        .amount {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⏳ Solicitud de Reembolso</h1>
+        </div>
+        
+        <div class="content">
+            <p>Hola,</p>
+            
+            <p>Hemos recibido tu solicitud de reembolso <strong>{{refundType}}</strong> para el evento <strong>{{eventName}}</strong>.</p>
+            
+            <div class="amount">
+                {{refundAmount}} {{currency}}
+            </div>
+            
+            <div class="info-box">
+                <h3 style="margin-top: 0;">📋 Detalles del Reembolso</h3>
+                <p><strong>Tipo:</strong> Reembolso {{refundType}}</p>
+                <p><strong>Boletas a reembolsar:</strong> {{ticketCount}}</p>
+                <p><strong>Monto total:</strong> {{refundAmount}} {{currency}}</p>
+                <p><strong>ID de Orden:</strong> {{orderID}}</p>
+                <p><strong>Tiempo de procesamiento:</strong> {{processingDays}} días hábiles</p>
+            </div>
+            
+            {{#if ticketDetails}}
+            <h3>🎫 Boletas</h3>
+            {{#each ticketDetails}}
+            <div class="ticket-detail">
+                <strong>{{category}}</strong> - {{seat}}<br>
+                <span style="color: #6c757d;">{{price}} {{../currency}}</span>
+            </div>
+            {{/each}}
+            {{/if}}
+            
+            <div style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 4px; margin-top: 20px;">
+                <strong>⚠️ Importante:</strong>
+                <ul style="margin: 10px 0;">
+                    <li>El reembolso será procesado en {{processingDays}} días hábiles</li>
+                    <li>El monto será devuelto a tu método de pago original</li>
+                    <li>Recibirás una notificación cuando el reembolso sea procesado</li>
+                </ul>
+            </div>
+            
+            <p style="margin-top: 30px;">Si tienes alguna pregunta, no dudes en contactarnos.</p>
+            
+            <p>¡Gracias por usar DoEvents!</p>
+        </div>
+        
+        <div class="footer">
+            <p>Este es un correo automático, por favor no respondas a este mensaje.</p>
+            <p>&copy; 2026 DoEvents. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,72 @@
+{
+  "tableName": "FavoriteGroups",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/FavoriteGroups",
+  "tableId": "7daa59f5-3a8b-4d17-b0a2-4cd51e5afa58",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 3,
+  "tableSizeBytes": 799,
+  "creationDateTime": "2025-11-03T15:20:52.015000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "userId",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "groupId",
+      "KeyType": "RANGE"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "groupId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "name",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "userId",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "GSI-groupName",
+      "keySchema": [
+        {
+          "AttributeName": "userId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "name",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 0,
+      "indexSizeBytes": 0
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

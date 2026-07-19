@@ -1,0 +1,60 @@
+{
+  "tableName": "Venue_Seat",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/Venue_Seat",
+  "tableId": "bc4cc2ab-4efc-4c59-88da-698dd8d4ff8f",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 9996,
+  "tableSizeBytes": 3549714,
+  "creationDateTime": "2025-11-07T13:06:05.877000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "seatId",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "categoryId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "seatId",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "categoryIdIndex",
+      "keySchema": [
+        {
+          "AttributeName": "categoryId",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 9996,
+      "indexSizeBytes": 3549714
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

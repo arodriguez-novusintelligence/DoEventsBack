@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}}</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #eff0f4;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #12162f;
+      }
+      .wrap {
+        width: 100%;
+        padding: 20px 10px;
+        box-sizing: border-box;
+      }
+      .card {
+        max-width: 640px;
+        margin: 0 auto;
+        background: #f8f8fb;
+        border-radius: 16px;
+        overflow: hidden;
+      }
+      .header {
+        background: transparent;
+        padding: 0;
+      }
+      .top-svg {
+        width: 100%;
+        height: auto;
+        display: block;
+        padding: 14px 14px 0;
+      }
+      .hero {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .hero td {
+        padding: 0;
+      }
+      .hero-left {
+        background: linear-gradient(90deg, #283472 0%, #2f438f 100%);
+        color: #ffffff;
+        padding: 18px 20px;
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .hero-mid {
+        width: 94px;
+        background: #dfe4f5;
+        border-top-left-radius: 999px;
+        border-bottom-left-radius: 999px;
+      }
+      .hero-right {
+        width: 78px;
+        background: #dfe4f5;
+        text-align: center;
+      }
+      .hero-icon {
+        display: inline-block;
+        margin-top: 12px;
+        width: 34px;
+        height: 34px;
+        line-height: 34px;
+        border: 1px solid #6f7db3;
+        border-radius: 9px;
+        color: #4a5ea4;
+        font-size: 17px;
+        font-weight: 700;
+      }
+      .header-band {
+        background: linear-gradient(90deg, #2d3475 0%, #3f4da1 35%, #d7d8e5 36%);
+        border-radius: 12px;
+        padding: 16px 18px;
+        color: #ffffff;
+        font-weight: 700;
+      }
+      .content {
+        padding: 20px 18px 8px;
+      }
+      .hello {
+        margin: 0 0 10px;
+        font-size: 19px;
+        font-weight: 700;
+      }
+      .muted {
+        margin: 0 0 14px;
+        font-size: 13px;
+        color: #444a60;
+      }
+      .two-col {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .two-col td {
+        vertical-align: top;
+        width: 50%;
+        padding: 0 6px 0 0;
+        height: 1px;
+      }
+      .panel {
+        background: #eef0f6;
+        border: 1px solid #e1e4ec;
+        border-radius: 10px;
+        min-height: 230px;
+        height: 100%;
+        box-sizing: border-box;
+      }
+      .panel h4 {
+        margin: 10px 12px;
+        font-size: 13px;
+        color: #323a7f;
+      }
+      .line {
+        margin: 0;
+        padding: 0 12px 8px;
+        font-size: 12px;
+        color: #2f3448;
+      }
+      .event-image {
+        margin: 0 12px 8px;
+        height: 150px;
+        border-radius: 8px;
+        background: #d5d8df;
+        overflow: hidden;
+        text-align: center;
+      }
+      .event-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .summary {
+        margin-top: 14px;
+      }
+      .summary h4 {
+        margin: 0 0 10px;
+        font-size: 14px;
+      }
+      table.detail {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      table.detail th {
+        text-align: left;
+        color: #5a6177;
+        font-weight: 700;
+        padding: 8px 4px;
+        border-bottom: 1px solid #e4e7ef;
+      }
+      table.detail td {
+        padding: 7px 4px;
+        border-bottom: 1px solid #edf0f5;
+      }
+      .right {
+        text-align: right;
+      }
+      .total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 12px;
+        font-weight: 700;
+      }
+      .total .value {
+        color: #4d5eff;
+        font-size: 30px;
+        line-height: 1;
+      }
+      .ref {
+        margin-top: 10px;
+        padding: 10px 12px;
+        background: #eceef8;
+        border-radius: 9px;
+        font-size: 12px;
+      }
+      .cta {
+        text-align: center;
+        margin: 18px 0 6px;
+      }
+      .cta a {
+        display: inline-block;
+        text-decoration: none;
+        color: #ffffff;
+        background: #5c70f7;
+        padding: 10px 22px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .stats {
+        margin-top: 14px;
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 10px 0;
+      }
+      .stats td {
+        background: #eceef4;
+        border-radius: 10px;
+        text-align: center;
+        padding: 12px 8px;
+      }
+      .stats .label {
+        color: #565d73;
+        font-size: 12px;
+      }
+      .stats .value-blue {
+        color: #4d5eff;
+        font-size: 22px;
+        font-weight: 700;
+      }
+      .stats .value-green {
+        color: #0baf63;
+        font-size: 22px;
+        font-weight: 700;
+      }
+      .tips {
+        margin-top: 14px;
+        padding: 12px;
+        border: 1px solid #f0b760;
+        border-radius: 10px;
+        background: #fff9ef;
+        font-size: 12px;
+        color: #5f4b25;
+      }
+      .tips ol {
+        margin: 8px 0 0 16px;
+        padding: 0;
+      }
+      .tips li {
+        margin: 2px 0;
+      }
+      .footer {
+        margin-top: 18px;
+        background: #dfe2ef;
+        text-align: center;
+        padding: 18px 16px;
+      }
+      .brand {
+        font-size: 29px;
+        font-weight: 700;
+        color: #33439b;
+      }
+      .brand span {
+        color: #11131e;
+      }
+      .tiny {
+        font-size: 11px;
+        color: #5f6576;
+        margin-top: 8px;
+      }
+      @media only screen and (max-width: 620px) {
+        .two-col,
+        .two-col tbody,
+        .two-col tr,
+        .two-col td {
+          display: block;
+          width: 100%;
+        }
+        .two-col td {
+          padding: 0;
+          margin-bottom: 10px;
+        }
+        .total .value {
+          font-size: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <div class="header">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin-bottom:12px;">
+            <tr>
+              <td background="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-bg.png" bgcolor="#2f366f" style="background-image:url('https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-bg.png');background-size:100% 100%;background-repeat:no-repeat;background-color:#2f366f;padding:0;border-radius:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tr><td style="padding:18px 20px 18px 24px;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:700;color:#ffffff;">&#161;Nueva venta!</td><td width="68" style="text-align:center;vertical-align:middle;padding:8px 12px 8px 8px;"><img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-icon.png" width="36" height="36" alt="" style="display:block;margin:0 auto;" /></td></tr></table></td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="content">
+          <p class="hello">Hola {{organizerName}}</p>
+          <p class="muted">{{#if saleIntroText}}{{saleIntroText}}{{else}}El usuario {{buyerName}} compro {{ticketCount}} entrada(s) para tu evento.{{/if}}</p>
+
+          <table class="two-col" role="presentation">
+            <tr>
+              <td>
+                <div class="panel">
+                  <h4>Comprador</h4>
+                  <p class="line"><strong>{{buyerName}}</strong></p>
+                  {{#if buyerUsername}}<p class="line">{{buyerUsername}}</p>{{/if}}
+                  {{#if buyerProfileImage}}
+                    <p class="line"><img src="{{buyerProfileImage}}" alt="Perfil" style="width:72px;height:72px;border-radius:50%;object-fit:cover;" /></p>
+                  {{/if}}
+                </div>
+              </td>
+              <td>
+                <div class="panel">
+                  <h4>{{#if entityPanelTitle}}{{entityPanelTitle}}{{else}}Evento{{/if}}</h4>
+                  <div class="event-image">
+                    {{#if eventImage}}
+                      <img src="{{eventImage}}" alt="Imagen del evento" />
+                    {{else}}
+                      <div style="line-height:150px;font-size:12px;color:#59607b;">Imagen del evento</div>
+                    {{/if}}
+                  </div>
+                  <p class="line"><strong>{{eventName}}</strong></p>
+                  <p class="line">{{eventDate}} {{eventTime}}</p>
+                  <p class="line">{{eventLocation}}</p>
+                </div>
+              </td>
+            </tr>
+          </table>
+
+          <div class="summary">
+            <h4>Detalle de la compra</h4>
+            <table class="detail" role="presentation">
+              <thead>
+                <tr>
+                  <th>Categoria</th>
+                  <th class="right">Cant</th>
+                  <th class="right">Precio unit</th>
+                  <th class="right">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each categoryItems}}
+                  <tr>
+                    <td>{{category}}</td>
+                    <td class="right">{{quantity}}</td>
+                    <td class="right">{{unitPriceFormatted}}</td>
+                    <td class="right">{{subtotalFormatted}}</td>
+                  </tr>
+                {{/each}}
+                <tr>
+                  <td>Subtotal ({{ticketCount}} {{#if itemCountLabel}}{{itemCountLabel}}{{else}}boletas{{/if}})</td>
+                  <td class="right"></td>
+                  <td class="right"></td>
+                  <td class="right">{{subtotalFormatted}}</td>
+                </tr>
+                <tr>
+                  <td>Cargo por servicio (10%)</td>
+                  <td class="right"></td>
+                  <td class="right"></td>
+                  <td class="right">{{serviceFeeFormatted}}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="total">
+              <span>Total</span>
+              <span class="value">{{#if totalAmountPlain}}$ {{totalAmountPlain}}{{else}}{{totalFormatted}}{{/if}}</span>
+            </div>
+          </div>
+
+          <div class="ref">
+            <div><strong>Orden:</strong> {{orderReference}}</div>
+            <div><strong>Referencia pasarela:</strong> {{gatewayReference}}</div>
+            <div><strong>Fecha de pago:</strong> {{paymentDateDisplay}}</div>
+          </div>
+
+          <div class="cta">
+            <a href="{{salesLink}}">Ver mis ventas</a>
+          </div>
+
+          <table class="stats" role="presentation">
+            <tr>
+              <td>
+                <div class="value-blue">{{ticketCount}}</div>
+                <div class="label">{{#if itemCountLabel}}{{itemCountLabel}}{{else}}Boletas vendidas{{/if}}</div>
+              </td>
+              <td>
+                <div class="value-green">{{#if orderRevenuePlain}}$ {{orderRevenuePlain}}{{else}}{{totalFormatted}}{{/if}}</div>
+                <div class="label">Total ingresos</div>
+              </td>
+            </tr>
+          </table>
+
+          {{#if purchaseAdvice}}
+            <div class="tips">
+              Sabemos lo importante que es destacar en un mercado competitivo. Por eso, queremos compartir contigo 4 tips que te ayudaran a maximizar las ventas de tus eventos:
+              <ol>
+                {{#each purchaseAdvice}}
+                  <li>{{this}}</li>
+                {{/each}}
+              </ol>
+            </div>
+          {{/if}}
+        </div>
+
+        <div class="footer">
+          <div style="text-align:center;margin:0 0 10px;line-height:1;">
+            <img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-logo-doevents.png" width="96" height="28" alt="Do.Events" style="display:inline-block;vertical-align:middle;" />
+          </div>
+          <div class="tiny">mensaje automatico - no responder este correo</div>
+          <div class="tiny">www.doeventsapp.com</div>
+          <div class="tiny">© 2026 Do eventsapp. Todos los derechos reservados</div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

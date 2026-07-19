@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{subject}}</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #eef1fb;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #1b2442;
+      }
+      .shell {
+        width: 100%;
+        padding: 18px 0;
+      }
+      .container {
+        width: 100%;
+        max-width: 640px;
+        margin: 0 auto;
+        background: #f8f9fd;
+        border: 1px solid #e0e5f4;
+        border-radius: 18px;
+        overflow: hidden;
+      }
+      .inner {
+        padding: 16px 16px 24px;
+      }
+      .top-svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .hero {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .hero td {
+        padding: 0;
+      }
+      .hero-left {
+        background: linear-gradient(90deg, #283472 0%, #2f438f 100%);
+        color: #ffffff;
+        padding: 18px 20px;
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1.1;
+        border-top-left-radius: 14px;
+        border-bottom-left-radius: 14px;
+      }
+      .hero-mid {
+        width: 94px;
+        background: #dfe4f5;
+        border-top-left-radius: 999px;
+        border-bottom-left-radius: 999px;
+      }
+      .hero-right {
+        width: 78px;
+        background: #dfe4f5;
+        text-align: center;
+        border-top-right-radius: 14px;
+        border-bottom-right-radius: 14px;
+      }
+      .hero-icon {
+        display: inline-block;
+        margin-top: 12px;
+        width: 34px;
+        height: 34px;
+        line-height: 34px;
+        border: 1px solid #6f7db3;
+        border-radius: 9px;
+        color: #4a5ea4;
+        font-size: 17px;
+        font-weight: 700;
+      }
+      .badge {
+        margin: 18px 4px 8px;
+        color: #596ab3;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+      }
+      .intro {
+        margin: 0 4px 14px;
+        font-size: 15px;
+        line-height: 1.6;
+        color: #44506f;
+      }
+      .section-title {
+        margin: 0 4px 10px;
+        font-size: 16px;
+        font-weight: 700;
+        color: #1f294f;
+      }
+      .card {
+        background: #ffffff;
+        border: 1px solid #dbe2f4;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .stats-grid {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 10px 0;
+        margin-top: 14px;
+      }
+      .stat-card {
+        background: #ffffff;
+        border: 1px solid #dbe2f4;
+        border-radius: 12px;
+        padding: 14px 12px;
+        text-align: center;
+      }
+      .stat-value {
+        color: #243671;
+        font-size: 21px;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .stat-label {
+        margin-top: 6px;
+        color: #6f7897;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      .event-image-wrap {
+        background: #e5e7eb;
+        min-height: 160px;
+        text-align: center;
+      }
+      .event-image {
+        width: 100%;
+        max-height: 250px;
+        object-fit: cover;
+        display: block;
+      }
+      .event-body {
+        padding: 0;
+      }
+      .event-name {
+        margin: 0;
+        padding: 14px 16px 8px;
+        font-size: 22px;
+        line-height: 1.2;
+        color: #4d61db;
+        font-weight: 700;
+      }
+      .meta-row {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .meta-row td {
+        padding: 12px 16px;
+        border-top: 1px solid #e7ebf6;
+        font-size: 14px;
+        color: #2e3858;
+        vertical-align: top;
+      }
+      .meta-label {
+        display: block;
+        color: #6f7897;
+        font-size: 12px;
+        margin-bottom: 4px;
+      }
+      .meta-right {
+        text-align: right;
+        white-space: nowrap;
+      }
+      .location-link {
+        color: #5a6ef2 !important;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .cta-wrap {
+        padding: 18px 6px 6px;
+        text-align: center;
+      }
+      .cta {
+        display: inline-block;
+        background: #4d61db;
+        color: #ffffff !important;
+        text-decoration: none;
+        border-radius: 999px;
+        padding: 12px 22px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .alt-link {
+        margin-top: 10px;
+        font-size: 12px;
+        color: #7681a4;
+        word-break: break-all;
+        text-align: center;
+      }
+      .tips {
+        margin-top: 18px;
+        background: #fde6b7;
+        border: 1px solid #f3d28c;
+        border-radius: 10px;
+        padding: 14px 16px;
+      }
+      .tips-title {
+        margin: 0 0 8px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #5a4520;
+      }
+      .tips-list {
+        margin: 0;
+        padding-left: 18px;
+        color: #5a4520;
+        font-size: 13px;
+        line-height: 1.55;
+      }
+      .brand-logo-wrap {
+        margin-top: 18px;
+        text-align: center;
+      }
+      .brand-logo-top {
+        width: 252px;
+        height: 73.5px;
+      }
+      .logo-ink {
+        fill: #010e15;
+      }
+      .logo-line {
+        stroke: #010e15;
+      }
+      .footer {
+        margin-top: 10px;
+        text-align: center;
+        color: #7f88a6;
+        font-size: 12px;
+        line-height: 1.6;
+      }
+      .footer a {
+        color: #4d61db !important;
+        text-decoration: none;
+      }
+      @media only screen and (max-width: 620px) {
+        .hero-left {
+          font-size: 24px;
+        }
+        .event-name {
+          font-size: 20px;
+        }
+      }
+      @media (prefers-color-scheme: dark) {
+        .logo-ink {
+          fill: #ffffff !important;
+        }
+        .logo-line {
+          stroke: #ffffff !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="container">
+        <div class="inner">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin-bottom:12px;">
+            <tr>
+              <td background="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-bg.png" bgcolor="#2f366f" style="background-image:url('https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-bg.png');background-size:100% 100%;background-repeat:no-repeat;background-color:#2f366f;padding:0;border-radius:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tr><td style="padding:18px 20px 18px 24px;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:700;color:#ffffff;">{{headerTitle}}</td><td width="68" style="text-align:center;vertical-align:middle;padding:8px 12px 8px 8px;"><img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-icon.png" width="36" height="36" alt="" style="display:block;margin:0 auto;" /></td></tr></table></td>
+            </tr>
+          </table>
+
+          <div class="badge">{{badgeLabel}}</div>
+          <p class="intro">{{{introText}}}</p>
+
+          <div class="section-title">{{#if detailsSectionTitle}}{{detailsSectionTitle}}{{else}}Evento{{/if}}</div>
+          <div class="card">
+            <div class="event-image-wrap">
+              {{#if eventImage}}
+                <img class="event-image" src="{{eventImage}}" alt="{{eventName}}" />
+              {{/if}}
+            </div>
+
+            <div class="event-body">
+              <h2 class="event-name">{{eventName}}</h2>
+
+              <table class="meta-row" role="presentation">
+                <tr>
+                  <td>
+                    <span class="meta-label">{{#if dateLabel}}{{dateLabel}}{{else}}Fecha{{/if}}</span>
+                    {{eventDateDisplay}}
+                  </td>
+                  <td class="meta-right">
+                    <span class="meta-label">{{#if timeLabel}}{{timeLabel}}{{else}}Horario{{/if}}</span>
+                    {{eventTimeRange}}
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <span class="meta-label">{{#if locationLabel}}{{locationLabel}}{{else}}Ubicación del evento{{/if}}</span>
+                    <div>{{eventLocation}}</div>
+                    {{#if eventAddress}}
+                      <div style="margin-top:4px; color:#6f7897; font-size:12px;">{{eventAddress}}</div>
+                    {{/if}}
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          {{#if summaryStats}}
+            <table class="stats-grid" role="presentation">
+              <tr>
+                {{#each summaryStats}}
+                  <td class="stat-card">
+                    <div class="stat-value">{{value}}</div>
+                    <div class="stat-label">{{label}}</div>
+                  </td>
+                {{/each}}
+              </tr>
+            </table>
+          {{/if}}
+
+          <div class="cta-wrap">
+            <a class="cta" href="{{link}}">{{ctaText}}</a>
+            <div class="alt-link">Si el botón no abre, copia este enlace: {{link}}</div>
+          </div>
+
+          {{#if recommendationItems}}
+            <div class="tips">
+              <p class="tips-title">{{recommendationTitle}}</p>
+              <ol class="tips-list">
+                {{#each recommendationItems}}
+                  <li>{{this}}</li>
+                {{/each}}
+              </ol>
+            </div>
+          {{/if}}
+
+          <div class="brand-logo-wrap" role="img" aria-label="Do.Events">
+            <img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-logo-doevents.png" width="120" height="35" alt="Do.Events" style="display:inline-block;vertical-align:middle;" />
+          </div>
+          <div class="footer">
+            Cualquier duda, puedes comunicarte a <a href="mailto:management@doeventsapp.com">management@doeventsapp.com</a><br />
+            © {{year}} Do eventsapp. Todos los derechos reservados.
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

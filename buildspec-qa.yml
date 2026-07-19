@@ -1,0 +1,44 @@
+# Despliegue QA lambdas principales (CodeBuild + IAM)
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - npm install -g serverless@3.38.0
+  build:
+    commands:
+      - |
+        set -euo pipefail
+        export AWS_REGION="${AWS_REGION:-us-east-2}"
+        export NODE_OPTIONS="--max-old-space-size=4096"
+        ROOT="${CODEBUILD_SRC_DIR:-.}"
+
+        prepare_slss() {
+          local config="$1"
+          [ -f "$config" ] || return 0
+          cp "$config" "${config}.bak"
+          sed -i '/^frameworkVersion:/d;/^org:/d' "$config"
+        }
+
+        restore_slss() {
+          local config="$1"
+          [ -f "${config}.bak" ] && mv "${config}.bak" "$config"
+        }
+
+        deploy_lambda() {
+          local dir="$1"
+          local config="${2:-serverless.yml}"
+          echo "=== Deploy ${dir} (${config}) ==="
+          cd "${ROOT}/${dir}"
+          rm -rf .serverless
+          prepare_slss "$config"
+          npm install --omit=dev --silent 2>/dev/null || npm install --silent
+          npx serverless deploy --config "$config" --stage qa --region "${AWS_REGION}" --verbose
+          restore_slss "$config"
+          rm -rf .serverless node_modules
+        }
+
+        deploy_lambda aws-lambda-login serverless.qa.yml
+        echo "Deploy QA backend (login) completado"

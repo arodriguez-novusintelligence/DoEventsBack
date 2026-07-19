@@ -1,0 +1,138 @@
+openapi: 3.0.1
+info:
+  title: Imágenes de Eventos API
+  description: API para gestionar imágenes asociadas a eventos: agregar, consultar, visualizar y actualizar imágenes almacenadas en S3.
+  version: "1.0.0"
+
+paths:
+  /event-images:
+    post:
+      summary: Agregar imágenes a evento
+      description: Sube imágenes codificadas en base64 a S3 y registra metadatos en la tabla "imagenes".
+      tags:
+        - Imágenes
+      requestBody:
+        description: Lista de imágenes base64 con identificadores del evento e imagen
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddImageRequest'
+      responses:
+        '200':
+          description: Imágenes subidas exitosamente
+        '400':
+          description: Parámetros inválidos
+        '500':
+          description: Error interno del servidor
+
+  /event-images/{id_evento}:
+    get:
+      summary: Obtener imágenes del evento (URL firmadas)
+      description: Devuelve las URLs firmadas de las imágenes asociadas a un evento específico.
+      tags:
+        - Imágenes
+      parameters:
+        - name: id_evento
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Imágenes obtenidas correctamente
+        '400':
+          description: Faltan parámetros
+        '404':
+          description: Imágenes no encontradas
+        '500':
+          description: Error interno del servidor
+
+    put:
+      summary: Actualizar imágenes del evento
+      description: Reemplaza las imágenes existentes en S3 por nuevas versiones proporcionadas en base64.
+      tags:
+        - Imágenes
+      requestBody:
+        description: Nuevas imágenes codificadas en base64
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateImageRequest'
+      parameters:
+        - name: id_evento
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Imágenes actualizadas correctamente
+        '400':
+          description: Faltan parámetros
+        '404':
+          description: No se encontraron imágenes para actualizar
+        '500':
+          description: Error al actualizar imágenes
+
+  /event-images/update/{id_evento}:
+    get:
+      summary: Obtener imágenes (base64 y firmadas) para actualización
+      description: Devuelve las imágenes codificadas en base64 y sus URLs firmadas para revisión antes de ser actualizadas.
+      tags:
+        - Imágenes
+      parameters:
+        - name: id_evento
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Imágenes obtenidas exitosamente
+        '400':
+          description: Parámetro id_evento requerido
+        '404':
+          description: Imágenes no encontradas
+        '500':
+          description: Error interno del servidor
+
+components:
+  schemas:
+    AddImageRequest:
+      type: object
+      properties:
+        id_evento:
+          type: string
+        id_imagen:
+          type: string
+        id_user:
+          type: string
+        list_image:
+          type: array
+          items:
+            type: object
+            properties:
+              nombreImagen:
+                type: string
+              ImagenB64:
+                type: string
+      required:
+        - id_evento
+        - list_image
+
+    UpdateImageRequest:
+      type: object
+      properties:
+        list_image:
+          type: array
+          items:
+            type: object
+            properties:
+              nombreImagen:
+                type: string
+              ImagenB64:
+                type: string
+      required:
+        - list_image

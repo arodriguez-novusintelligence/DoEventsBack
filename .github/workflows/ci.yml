@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validar dependencias en lambdas principales
+        run: |
+          for dir in aws-lambda-manageevents aws-lambda-login aws-lambda-managetickets aws-lambda-venues aws-lambda-checkouts; do
+            if [ -f "$dir/package.json" ]; then
+              echo "==> $dir"
+              npm ci --prefix "$dir" --omit=dev 2>/dev/null || npm install --prefix "$dir" --omit=dev
+            fi
+          done
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: npm audit sample
+        run: |
+          for dir in aws-lambda-manageevents aws-lambda-login; do
+            [ -f "$dir/package.json" ] && npm audit --prefix "$dir" --audit-level=critical || true
+          done

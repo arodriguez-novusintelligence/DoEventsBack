@@ -1,0 +1,40 @@
+{
+  "tableName": "Likes",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/Likes",
+  "tableId": "cb498b5e-48da-4116-9046-8dcac9e2161c",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 1,
+  "tableSizeBytes": 71,
+  "creationDateTime": "2025-04-04T11:32:36.613000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "like_id",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "like_id",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

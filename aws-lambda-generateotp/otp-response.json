@@ -1,0 +1,1 @@
+{"errorType":"SyntaxError","errorMessage":"\"undefined\" is not valid JSON","trace":["SyntaxError: \"undefined\" is not valid JSON","    at JSON.parse (<anonymous>)","    at exports.handler (/var/task/src/generateOtp.js:207:82)","    at Runtime.handleOnceNonStreaming (file:///var/runtime/index.mjs:1306:29)"]}

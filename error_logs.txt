@@ -1,0 +1,14 @@
+﻿{
+    "events": [
+        {
+            "logStreamName": "2026/01/19/[$LATEST]4ba77caa8fa847bbb2b867ff5de30237",
+            "timestamp": 1768850622683,
+aws : 
+En línea: 1 Carácter: 137
++ ... iseconds(); aws logs filter-log-events --log-group-name "/aws/lambda/ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+'charmap' codec can't encode character '\u274c' in position 72: character maps to <undefined>
+            "message": 

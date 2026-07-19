@@ -1,0 +1,98 @@
+org: events
+service: aws-lambda-login
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: sa-east-1
+  stage: dev
+  environment:
+    JWT_SECRET: arn:aws:ssm:us-east-1:519010577666:parameter/doevent/login/JWT_SECRET
+    CLIENT_TABLE: Client-dev
+    FAVORITE_USERS_TABLE: FavoriteUsers-dev
+    USER_PREFERENCES_TABLE: UserPreferences-dev
+    BACKOFFICE_TABLE: doevents-backoffice-dev-users
+    BACKOFFICE_REGION: sa-east-1
+    DYNAMODB_REGION: sa-east-1
+    APPLE_CALLBACK_LANDING_URL: https://dev.doeventsapp.com/apple-callback
+    APPLE_SERVICES_ID: ${env:APPLE_SERVICES_ID, ''}
+    FACEBOOK_APP_ID: ${env:FACEBOOK_APP_ID, '696770136864604'}
+    FACEBOOK_APP_SECRET: ${env:FACEBOOK_APP_SECRET, ''}
+    DATA_DELETION_STATUS_URL: https://dev.doeventsapp.com/auth/data-deletion
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:Query
+        - dynamodb:Scan
+      Resource:
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/Client-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/Client-dev/index/*
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/UserPreferences-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/UserPreferences-dev/index/*
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/FavoriteUsers-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/FavoriteUsers-dev/index/*
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/doevents-backoffice-dev-users
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/doevents-backoffice-dev-users/index/*
+    - Effect: Allow
+      Action:
+        - ssm:GetParameter
+      Resource:
+        - arn:aws:ssm:us-east-1:519010577666:parameter/doevent/login/JWT_SECRET
+
+functions:
+  login:
+    handler: src/login.handler
+    events:
+      - httpApi:
+          path: /login
+          method: post
+  googleAuth:
+    handler: src/login.googleAuth
+    events:
+      - httpApi:
+          path: /googleOAuth
+          method: post
+  facebookAuth:
+    handler: src/login.facebookAuth
+    events:
+      - httpApi:
+          path: /facebookOAuth
+          method: post
+  facebookDataDeletion:
+    handler: src/facebookDataDeletion.facebookDataDeletion
+    events:
+      - httpApi:
+          path: /facebookDataDeletion
+          method: post
+      - httpApi:
+          path: /facebookDataDeletion
+          method: get
+  appleAuth:
+    handler: src/login.appleAuth
+    events:
+      - httpApi:
+          path: /appleOAuth
+          method: post
+  appleCallback:
+    handler: src/login.appleCallback
+    events:
+      - httpApi:
+          path: /apple-callback
+          method: post
+      - httpApi:
+          path: /apple-callback
+          method: get
+
+package:
+  patterns:
+    - 'src/**'
+    - 'package.json'
+    - 'package-lock.json'
+    - 'node_modules/**'
+    - '!**/*.md'
+    - '!**/*.test.js'

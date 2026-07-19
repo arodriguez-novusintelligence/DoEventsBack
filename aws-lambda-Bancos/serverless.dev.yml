@@ -1,0 +1,54 @@
+org: events
+service: aws-lambda-Bancos
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: sa-east-1
+  stage: dev
+  environment:
+    BANCOS_TABLE: Bancos-dev
+    DYNAMODB_REGION: sa-east-1
+    CORS_ALLOWED_ORIGINS: https://dev.doeventsapp.com,http://localhost:5173,https://localhost,capacitor://localhost
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:DeleteItem
+      Resource:
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/Bancos-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/Bancos-dev/index/*
+
+functions:
+  swaggerDocs:
+    handler: src/swaggerDocs.swaggerDocs
+    events:
+      - httpApi:
+          path: /doc
+          method: get
+      - httpApi:
+          path: /doc/swagger-Banks.yml
+          method: get
+  crearBanco:
+    handler: src/crearBanco.crearBanco
+    events:
+      - httpApi:
+          path: /CrearBanco
+          method: post
+  getBanco:
+    handler: src/getBanco.getBanco
+    events:
+      - httpApi:
+          path: /getBanco/{id_country}
+          method: get
+  updateBanco:
+    handler: src/updateBanco.updateBanco
+    events:
+      - httpApi:
+          path: /updateBanco
+          method: put

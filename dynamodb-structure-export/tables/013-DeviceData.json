@@ -1,0 +1,79 @@
+{
+  "tableName": "DeviceData",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/DeviceData",
+  "tableId": "f4d380c6-a73c-4dc9-9b0f-93c1d0f35693",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 70,
+  "tableSizeBytes": 19842,
+  "creationDateTime": "2025-04-21T17:03:30.322000-05:00",
+  "deletionProtectionEnabled": true,
+  "keySchema": [
+    {
+      "AttributeName": "deviceId",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "city",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "deviceId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "userID",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "UserIDIndex",
+      "keySchema": [
+        {
+          "AttributeName": "userID",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 70,
+      "indexSizeBytes": 19842
+    },
+    {
+      "indexName": "CityStartDateIndex",
+      "keySchema": [
+        {
+          "AttributeName": "city",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 4,
+      "indexSizeBytes": 461
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

@@ -1,0 +1,72 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: events
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: aws-lambda-DatosBancarios
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    DATOS_BANCARIOS_TABLE: DatosBancarios
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:PutObject
+        - s3:GetObject
+        - s3:DeleteObject
+      Resource:
+        - arn:aws:dynamodb:us-east-1:519010577666:table/DatosBancarios
+        - arn:aws:dynamodb:us-east-1:519010577666:table/DatosBancarios/index/UserIdIndex
+        - arn:aws:s3:::lambdadatobdocumento/*
+        - arn:aws:s3:::lambdadatobcertificado/*
+        - arn:aws:s3:::lambdadatobcertificadocamaracomercio/*
+        - arn:aws:s3:::certificadosrutdatosbancarios/*
+package:
+  patterns:
+    - "!.serverless/**"
+    - "!doc/**"
+    - "!readme.md"
+    - "!node_modules/aws-crt/**"
+functions:
+  swaggerDocs:
+    handler: src/swaggerDocs.swaggerDocs
+    events:
+      - httpApi:
+          path: /doc
+          method: get
+      - httpApi:
+          path: /doc/swagger-bank-details.yml
+          method: get
+  crearDatosBancarios:
+    handler: src/createBankData.crearDatosBancarios
+    events:
+      - httpApi:
+          path: /crearDatosBancarios
+          method: post
+  obtenerDatosBancarios:
+    handler: src/getBankData.obtenerDatosBancariosPorId
+    events:
+      - httpApi:
+          path: /obtenerDatosBancarios/{id}
+          method: get
+  obtenerDatosBancariosByUser:
+    handler: src/getBankDataByUserId.obtenerDatosBancariosByUserId
+    events:
+      - httpApi:
+          path: /obtenerDatosBancariosByUserId/{userID}
+          method: get
+  actualizarDatosBancarios:
+    handler: src/updateBankData.updateBankData
+    events:
+      - httpApi:
+          path: /actualizarDatosBancarios
+          method: post
+  setDatoBancarioPredeterminado:
+    handler: src/setBankDataDefault.setBankDataDefault
+    events:
+      - httpApi:
+          path: /datosBancarios/{id}/predeterminado
+          method: patch

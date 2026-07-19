@@ -1,0 +1,68 @@
+{
+  "tableName": "UserChannels",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/UserChannels",
+  "tableId": "70af282a-2277-4957-9df4-811d0c2687f6",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 9,
+  "tableSizeBytes": 779,
+  "creationDateTime": "2025-07-24T14:46:08.645000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "channelId",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "connectionId",
+      "KeyType": "RANGE"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "channelId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "connectionId",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "ConnectionIndex",
+      "keySchema": [
+        {
+          "AttributeName": "connectionId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "channelId",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 9,
+      "indexSizeBytes": 779
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

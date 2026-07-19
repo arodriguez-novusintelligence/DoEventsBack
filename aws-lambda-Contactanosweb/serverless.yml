@@ -1,0 +1,43 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: events
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: aws-lambda-Contactanosweb
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:PutObject
+        - ses:SendEmail
+        - ses:SendRawEmail
+      Resource:
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Contactanosweb
+        - arn:aws:ses:us-east-1:519010577666:identity/*
+functions:
+  swaggerDocs:
+    handler: src/swaggerDocs.swaggerDocs
+    events:
+      - http:
+          path: doc
+          method: get
+      - http:
+          path: doc/swagger-contact-us-web.yml
+          method: get
+  crearcontac:
+    handler: src/createcontac.createContact
+    events:
+      - httpApi:
+          path: /crearcontacto
+          method: post
+          cors: true
+  obtenercontact:
+    handler: src/getcontac.getContacts
+    events:
+      - httpApi:
+          path: /obtenercontac
+          method: get
+          cors: true

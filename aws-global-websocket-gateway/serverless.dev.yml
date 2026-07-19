@@ -1,0 +1,128 @@
+org: events
+service: global-websocket-gateway
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: sa-east-1
+  stage: dev
+
+  environment:
+    STAGE: dev
+    DYNAMODB_REGION: sa-east-1
+    USER_CHANNELS_TABLE: UserChannels-dev
+    WS_API_ENDPOINT: wss://ittofzg9g9.execute-api.sa-east-1.amazonaws.com/dev
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/UserChannels-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/UserChannels-dev/index/*
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource:
+        - arn:aws:lambda:sa-east-1:519010577666:function:chat-room-events-dev-*
+        - arn:aws:lambda:sa-east-1:519010577666:function:notifications-dev-*
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - execute-api:ManageConnections
+            - execute-api:Invoke
+          Resource:
+            - arn:aws:execute-api:sa-east-1:519010577666:ittofzg9g9/dev/POST/@connections/*
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    websocketPort: 3010
+    httpPort: 3011
+    lambdaPort: 3012
+    host: 0.0.0.0
+
+functions:
+  connectHandler:
+    handler: src/connect.handler
+    events:
+      - websocket:
+          route: $connect
+
+  disconnectHandler:
+    handler: src/disconnect.handler
+    events:
+      - websocket:
+          route: $disconnect
+
+  dispatcherHandler:
+    handler: src/dispatcher.handler
+    events:
+      - websocket:
+          route: dispatcher
+
+  statusConnectionHandler:
+    handler: src/statusConnection.handler
+    events:
+      - websocket:
+          route: statusConnection
+
+  joinRoomHandler:
+    handler: src/chatGateway.joinRoomHandler
+    events:
+      - websocket:
+          route: joinRoom
+
+  sendChatMessageAssetsHandler:
+    handler: src/chatGateway.sendChatMessageAssetsHandler
+    events:
+      - websocket:
+          route: sendChatMessageAssets
+
+  sendChatMessageHandler:
+    handler: src/chatGateway.sendChatMessageHandler
+    events:
+      - websocket:
+          route: sendChatMessage
+
+  editChatMessageHandler:
+    handler: src/chatGateway.editChatMessageHandler
+    events:
+      - websocket:
+          route: editChatMessage
+
+  reactChatMessageHandler:
+    handler: src/chatGateway.reactChatMessageHandler
+    events:
+      - websocket:
+          route: reactChatMessage
+
+  inAppNotificationHandler:
+    handler: src/notificationGateway.inAppNotificationHandler
+    events:
+      - websocket:
+          route: inAppNotification
+
+  sendNotificationHandler:
+    handler: src/notificationGateway.sendNotificationHandler
+    events:
+      - websocket:
+          route: sendNotification
+
+  emailNotificationHandler:
+    handler: src/notificationGateway.emailNotificationHandler
+    events:
+      - websocket:
+          route: sendEmailNotification
+
+  whatsappNotificationHandler:
+    handler: src/notificationGateway.whatsappNotificationHandler
+    events:
+      - websocket:
+          route: sendWhatsAppNotification

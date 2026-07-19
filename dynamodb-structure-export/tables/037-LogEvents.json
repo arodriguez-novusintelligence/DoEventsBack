@@ -1,0 +1,49 @@
+{
+  "tableName": "LogEvents",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/LogEvents",
+  "tableId": "b39ae89d-43be-42f8-a0b2-20121397b5fa",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 2,
+  "tableSizeBytes": 282,
+  "creationDateTime": "2024-09-17T13:03:40.568000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "rquid",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "timestamp",
+      "KeyType": "RANGE"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "rquid",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "timestamp",
+      "AttributeType": "N"
+    }
+  ],
+  "globalSecondaryIndexes": [],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "ENABLED",
+    "AttributeName": "ttl"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

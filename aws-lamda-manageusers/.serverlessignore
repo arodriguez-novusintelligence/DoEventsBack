@@ -1,0 +1,18 @@
+# Parches manuales y zips locales (no son código de producción)
+_lambda_patch/**
+_patch_search/**
+.deploy-getuser/**
+*.zip
+
+# Tooling de desarrollo
+.serverless/**
+node_modules/serverless/**
+node_modules/serverless-offline/**
+node_modules/@esbuild/**
+node_modules/java-invoke-local/**
+node_modules/@types/**
+**/.bin/**
+
+# Documentación
+**/*.md
+README.md

@@ -1,0 +1,657 @@
+openapi: 3.0.1
+info:
+  title: Eventos API
+  description: API para gestionar eventos, incluyendo creación, publicación, actualizaciones, favoritos, entradas y feed según ubicación.
+  version: "1.0.0"
+
+paths:
+  /eventos:
+    post:
+      summary: Crear evento
+      description: Registra un nuevo evento con todos sus datos organizacionales y de programación.
+      tags: [Eventos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEventRequest"
+      responses:
+        "201":
+          description: Evento creado exitosamente
+        "400":
+          description: Validación fallida
+        "500":
+          description: Error interno del servidor
+
+  /eventos/{id}:
+    put:
+      summary: Actualizar evento
+      description: Modifica la información de un evento existente.
+      tags: [Eventos]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEventRequest"
+      responses:
+        "200":
+          description: Evento actualizado exitosamente
+        "400":
+          description: Datos inválidos o faltantes
+        "500":
+          description: Error interno
+
+  /eventos/publicar:
+    post:
+      summary: Publicar evento
+      description: Cambia el estado del evento a "activo".
+      tags: [Eventos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventId:
+                  type: string
+      responses:
+        "201":
+          description: Evento publicado correctamente
+        "500":
+          description: Error interno
+
+  /eventos/{eventId}/categoria-reembolso:
+    put:
+      summary: Actualizar categoría de reembolso
+      description: Asigna o modifica la categoría de reembolso para un evento.
+      tags: [Eventos]
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categoriaReembolso:
+                  type: string
+      responses:
+        "201":
+          description: Categoría actualizada
+        "400":
+          description: Datos incompletos
+        "500":
+          description: Error interno
+
+  /canRequestRefund/{eventId}:
+    post:
+      summary: Validar si se puede solicitar reembolso
+      description: |
+        Valida si un usuario puede solicitar reembolso para un evento específico basándose en:
+        - La fecha actual proporcionada
+        - La fecha de inicio del evento (fechaIni)
+        - La categoría de reembolso del evento (categoriaReembolso)
+
+        Categorías de reembolso:
+        - **30**: Requiere mínimo 30 días de anticipación
+        - **7**: Requiere mínimo 7 días de anticipación
+        - **1**: Requiere mínimo 1 día de anticipación
+        - **0**: Requiere evaluación manual caso por caso
+        - **N**: No se permiten reembolsos
+      tags: [Reembolsos]
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          description: ID del evento para el cual se desea validar el reembolso
+          schema:
+            type: string
+            example: "3adf210f-716b-43fb-84b4-ece5e2119af2"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - orderId
+                - currentDate
+              properties:
+                userId:
+                  type: string
+                  description: ID del usuario que solicita el reembolso
+                  example: "42c2e4a4-0"
+                orderId:
+                  type: string
+                  description: ID de la orden de compra
+                  example: "test-cf0f7283-31"
+                currentDate:
+                  type: string
+                  pattern: '^\d{8}$'
+                  description: Fecha actual en formato YYYYMMDD
+                  example: "20251101"
+            examples:
+              validacion_30_dias:
+                summary: Validación con 30 días de anticipación
+                value:
+                  userId: "42c2e4a4-0"
+                  orderId: "test-cf0f7283-31"
+                  currentDate: "20251101"
+              validacion_7_dias:
+                summary: Validación con 7 días de anticipación
+                value:
+                  userId: "42c2e4a4-0"
+                  orderId: "test-cf0f7283-31"
+                  currentDate: "20251208"
+              validacion_1_dia:
+                summary: Validación con 1 día de anticipación
+                value:
+                  userId: "42c2e4a4-0"
+                  orderId: "test-cf0f7283-31"
+                  currentDate: "20251214"
+      responses:
+        "200":
+          description: Validación completada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      eventId:
+                        type: string
+                        example: "3adf210f-716b-43fb-84b4-ece5e2119af2"
+                      eventName:
+                        type: string
+                        example: "Conferencia Tech 2025"
+                      eventDate:
+                        type: string
+                        example: "20251215"
+                      currentDate:
+                        type: string
+                        example: "20251101"
+                      daysUntilEvent:
+                        type: integer
+                        example: 44
+                      refundCategory:
+                        type: string
+                        enum: ["30", "7", "1", "0", "N"]
+                        example: "30"
+                      canRequestRefund:
+                        type: boolean
+                        example: true
+                      requiresManualReview:
+                        type: boolean
+                        example: false
+                      reason:
+                        type: string
+                        example: "Puedes solicitar reembolso. Faltan 44 días para el evento (mínimo requerido: 30 días)"
+                      orderInfo:
+                        type: object
+                        description: Información de la orden validada
+                        properties:
+                          orderId:
+                            type: string
+                            example: "test-cf0f7283-31"
+                          userId:
+                            type: string
+                            example: "42c2e4a4-0"
+                          amount:
+                            type: number
+                            example: 90000
+                          currency:
+                            type: string
+                            example: "COP"
+                          paymentStatus:
+                            type: string
+                            example: "APPROVED"
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: "2025-10-04T16:22:17.080Z"
+              examples:
+                puede_reembolso:
+                  summary: Puede solicitar reembolso (30 días)
+                  value:
+                    success: true
+                    data:
+                      eventId: "3adf210f-716b-43fb-84b4-ece5e2119af2"
+                      eventName: "Conferencia Tech 2025"
+                      eventDate: "20251215"
+                      currentDate: "20251101"
+                      daysUntilEvent: 44
+                      refundCategory: "30"
+                      canRequestRefund: true
+                      requiresManualReview: false
+                      reason: "Puedes solicitar reembolso. Faltan 44 días para el evento (mínimo requerido: 30 días)"
+                      orderInfo:
+                        orderId: "test-cf0f7283-31"
+                        userId: "42c2e4a4-0"
+                        amount: 90000
+                        currency: "COP"
+                        paymentStatus: "APPROVED"
+                        createdAt: "2025-10-04T16:22:17.080Z"
+                no_puede_reembolso:
+                  summary: No puede solicitar reembolso (insuficiente anticipación)
+                  value:
+                    success: true
+                    data:
+                      eventId: "3adf210f-716b-43fb-84b4-ece5e2119af2"
+                      eventName: "Conferencia Tech 2025"
+                      eventDate: "20251215"
+                      currentDate: "20251210"
+                      daysUntilEvent: 5
+                      refundCategory: "30"
+                      canRequestRefund: false
+                      requiresManualReview: false
+                      reason: "No puedes solicitar reembolso. Faltan 5 días para el evento (mínimo requerido: 30 días de anticipación)"
+                evaluacion_manual:
+                  summary: Requiere evaluación manual
+                  value:
+                    success: true
+                    data:
+                      eventId: "3adf210f-716b-43fb-84b4-ece5e2119af2"
+                      eventName: "Conferencia Tech 2025"
+                      eventDate: "20251215"
+                      currentDate: "20251201"
+                      daysUntilEvent: 14
+                      refundCategory: "0"
+                      canRequestRefund: false
+                      requiresManualReview: true
+                      reason: "Las solicitudes de reembolso para este evento se evalúan caso a caso. Por favor contacta al organizador"
+                no_permite_reembolsos:
+                  summary: Evento no permite reembolsos
+                  value:
+                    success: true
+                    data:
+                      eventId: "3adf210f-716b-43fb-84b4-ece5e2119af2"
+                      eventName: "Evento sin reembolso"
+                      eventDate: "20251215"
+                      currentDate: "20251101"
+                      daysUntilEvent: 44
+                      refundCategory: "N"
+                      canRequestRefund: false
+                      requiresManualReview: false
+                      reason: "Este evento no permite solicitudes de reembolso"
+        "400":
+          description: Parámetros faltantes, formato de fecha inválido o estado de orden inválido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+              examples:
+                userId_faltante:
+                  summary: Falta el parámetro userId
+                  value:
+                    success: false
+                    message: "El parámetro userId es requerido en el body"
+                orderId_faltante:
+                  summary: Falta el parámetro orderId
+                  value:
+                    success: false
+                    message: "El parámetro orderId es requerido en el body"
+                fecha_faltante:
+                  summary: Falta el parámetro currentDate
+                  value:
+                    success: false
+                    message: "El parámetro currentDate es requerido en el body (formato YYYYMMDD)"
+                formato_invalido:
+                  summary: Formato de fecha inválido
+                  value:
+                    success: false
+                    message: "El formato de currentDate debe ser YYYYMMDD"
+                orden_no_aprobada:
+                  summary: La orden no está aprobada
+                  value:
+                    success: false
+                    message: "No se puede solicitar reembolso para una orden con estado: PENDING"
+                categoria_invalida:
+                  summary: Categoría de reembolso inválida
+                  value:
+                    success: false
+                    message: "Categoría de reembolso no válida: X. Valores permitidos: 30, 7, 1, 0, N"
+        "403":
+          description: La orden no pertenece al usuario o al evento especificado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+              examples:
+                usuario_incorrecto:
+                  summary: La orden no pertenece al usuario
+                  value:
+                    success: false
+                    message: "La orden no pertenece al usuario especificado"
+                evento_incorrecto:
+                  summary: La orden no pertenece al evento
+                  value:
+                    success: false
+                    message: "La orden no pertenece al evento especificado"
+        "404":
+          description: Evento u orden no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+              examples:
+                orden_no_encontrada:
+                  summary: Orden no encontrada
+                  value:
+                    success: false
+                    message: "Orden no encontrada"
+                evento_no_encontrado:
+                  summary: Evento no encontrado
+                  value:
+                    success: false
+                    message: "Evento no encontrado"
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Error interno del servidor"
+                  error:
+                    type: string
+
+  /eventos/{eventId}/like:
+    post:
+      summary: Like o Unlike a evento
+      description: Agrega o elimina un evento de los favoritos del usuario.
+      tags: [Eventos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                eventId:
+                  type: string
+                like:
+                  type: boolean
+      responses:
+        "200":
+          description: Operación exitosa
+        "400":
+          description: Like ya existe o no encontrado
+        "500":
+          description: Error interno
+
+  /eventos/{id}/entradas:
+    get:
+      summary: Obtener entradas del evento
+      description: Devuelve la información de entranceData del evento.
+      tags: [Eventos]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Datos obtenidos
+        "404":
+          description: Evento no encontrado
+        "500":
+          description: Error interno
+
+  /eventos/{id}/detalles:
+    get:
+      summary: Obtener detalles de evento
+      description: Devuelve los detalles del evento junto con su categoría, tipo y tipoLugar enriquecido.
+      tags: [Eventos]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Datos enriquecidos obtenidos
+        "404":
+          description: Evento no encontrado
+        "500":
+          description: Error interno
+
+  /eventos/feed/ubicacion-fecha:
+    post:
+      summary: Eventos por ubicación y fecha
+      description: Devuelve un feed geolocalizado de eventos activos, públicos y ajenos al usuario.
+      tags: [Eventos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetEventsFeedRequest"
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Feed generado exitosamente
+        "400":
+          description: Petición malformada
+        "500":
+          description: Error al procesar eventos
+
+  /eventos/favoritos/{userId}:
+    get:
+      summary: Eventos favoritos de usuario
+      description: Devuelve los eventos que un usuario ha marcado como favoritos.
+      tags: [Eventos]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fechaActual
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lista de favoritos devuelta
+        "404":
+          description: No se encontraron eventos
+        "500":
+          description: Error interno
+
+  /eventos/usuario/{userId}/recientes:
+    get:
+      summary: Eventos recientes creados por usuario
+      description: Devuelve eventos activos y próximos según fecha actual.
+      tags: [Eventos]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fechaActual
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Eventos próximos del usuario
+        "500":
+          description: Error interno
+
+  /eventos/usuario/{userId}:
+    get:
+      summary: Obtener todos los eventos del usuario
+      description: Devuelve todos los eventos activos del usuario con imagen firmada y si tiene like.
+      tags: [Eventos]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Eventos encontrados
+        "500":
+          description: Error interno
+
+components:
+  schemas:
+    CreateEventRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        fechaIni:
+          type: string
+        fechaFin:
+          type: string
+        horaIni:
+          type: string
+        horaFin:
+          type: string
+        ubicacion:
+          type: object
+          properties:
+            latitude:
+              type: number
+            longitude:
+              type: number
+        organizerName:
+          type: string
+        TelPrin:
+          type: string
+        TelSec:
+          type: string
+        email:
+          type: string
+        userId:
+          type: string
+        tipoEvento:
+          type: string
+        Categoria:
+          type: string
+        aforo:
+          type: string
+        modalidadEvt:
+          type: string
+        IndicativoTelPrinOrg:
+          type: string
+        IndicativoTelSecOrg:
+          type: string
+        anfitrioName:
+          type: string
+        TelPrinAnf:
+          type: string
+        IndicativoTelPrinAnf:
+          type: string
+        IndicativoTelSecAnf:
+          type: string
+        TelSecAnf:
+          type: string
+        emailAnf:
+          type: string
+        clase:
+          type: string
+        video:
+          type: string
+        Hashtags:
+          type: string
+        pais:
+          type: string
+        ciudad:
+          type: string
+        tipoLugar:
+          type: string
+        direccion:
+          type: string
+        departamento:
+          type: string
+        entranceData:
+          type: array
+          items:
+            type: object
+
+    UpdateEventRequest:
+      allOf:
+        - $ref: "#/components/schemas/CreateEventRequest"
+
+    GetEventsFeedRequest:
+      type: object
+      properties:
+        fechaActual:
+          type: string
+        limit:
+          type: integer
+        lastKey:
+          type: string
+        userLocation:
+          type: object
+          properties:
+            latitude:
+              type: number
+            longitude:
+              type: number

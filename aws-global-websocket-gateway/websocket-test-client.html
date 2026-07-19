@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DoEvents WebSocket Test Client</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .section {
+        margin-bottom: 30px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      button {
+        padding: 10px 15px;
+        margin: 5px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: white;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .status {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+      .connected {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .disconnected {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      .log {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        padding: 15px;
+        border-radius: 4px;
+        height: 200px;
+        overflow-y: auto;
+        font-family: monospace;
+        white-space: pre-wrap;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 8px;
+        margin: 5px 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      .input-group {
+        margin: 10px 0;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>DoEvents WebSocket Test Client</h1>
+
+      <!-- WebSocket Connection Status -->
+      <div class="section">
+        <h3>Conexión WebSocket</h3>
+        <div id="connectionStatus" class="status disconnected">
+          Desconectado
+        </div>
+        <button onclick="connectWebSocket()">Conectar WebSocket</button>
+        <button onclick="disconnectWebSocket()">Desconectar</button>
+      </div>
+
+      <!-- Configuration -->
+      <div class="section">
+        <h3>Configuración</h3>
+        <div class="input-group">
+          <label for="userId">User ID:</label>
+          <input
+            type="text"
+            id="userId"
+            placeholder="Ej: user123"
+            value="42c2e4a4-0"
+          />
+        </div>
+        <div class="input-group">
+          <label for="chatId">Chat ID:</label>
+          <input
+            type="text"
+            id="chatId"
+            placeholder="Ej: chat456"
+            value="testchat456"
+          />
+        </div>
+        <div class="input-group">
+          <label for="message">Mensaje:</label>
+          <input
+            type="text"
+            id="message"
+            placeholder="Escribe tu mensaje aquí"
+            value="Hola, este es un mensaje de prueba"
+          />
+        </div>
+      </div>
+
+      <!-- WebSocket Chat Tests -->
+      <div class="section">
+        <h3>Pruebas de Chat (WebSocket)</h3>
+        <button onclick="testJoinRoom()">Unirse a Sala</button>
+        <button onclick="testSendMessage()">Enviar Mensaje</button>
+        <button onclick="testEditMessage()">Editar Mensaje</button>
+        <button onclick="testSendAssets()">Enviar Assets</button>
+      </div>
+
+      <!-- REST API Tests -->
+      <div class="section">
+        <h3>Pruebas REST API</h3>
+        <button onclick="testGetChats()">Obtener Chats</button>
+        <button onclick="testGetMessages()">Obtener Mensajes</button>
+        <button onclick="testCreateChat()">Crear Chat</button>
+      </div>
+
+      <!-- Notification Tests -->
+      <div class="section">
+        <h3>Pruebas de Notificaciones</h3>
+        <button onclick="testSendEmail()">Enviar Email</button>
+        <button onclick="testSendWhatsApp()">Enviar WhatsApp</button>
+        <button onclick="testInAppNotification()">Notificación In-App</button>
+      </div>
+
+      <!-- Logs -->
+      <div class="section">
+        <h3>Logs</h3>
+        <button onclick="clearLogs()">Limpiar Logs</button>
+        <div id="logs" class="log"></div>
+      </div>
+    </div>
+
+    <script>
+      let ws = null;
+      const wsUrl = "wss://ajojxxqr14.execute-api.us-east-1.amazonaws.com/dev";
+      const restApiUrl =
+        "https://s74yw0vme7.execute-api.us-east-1.amazonaws.com/dev";
+
+      function log(message) {
+        const logs = document.getElementById("logs");
+        const timestamp = new Date().toLocaleTimeString();
+        logs.textContent += `[${timestamp}] ${message}\n`;
+        logs.scrollTop = logs.scrollHeight;
+        console.log(message);
+      }
+
+      function clearLogs() {
+        document.getElementById("logs").textContent = "";
+      }
+
+      function updateConnectionStatus(connected) {
+        const status = document.getElementById("connectionStatus");
+        if (connected) {
+          status.textContent = "Conectado";
+          status.className = "status connected";
+        } else {
+          status.textContent = "Desconectado";
+          status.className = "status disconnected";
+        }
+      }
+
+      function connectWebSocket() {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          log("Ya está conectado al WebSocket");
+          return;
+        }
+
+        const userId = document.getElementById("userId").value;
+        if (!userId) {
+          log("❌ Por favor ingresa un User ID antes de conectar");
+          return;
+        }
+
+        // Agregar userId como query parameter
+        const wsUrlWithUserId = `${wsUrl}?userId=${encodeURIComponent(userId)}`;
+        log("Conectando a WebSocket: " + wsUrlWithUserId);
+        ws = new WebSocket(wsUrlWithUserId);
+
+        ws.onopen = function (event) {
+          log("✅ Conexión WebSocket establecida");
+          updateConnectionStatus(true);
+        };
+
+        ws.onmessage = function (event) {
+          log("📩 Mensaje recibido: " + event.data);
+          try {
+            const data = JSON.parse(event.data);
+            log("📦 Datos parseados: " + JSON.stringify(data, null, 2));
+          } catch (e) {
+            log("⚠️ No se pudo parsear el mensaje como JSON");
+          }
+        };
+
+        ws.onclose = function (event) {
+          log(
+            "❌ Conexión WebSocket cerrada. Código: " +
+              event.code +
+              ", Razón: " +
+              event.reason
+          );
+          updateConnectionStatus(false);
+          ws = null;
+        };
+
+        ws.onerror = function (error) {
+          log("🚨 Error en WebSocket: " + error);
+          updateConnectionStatus(false);
+        };
+      }
+
+      function disconnectWebSocket() {
+        if (ws) {
+          ws.close();
+          log("Desconectando WebSocket...");
+        } else {
+          log("No hay conexión WebSocket activa");
+        }
+      }
+
+      function sendWebSocketMessage(action, data) {
+        if (!ws || ws.readyState !== WebSocket.OPEN) {
+          log("❌ WebSocket no está conectado. Conecta primero.");
+          return;
+        }
+
+        const message = {
+          action: action,
+          ...data,
+        };
+
+        const messageStr = JSON.stringify(message);
+        log("📤 Enviando mensaje: " + messageStr);
+        ws.send(messageStr);
+      }
+
+      // Chat WebSocket Functions
+      function testJoinRoom() {
+        const userId = document.getElementById("userId").value;
+        const chatId = document.getElementById("chatId").value;
+
+        if (!userId || !chatId) {
+          log("❌ Por favor ingresa User ID y Chat ID");
+          return;
+        }
+
+        log("🚀 Probando joinRoom...");
+        sendWebSocketMessage("joinRoom", {
+          roomId: chatId, // La función espera roomId, no chatId
+          userId: userId,
+        });
+      }
+
+      function testSendMessage() {
+        const userId = document.getElementById("userId").value;
+        const chatId = document.getElementById("chatId").value;
+        const messageText = document.getElementById("message").value;
+
+        if (!userId || !chatId || !messageText) {
+          log(
+            "❌ Por favor llena todos los campos (User ID, Chat ID, Mensaje)"
+          );
+          return;
+        }
+
+        log("🚀 Probando sendChatMessage...");
+        sendWebSocketMessage("sendChatMessage", {
+          roomId: chatId, // La función espera roomId
+          message: {
+            text: messageText,
+            sender: userId,
+            type: "text",
+            reactions: [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            deletedAt: null,
+          },
+        });
+      }
+
+      function testEditMessage() {
+        const messageId = "msg_" + Date.now();
+        const newMessage =
+          "Mensaje editado: " + document.getElementById("message").value;
+
+        log("🚀 Probando editChatMessage...");
+        sendWebSocketMessage("editChatMessage", {
+          messageId: messageId,
+          newMessage: newMessage,
+        });
+      }
+
+      function testSendAssets() {
+        const userId = document.getElementById("userId").value;
+        const chatId = document.getElementById("chatId").value;
+
+        if (!userId || !chatId) {
+          log("❌ Por favor ingresa User ID y Chat ID");
+          return;
+        }
+
+        log("🚀 Probando sendChatMessageAssets...");
+        sendWebSocketMessage("sendChatMessageAssets", {
+          userId: userId,
+          chatId: chatId,
+          assetUrl: "https://example.com/image.jpg",
+          assetType: "image",
+        });
+      }
+
+      // REST API Functions
+      async function testGetChats() {
+        const userId = document.getElementById("userId").value;
+        if (!userId) {
+          log("❌ Por favor ingresa User ID");
+          return;
+        }
+
+        log("🚀 Probando GET /getChatsByUserId...");
+        try {
+          const response = await fetch(
+            `${restApiUrl}/getChatsByUserId?userId=${userId}`
+          );
+          const data = await response.json();
+          log("✅ Chats obtenidos: " + JSON.stringify(data, null, 2));
+        } catch (error) {
+          log("❌ Error obteniendo chats: " + error.message);
+        }
+      }
+
+      async function testGetMessages() {
+        const chatId = document.getElementById("chatId").value;
+        if (!chatId) {
+          log("❌ Por favor ingresa Chat ID");
+          return;
+        }
+
+        log("🚀 Probando GET /getMessagesByChatId...");
+        try {
+          const response = await fetch(
+            `${restApiUrl}/getMessagesByChatId?chatId=${chatId}`
+          );
+          const data = await response.json();
+          log("✅ Mensajes obtenidos: " + JSON.stringify(data, null, 2));
+        } catch (error) {
+          log("❌ Error obteniendo mensajes: " + error.message);
+        }
+      }
+
+      async function testCreateChat() {
+        const userId = document.getElementById("userId").value;
+        if (!userId) {
+          log("❌ Por favor ingresa User ID");
+          return;
+        }
+
+        log("🚀 Probando POST /createChat...");
+        try {
+          const response = await fetch(`${restApiUrl}/createChat`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userId: userId,
+              chatName: "Chat de Prueba",
+              participants: [userId, "user456"],
+            }),
+          });
+          const data = await response.json();
+          log("✅ Chat creado: " + JSON.stringify(data, null, 2));
+        } catch (error) {
+          log("❌ Error creando chat: " + error.message);
+        }
+      }
+
+      // Notification Functions
+      async function testSendEmail() {
+        log("🚀 Probando envío de email...");
+        try {
+          const response = await fetch(
+            "https://3zl8owc8xe.execute-api.us-east-1.amazonaws.com/dev/send-email",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                to: "test@example.com",
+                subject: "Prueba desde cliente WebSocket",
+                message: "Este es un email de prueba",
+              }),
+            }
+          );
+          const data = await response.json();
+          log("✅ Email enviado: " + JSON.stringify(data, null, 2));
+        } catch (error) {
+          log("❌ Error enviando email: " + error.message);
+        }
+      }
+
+      async function testSendWhatsApp() {
+        log("🚀 Probando envío de WhatsApp...");
+        try {
+          const response = await fetch(
+            "https://3zl8owc8xe.execute-api.us-east-1.amazonaws.com/dev/send-whatsapp",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                to: "+1234567890",
+                message: "Mensaje de prueba desde WebSocket client",
+              }),
+            }
+          );
+          const data = await response.json();
+          log("✅ WhatsApp enviado: " + JSON.stringify(data, null, 2));
+        } catch (error) {
+          log("❌ Error enviando WhatsApp: " + error.message);
+        }
+      }
+
+      async function testInAppNotification() {
+        const userId = document.getElementById("userId").value;
+        if (!userId) {
+          log("❌ Por favor ingresa User ID");
+          return;
+        }
+
+        log("🚀 Probando notificación in-app...");
+        sendWebSocketMessage("sendNotification", {
+          userId: userId,
+          type: "info",
+          title: "Prueba de Notificación",
+          message:
+            "Esta es una notificación de prueba desde el cliente WebSocket",
+        });
+      }
+
+      // Auto-connect on page load
+      window.onload = function () {
+        log("🎯 Cliente de prueba WebSocket cargado");
+        log("📋 URLs configuradas:");
+        log("   WebSocket: " + wsUrl);
+        log("   REST API: " + restApiUrl);
+        log("");
+        log('💡 Haz clic en "Conectar WebSocket" para empezar las pruebas');
+      };
+    </script>
+  </body>
+</html>

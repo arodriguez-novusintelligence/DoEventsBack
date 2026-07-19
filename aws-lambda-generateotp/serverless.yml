@@ -1,0 +1,82 @@
+org: events
+service: aws-lambda-generateotp
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-2
+  stage: qa
+  environment:
+    OTP_TABLE: OTPCode-qa
+    CLIENT_TABLE: Client-qa
+    PREFERENCES_TABLE: Preferences-qa
+    USER_PREFERENCES_TABLE: UserPreferences-qa
+    SES_FROM_EMAIL: notificaciones.doevents@doeventsapp.com
+    WHATSAPP_PHONE_ID: ${env:WHATSAPP_PHONE_ID, '588313857701989'}
+    META_ACCESS_TOKEN: ${env:META_ACCESS_TOKEN, ''}
+    CORS_ALLOWED_ORIGINS: https://qa.doeventsapp.com,http://localhost:5173,https://localhost,capacitor://localhost
+    WEB_APP_BASE_URL: https://qa.doeventsapp.com
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:Scan
+      Resource:
+        - arn:aws:dynamodb:us-east-2:519010577666:table/OTPCode-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Client-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Client-qa/index/EmailIndex
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Client-qa/index/PhoneIndex
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Preferences-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/UserPreferences-qa
+    - Effect: Allow
+      Action:
+        - ses:SendEmail
+        - ses:SendRawEmail
+      Resource: "*"
+    - Effect: Allow
+      Action:
+        - sns:Publish
+      Resource: "*"
+
+functions:
+  generateOtp:
+    handler: src/generateOtp.handler
+    events:
+      - httpApi:
+          path: /generateOtp
+          method: post
+  generateToken:
+    handler: src/getToken.generateToken
+    events:
+      - httpApi:
+          path: /generateToken
+          method: post
+  getPreferences:
+    handler: src/preferences.getPreferences
+    events:
+      - httpApi:
+          path: /preference
+          method: get
+  saveUserPreferences:
+    handler: src/preferences.saveUserPreferences
+    events:
+      - httpApi:
+          path: /userPreference
+          method: post
+
+package:
+  patterns:
+    - 'src/**'
+    - 'node_modules/**'
+    - '!**/*.md'
+    - '!**/test-*.json'
+    - '!**/payload*.json'
+    - '!**/otp-*.json'
+    - '!**/out.json'
+    - '!**/response.json'
+    - '!**/*.yaml'

@@ -1,0 +1,60 @@
+{
+  "tableName": "Venue_Section",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/Venue_Section",
+  "tableId": "94f97754-ac0c-4a52-beb9-a15d76da6826",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 6,
+  "tableSizeBytes": 1254,
+  "creationDateTime": "2025-11-07T13:04:45.297000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "sectionId",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "categoryId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "sectionId",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "categoryIdIndex",
+      "keySchema": [
+        {
+          "AttributeName": "categoryId",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 6,
+      "indexSizeBytes": 1254
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

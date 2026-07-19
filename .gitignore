@@ -1,0 +1,22 @@
+# Dependencias: ignorar node_modules en todas las carpetas y lambdas
+node_modules/
+**/node_modules/
+.serverless/
+**/.serverless/
+*.zip
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+
+# Archivos de depuración local (no versionar)
+/payload.json
+/lambda_logs.json
+/filtered_logs.json
+/refund-error-logs.json
+/transfer-logs-raw.json
+/verify-dist.json
+/updated-dist.json
+/order-test_*.json
+/temp-key.json

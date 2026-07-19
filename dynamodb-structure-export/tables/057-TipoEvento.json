@@ -1,0 +1,40 @@
+{
+  "tableName": "TipoEvento",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/TipoEvento",
+  "tableId": "270718d8-ffca-433c-83d7-9ad51a2ae861",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 22,
+  "tableSizeBytes": 1821,
+  "creationDateTime": "2024-11-18T19:09:41.562000-05:00",
+  "deletionProtectionEnabled": true,
+  "keySchema": [
+    {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "id",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

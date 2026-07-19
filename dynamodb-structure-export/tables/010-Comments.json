@@ -1,0 +1,40 @@
+{
+  "tableName": "Comments",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/Comments",
+  "tableId": "c8979ff8-3508-4b83-99e5-3644d41a231b",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 1,
+  "tableSizeBytes": 110,
+  "creationDateTime": "2025-04-04T11:32:29.094000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "comment_id",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "comment_id",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

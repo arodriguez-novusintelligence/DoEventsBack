@@ -1,0 +1,81 @@
+org: events
+service: aws-lambda-managecomments
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  timeout: 30
+  environment:
+    CLIENT_TABLE: Client
+    PROFILE_COMMENTS_TABLE: ProfileComments
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:GetObject
+      Resource:
+        - arn:aws:dynamodb:us-east-1:519010577666:table/ProfileComments
+        - arn:aws:dynamodb:us-east-1:519010577666:table/ProfileComments/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Client
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Client/index/*
+        - arn:aws:s3:::doeventprofileimagesbucket/*
+
+functions:
+  createComment:
+    handler: src/createComment.handler
+    events:
+      - httpApi:
+          path: /comments
+          method: post
+
+  getCommentsByUserId:
+    handler: src/getCommentsByUserId.handler
+    events:
+      - httpApi:
+          path: /comments/user/{userId}
+          method: get
+
+  updateComment:
+    handler: src/updateComment.handler
+    events:
+      - httpApi:
+          path: /comments/{commentId}
+          method: put
+
+  toggleLike:
+    handler: src/toggleLike.handler
+    events:
+      - httpApi:
+          path: /comments/{commentId}/like
+          method: post
+
+  deleteComment:
+    handler: src/deleteComment.handler
+    events:
+      - httpApi:
+          path: /comments/{commentId}
+          method: delete
+
+  replyToComment:
+    handler: src/replyToComment.handler
+    events:
+      - httpApi:
+          path: /comments/{commentId}/reply
+          method: post
+
+  deleteReply:
+    handler: src/deleteReply.handler
+    events:
+      - httpApi:
+          path: /comments/{commentId}/reply
+          method: delete
+
+  editReply:
+    handler: src/editReply.handler
+    events:
+      - httpApi:
+          path: /comments/{commentId}/reply
+          method: put

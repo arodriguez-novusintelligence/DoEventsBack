@@ -1,0 +1,45 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: events
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: aws-lambda-PlaceType
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    PLACE_TYPE_TABLE: TipoLugar
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:us-east-1:519010577666:table/TipoLugar
+functions:
+  getPlaceType:
+    handler: src/getPlaceType.getPlaceType
+    events:
+      - httpApi:
+          path: /PlaceType
+          method: get
+  createPlaceType:
+    handler: src/createPlaceType.createPlaceType
+    events:
+      - httpApi:
+          path: /createPlaceType
+          method: post
+resources:
+  Resources:
+    TaskTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: TipoLugar
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH

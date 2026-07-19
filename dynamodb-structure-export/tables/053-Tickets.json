@@ -1,0 +1,60 @@
+{
+  "tableName": "Tickets",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/Tickets",
+  "tableId": "2467fd9a-097f-4208-a54f-9bf0974dae60",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 430,
+  "tableSizeBytes": 650869,
+  "creationDateTime": "2025-07-21T16:40:11.224000-05:00",
+  "deletionProtectionEnabled": true,
+  "keySchema": [
+    {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "eventId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "id",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "eventIdIndex",
+      "keySchema": [
+        {
+          "AttributeName": "eventId",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 406,
+      "indexSizeBytes": 608965
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

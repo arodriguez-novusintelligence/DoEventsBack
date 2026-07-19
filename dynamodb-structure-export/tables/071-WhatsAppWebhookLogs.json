@@ -1,0 +1,48 @@
+{
+  "tableName": "WhatsAppWebhookLogs",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/WhatsAppWebhookLogs",
+  "tableId": "c64e7c2c-3975-4b2f-a085-9c0ba6583acb",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 0,
+  "tableSizeBytes": 0,
+  "creationDateTime": "2026-02-20T22:49:39.255000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "messageId",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "timestamp",
+      "KeyType": "RANGE"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "messageId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "timestamp",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

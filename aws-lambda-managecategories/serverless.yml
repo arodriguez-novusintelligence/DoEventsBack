@@ -1,0 +1,61 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: events
+
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: aws-lambda-managecategories
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    CATEGORIES_TABLE: EventosCategorias
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:PutObject
+      Resource:
+        - arn:aws:dynamodb:us-east-1:519010577666:table/EventosCategorias
+        - arn:aws:s3:::doeventimagecategories
+
+functions:
+  getCategoryById:
+    handler: src/getCategory.getCategoryById
+    events:
+      - httpApi:
+          path: /categories/{id}
+          method: get
+  getCategoryImage:
+    handler: src/getImage.getCategoryImage
+    events:
+      - httpApi:
+          path: /categories/{id}/image
+          method: get
+  createCategory:
+    handler: src/createCategory.createCategory
+    events:
+      - httpApi:
+          path: /categories
+          method: post
+  updateCategory:
+    handler: src/updateCategory.updateCategory
+    events:
+      - httpApi:
+          path: /categories/{id}
+          method: put
+
+resources:
+  Resources:
+    TaskTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: EventosCategorias
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH

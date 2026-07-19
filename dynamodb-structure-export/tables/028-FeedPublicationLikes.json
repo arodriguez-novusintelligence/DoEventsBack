@@ -1,0 +1,72 @@
+{
+  "tableName": "FeedPublicationLikes",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/FeedPublicationLikes",
+  "tableId": "1d345783-60d1-444d-9b1b-97586661f68d",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 220,
+  "tableSizeBytes": 20333,
+  "creationDateTime": "2026-03-09T14:15:47.435000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "publicationId",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "userId",
+      "KeyType": "RANGE"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "createdAt",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "publicationId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "userId",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "userId-createdAt-index",
+      "keySchema": [
+        {
+          "AttributeName": "userId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "createdAt",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 220,
+      "indexSizeBytes": 20333
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

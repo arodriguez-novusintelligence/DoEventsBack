@@ -1,0 +1,475 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: events
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: manage-orders-tickets
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: aws-lambda-orders-manageTickets
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: us-east-1
+  environment:
+    # Tablas y bucket que usan las lambdas
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    ORDERS_TABLE: Orders
+    EVENTS_TABLE: Eventos
+    TICKETS_TABLE: Tickets
+    ACCESS_LOGS_TABLE: AccessLogs
+    SEATS_TABLE: Seats
+    RESERVATIONS_TABLE: Reservations
+    IMAGE_BUCKET: doeventimageeventbucket
+    IMAGE_TABLE: imagenes
+    TICKETS_DIST_TABLE: TicketsDistribution
+    NOTIFICATIONS_API: https://ysfmaeawlf.execute-api.us-east-1.amazonaws.com/dev/trigger-notification
+    WEBSOCKET_ENDPOINT: https://cfd0fj86j9.execute-api.us-east-1.amazonaws.com/dev
+    STAGE: ${sls:stage}
+    CHATS_TABLE: Chats
+    CHAT_SEND_MESSAGE_FUNCTION: chat-room-events-${sls:stage}-sendChatMessage
+    CLIENT_TABLE: Client
+  iamRoleStatements:
+    # DynamoDB (tablas principales + índices)
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Orders
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Orders/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Eventos
+        - arn:aws:dynamodb:us-east-1:519010577666:table/CheckoutTicket
+        - arn:aws:dynamodb:us-east-1:519010577666:table/CheckoutTicket/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Seats
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Seats/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Tickets
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Tickets/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/TicketsDistribution
+        - arn:aws:dynamodb:us-east-1:519010577666:table/TicketsDistribution/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Reservations
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Reservations/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/AccessLogs
+        - arn:aws:dynamodb:us-east-1:519010577666:table/AccessLogs/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/UserChannels
+        - arn:aws:dynamodb:us-east-1:519010577666:table/UserChannels/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/usuarios
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Chats
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Chats/index/*
+        - arn:aws:lambda:us-east-1:519010577666:function:aws-lambda-imagenes-dev-getImageByEventId
+        - arn:aws:s3:::doeventimageeventbucket/*
+
+    # WebSocket API Gateway permissions
+    - Effect: Allow
+      Action:
+        - execute-api:ManageConnections
+        - execute-api:Invoke
+      Resource: arn:aws:execute-api:us-east-1:519010577666:cfd0fj86j9/*
+
+    # Permitir invocar lambda de chat para emitir mensaje en tiempo real al unir usuario por compra
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource:
+        - arn:aws:lambda:us-east-1:519010577666:function:chat-room-events-*-sendChatMessage
+
+    # EventBridge (para programar liberación de órdenes expiradas)
+    - Effect: Allow
+      Action:
+        - events:PutEvents
+        - events:PutRule
+        - events:PutTargets
+        - events:ListRules
+      Resource:
+        - arn:aws:events:us-east-1:519010577666:rule/release-expired-orders
+
+    # EventBridge Scheduler (one-time schedules per order)
+    - Effect: Allow
+      Action:
+        - scheduler:CreateSchedule
+        - scheduler:UpdateSchedule
+        - scheduler:DeleteSchedule
+        - scheduler:GetSchedule
+      Resource: "*"
+
+    # Allow passing the scheduler invoke role to EventBridge Scheduler
+    - Effect: Allow
+      Action:
+        - iam:PassRole
+      Resource:
+        - arn:aws:iam::519010577666:role/SchedulerInvokeReleaseOrderRole
+
+    # S3 (bucket para las imágenes QR)
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:PutObject
+      Resource:
+        - arn:aws:s3:::${self:custom.qrBucket}/*
+        - arn:aws:s3:::doeventimageeventbucket/*
+
+custom:
+  qrBucket: ticket-qr-${sls:stage}
+
+functions:
+  # ────────── 1. Ticket Lambda ──────────
+  generateTickets:
+    handler: src/ticket/generateTickets.handler
+    description: Crear
+    events:
+      - http:
+          path: orders/tickets/generate
+          method: post
+          cors: true
+  # 2. Obtener detalle de ticket
+  getTicketDetail:
+    handler: src/ticket/getTicketDetail.handler
+    description: Obtener detalles de un ticket
+    events:
+      - http:
+          path: tickets/{ticketId}
+          method: get
+          cors: true
+
+  # 3. Listar tickets de usuario
+  listUserTickets:
+    handler: src/ticket/listUserTickets.handler
+    description: Listar tickets de un usuario
+    events:
+      - http:
+          path: users/{userId}/tickets
+          method: get
+          cors: true
+
+  # 4. Listar tickets de evento
+  listEventTickets:
+    handler: src/ticket/listEventTickets.handler
+    description: Listar tickets de un evento
+    events:
+      - http:
+          path: events/{eventId}/tickets
+          method: get
+          cors: true
+
+  # 5. Transferir ticket (transferencia inmediata)
+  transferTicket:
+    handler: src/ticket/transferTicket.handler
+    description: Transferir tickets a otro usuario (transferencia inmediata)
+    events:
+      - http:
+          path: tickets/transfer
+          method: post
+          cors: true
+
+  # 6. Cancelar ticket
+  cancelTicket:
+    handler: src/ticket/cancelTicket.handler
+    description: Cancelar un ticket
+    events:
+      - http:
+          path: tickets/cancel
+          method: post
+          cors: true
+
+  # 7. Generar QR
+  generateQr:
+    handler: src/qr/generateQr.handler
+    description: Generar código QR para un ticket
+    events:
+      - http:
+          path: tickets/qr/generate
+          method: post
+          cors: true
+
+  # 8. Obtener imagen QR
+  getQrImage:
+    handler: src/qr/getQrImage.handler
+    description: Obtener la imagen del QR desde S3
+    events:
+      - http:
+          path: tickets/qr/{ticketId}
+          method: get
+          cors: true
+
+  # 9. Validar QR
+  validateQr:
+    handler: src/qr/validateQr.handler
+    description: Validar un código QR para acceso
+    events:
+      - http:
+          path: tickets/qr/validate
+          method: post
+          cors: true
+
+  # 10. Obtener logs de acceso
+  getAccessLogs:
+    handler: src/access/getAccessLogs.handler
+    description: Obtener logs de acceso para un ticket
+    events:
+      - http:
+          path: access/logs
+          method: post
+          cors: true
+
+  # 11. Obtener estadísticas de acceso
+  getAccessStats:
+    handler: src/access/getAccessStats.handler
+    description: Obtener estadísticas de acceso
+    events:
+      - http:
+          path: access/stats
+          method: get
+          cors: true
+
+  # ────────── Seats Management ──────────
+  listEventSeats:
+    handler: src/seats/listEventSeats.handler
+    description: Listar sillas de un evento
+    events:
+      - http:
+          path: events/{eventId}/seats
+          method: get
+          cors: true
+
+  getSeatDetail:
+    handler: src/seats/getSeatDetail.handler
+    description: Obtener detalle de una silla
+    events:
+      - http:
+          path: seats/{seatId}
+          method: get
+          cors: true
+
+  listSectionSeats:
+    handler: src/seats/listSectionSeats.handler
+    description: Listar sillas por sección de un evento
+    events:
+      - http:
+          path: events/{eventId}/sections/{section}/seats
+          method: get
+          cors: true
+
+  updateSeatStatus:
+    handler: src/seats/updateSeatStatus.handler
+    description: Actualizar estado de una silla
+    events:
+      - http:
+          path: seats/update-status
+          method: post
+          cors: true
+
+  # ────────── Tickets Distribution ──────────
+  getAvailableSeats:
+    handler: src/tickets-distribution/getAvailableSeats.handler
+    description: Consultar asientos disponibles de una distribución de tickets
+    events:
+      - http:
+          path: tickets-distribution/{distributionId}/available-seats
+          method: get
+          cors: true
+
+  getAvailableSeatsByEvent:
+    handler: src/tickets-distribution/getAvailableSeatsByEvent.handler
+    description: Consultar todos los asientos disponibles de un evento
+    events:
+      - http:
+          path: events/{eventId}/available-seats
+          method: get
+          cors: true
+
+  # ────────── Reservation Management ──────────
+  createReservation:
+    handler: src/reservation/createReservation.handler
+    description: Crear reserva temporal de silla
+    events:
+      - http:
+          path: reservations
+          method: post
+          cors: true
+
+  getReservationDetail:
+    handler: src/reservation/getReservationDetail.handler
+    description: Obtener detalle de una reserva
+    events:
+      - http:
+          path: reservations/{reservationId}
+          method: get
+          cors: true
+
+  cancelReservation:
+    handler: src/reservation/cancelReservation.handler
+    description: Cancelar reserva temporal
+    events:
+      - http:
+          path: reservations/cancel
+          method: post
+          cors: true
+
+  extendReservation:
+    handler: src/reservation/extendReservation.handler
+    description: Extender tiempo de reserva
+    events:
+      - http:
+          path: reservations/extend
+          method: post
+          cors: true
+
+  # ────────── Order & Payment Processing ──────────
+  createOrder:
+    handler: src/orders/manageOrders.createOrder
+    description: Crear orden validando TicketsDistribution
+    events:
+      - http:
+          path: orders
+          method: post
+          cors: true
+
+  processPaymentCallback:
+    handler: src/orders/manageOrders.processPaymentCallback
+    events:
+      - http:
+          path: payments/callback
+          method: post
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+
+  scanTicket:
+    handler: src/orders/manageOrders.scanTicket
+    events:
+      - http:
+          path: tickets/scan
+          method: post
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+
+  releaseExpiredTickets:
+    handler: src/orders/manageOrders.releaseExpiredTickets
+    events:
+      - schedule:
+          rate: rate(1 hour)
+
+  refreshActiveOrderQrs:
+    handler: src/orders/refreshActiveOrderQrs.handler
+    description: Refirma QR expirados de órdenes APPROVED en eventos activos
+    events:
+      - schedule:
+          rate: rate(30 minutes)
+
+  releaseExpiredOrder:
+    handler: src/orders/releaseExpiredOrder.handler
+    description: Liberar una orden específica expirada por TTL
+    events:
+      - http:
+          path: orders/{orderId}/release
+          method: post
+          cors: true
+      - schedule:
+          rate: rate(1 minute)
+          input:
+            action: "batch_check_all"
+
+  getOrderById:
+    handler: src/orders/getOrderById.handler
+    description: Obtener detalles de una orden por su ID
+    events:
+      - http:
+          path: orders/{orderId}
+          method: get
+          cors: true
+
+  logTicketAction:
+    handler: src/orders/logTicketAction.handler
+    description: Registrar acción sobre ticket en AccessLogs
+    events:
+      - http:
+          path: tickets/log
+          method: post
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+
+  # getOrderDetail was removed because it duplicated the `events/{eventId}/tickets` route
+  # and caused an API Gateway variable path conflict with other deployed services.
+  # If you need to expose order details, add a distinct path here (for example
+  # `orders/{orderId}`) that does not conflict with other services' variable
+  # path parts.
+
+  processPayment:
+    handler: src/orders/processPayment.handler
+    description: Procesar pago de una orden
+    events:
+      - http:
+          path: payments/process
+          method: post
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+
+  cancelOrder:
+    handler: src/orders/cancelOrder.handler
+    description: Cancelar una orden
+    events:
+      - http:
+          path: orders/cancel
+          method: post
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+
+resources:
+  Resources:
+    SchedulerInvokeReleaseOrderRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: SchedulerInvokeReleaseOrderRole
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: scheduler.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: AllowInvokeReleaseExpiredOrder
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - lambda:InvokeFunction
+                  Resource:
+                    - arn:aws:lambda:us-east-1:519010577666:function:aws-lambda-orders-manageTickets-${sls:stage}-releaseExpiredOrder

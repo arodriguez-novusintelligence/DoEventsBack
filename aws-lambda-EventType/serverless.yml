@@ -1,0 +1,58 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: events
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: aws-lambda-EventType
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    EVENT_TYPE_TABLE: TipoEvento${self:custom.tableSuffix.${self:provider.stage}, ''}
+    TABLE_NAME: TipoEvento${self:custom.tableSuffix.${self:provider.stage}, ''}
+    DYNAMODB_REGION: ${self:custom.region.${self:provider.stage}, self:provider.region}
+
+custom:
+  tableSuffix:
+    qa: '-qa'
+    dev: ''
+  region:
+    qa: us-east-2
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:PutObject
+        - s3:GetObject
+      Resource:
+        - arn:aws:dynamodb:us-east-1:519010577666:table/TipoEvento
+        - arn:aws:s3:::aws-lambda-event-type/*
+functions:
+  swaggerDocs:
+    handler: src/swaggerDocs.swaggerDocs
+    events:
+      - httpApi:
+          path: /doc
+          method: get
+      - httpApi:
+          path: /doc/swagger-event-type.yml
+          method: get
+  getEventType:
+    handler: src/getEventType.getEventType
+    events:
+      - httpApi:
+          path: /EventTypes
+          method: get
+  createEventType:
+    handler: src/createEventType.createEventType
+    events:
+      - httpApi:
+          path: /createEventType
+          method: post
+  getImagenEventType:
+    handler: src/getImagenEventType.getImagenEventType
+    events:
+      - httpApi:
+          path: /EventTypes/all
+          method: get

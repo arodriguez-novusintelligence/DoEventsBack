@@ -1,0 +1,60 @@
+{
+  "tableName": "imagenes",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/imagenes",
+  "tableId": "d932fb2e-64e6-416c-9750-bb2be91de8c3",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 492,
+  "tableSizeBytes": 113601,
+  "creationDateTime": "2024-12-09T21:14:51.101000-05:00",
+  "deletionProtectionEnabled": true,
+  "keySchema": [
+    {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "id_evento",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "eventIdIndex",
+      "keySchema": [
+        {
+          "AttributeName": "id_evento",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 486,
+      "indexSizeBytes": 112815
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

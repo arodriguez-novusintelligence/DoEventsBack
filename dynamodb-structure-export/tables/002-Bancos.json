@@ -1,0 +1,60 @@
+{
+  "tableName": "Bancos",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/Bancos",
+  "tableId": "02ae1421-ccd1-4533-94d4-c2f4bd51368e",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 3,
+  "tableSizeBytes": 181,
+  "creationDateTime": "2025-05-02T20:02:12.073000-05:00",
+  "deletionProtectionEnabled": true,
+  "keySchema": [
+    {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "id_country",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "id_country-index",
+      "keySchema": [
+        {
+          "AttributeName": "id_country",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 3,
+      "indexSizeBytes": 181
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

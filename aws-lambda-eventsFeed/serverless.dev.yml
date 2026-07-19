@@ -1,0 +1,65 @@
+org: events
+app: events-feed
+service: aws-lambda-eventsFeed
+
+params:
+  default:
+    awsRegion: us-east-1
+    tableSuffix: ""
+  dev:
+    awsRegion: sa-east-1
+    tableSuffix: "-dev"
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: ${param:awsRegion}
+  stage: dev
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:GetObject
+      Resource:
+        - arn:aws:dynamodb:${param:awsRegion}:519010577666:table/Eventos${param:tableSuffix}
+        - arn:aws:dynamodb:${param:awsRegion}:519010577666:table/Eventos${param:tableSuffix}/index/*
+        - arn:aws:dynamodb:${param:awsRegion}:519010577666:table/DeviceData${param:tableSuffix}
+        - arn:aws:dynamodb:${param:awsRegion}:519010577666:table/DeviceData${param:tableSuffix}/index/*
+        - arn:aws:dynamodb:${param:awsRegion}:519010577666:table/UserPreferences${param:tableSuffix}
+        - arn:aws:dynamodb:${param:awsRegion}:519010577666:table/Followers${param:tableSuffix}
+        - arn:aws:dynamodb:${param:awsRegion}:519010577666:table/imagenes${param:tableSuffix}
+        - arn:aws:dynamodb:${param:awsRegion}:519010577666:table/imagenes${param:tableSuffix}/index/eventIdIndex
+        - arn:aws:dynamodb:${param:awsRegion}:519010577666:table/userFavoriteEvents${param:tableSuffix}
+        - arn:aws:dynamodb:${param:awsRegion}:519010577666:table/Venues${param:tableSuffix}
+        - arn:aws:s3:::doeventimageeventbucket/*
+  environment:
+    STAGE: dev
+    DYNAMODB_REGION: ${param:awsRegion}
+    EVENTS_TABLE: Eventos${param:tableSuffix}
+    DEVICE_TABLE: DeviceData${param:tableSuffix}
+    PREFS_TABLE: UserPreferences${param:tableSuffix}
+    FOLLOW_TABLE: Followers${param:tableSuffix}
+    FOLLOWERS_TABLE: Followers${param:tableSuffix}
+    FAV_TABLE: userFavoriteEvents${param:tableSuffix}
+    VENUES_TABLE: Venues${param:tableSuffix}
+    IMAGE_TABLE: imagenes${param:tableSuffix}
+    IMAGES_TABLE: imagenes${param:tableSuffix}
+    imageBucket: doeventimageeventbucket
+    imagesTable: imagenes${param:tableSuffix}
+
+functions:
+  swaggerDocs:
+    handler: src/swaggerDocs.swaggerDocs
+    events:
+      - http:
+          path: doc
+          method: get
+      - http:
+          path: doc/swagger-events-feed.yml
+          method: get
+  getEvents:
+    handler: src/eventsFeed.handler
+    events:
+      - http:
+          path: /eventsFeed
+          method: POST

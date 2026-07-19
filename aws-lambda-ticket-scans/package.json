@@ -1,0 +1,21 @@
+{
+  "name": "aws-lambda-ticket-scans",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "npm run build && serverless deploy"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.700.0",
+    "@aws-sdk/lib-dynamodb": "^3.700.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.145",
+    "@types/node": "^20.14.3",
+    "serverless": "^4.0.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

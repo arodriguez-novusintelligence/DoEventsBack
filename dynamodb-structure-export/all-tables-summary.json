@@ -1,0 +1,1530 @@
+{
+  "generatedAt": "2026-04-13T14:25:45.478Z",
+  "region": "us-east-1",
+  "tableCount": 71,
+  "inferItems": false,
+  "sampleLimit": 25,
+  "tables": [
+    {
+      "tableName": "AccessLogs",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 2,
+      "tableSizeBytes": 185,
+      "keySchema": [
+        {
+          "AttributeName": "event_id",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "log_id",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "ticket_id-index",
+        "event_id-status-index",
+        "event_id-access_time-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Bancos",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 3,
+      "tableSizeBytes": 181,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "id_country-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "BlockUser",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 0,
+      "tableSizeBytes": 0,
+      "keySchema": [
+        {
+          "AttributeName": "userId",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "ChatMessage",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 1123,
+      "tableSizeBytes": 399434,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "createdAt",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "RoomIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "ChatMessageIdempotency",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 81,
+      "tableSizeBytes": 28191,
+      "keySchema": [
+        {
+          "AttributeName": "idempotencyKey",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "ENABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Chats",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 311,
+      "tableSizeBytes": 84449,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "updatedAt",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "roomId-index",
+        "event-index",
+        "event-updatedAt-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "CheckoutTicket",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 30,
+      "tableSizeBytes": 8059,
+      "keySchema": [
+        {
+          "AttributeName": "ticket_id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "qr_code-index",
+        "user_id-event_id-index",
+        "event_id-status-index",
+        "order_id-index",
+        "event_id-ticketName-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Cities",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 129681,
+      "tableSizeBytes": 4074372,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "id_state-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Client",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 31,
+      "tableSizeBytes": 12756,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "PlatformUserIdIndex",
+        "EmailIndex",
+        "userIndex",
+        "PhoneIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Comments",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 1,
+      "tableSizeBytes": 110,
+      "keySchema": [
+        {
+          "AttributeName": "comment_id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Countries",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 214,
+      "tableSizeBytes": 3784,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "DatosBancarios",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 273,
+      "tableSizeBytes": 162850,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "UserIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "DeviceData",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 70,
+      "tableSizeBytes": 19842,
+      "keySchema": [
+        {
+          "AttributeName": "deviceId",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "UserIDIndex",
+        "CityStartDateIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "doevents-backoffice-dev-sessions",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 0,
+      "tableSizeBytes": 0,
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "SessionsByUser"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "ENABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "doevents-backoffice-dev-users",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 6,
+      "tableSizeBytes": 1676,
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "StatusIndex",
+        "EmailIndex",
+        "UserIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Ejemplo",
+      "tableStatus": "ACTIVE",
+      "billingMode": null,
+      "itemCount": 0,
+      "tableSizeBytes": 0,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "correo-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "EventCalification",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 28,
+      "tableSizeBytes": 5218,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "createdAt",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "userIdIndex",
+        "eventIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "EventGroups",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 0,
+      "tableSizeBytes": 0,
+      "keySchema": [
+        {
+          "AttributeName": "eventId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "groupId",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "GSI-order",
+        "GSI-groupNAme"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "EventGuests",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 0,
+      "tableSizeBytes": 0,
+      "keySchema": [
+        {
+          "AttributeName": "eventId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "guestId",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "GSI-userId",
+        "GSI-email",
+        "GSI-phone",
+        "GSI-favorite"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "EventInvitations",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 342,
+      "tableSizeBytes": 211846,
+      "keySchema": [
+        {
+          "AttributeName": "PK",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "SK",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "EventIdIndex",
+        "UserIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Eventos",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 1271,
+      "tableSizeBytes": 1043406,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "fechaFin-index",
+        "userIdIndex",
+        "CiudadFechaIniIndex",
+        "venueId-index",
+        "CityStartDateIndex",
+        "EstatusFechaIndex",
+        "slug-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "FavoriteGroups",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 3,
+      "tableSizeBytes": 799,
+      "keySchema": [
+        {
+          "AttributeName": "userId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "groupId",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "GSI-groupName"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "FavoriteUsers",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 88,
+      "tableSizeBytes": 34557,
+      "keySchema": [
+        {
+          "AttributeName": "userId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "favoriteId",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "GSI-email",
+        "GSI-followers",
+        "GSI-phone",
+        "GSI-username"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "FeedCommentLikes",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 13,
+      "tableSizeBytes": 1118,
+      "keySchema": [
+        {
+          "AttributeName": "commentId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "userId",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "FeedComments",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 45,
+      "tableSizeBytes": 44498,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "publicationId-sortKey-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "FeedIdempotency",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 0,
+      "tableSizeBytes": 0,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "ENABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "FeedMedia",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 141,
+      "tableSizeBytes": 55830,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "FeedPublicationLikes",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 220,
+      "tableSizeBytes": 20333,
+      "keySchema": [
+        {
+          "AttributeName": "publicationId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "userId",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "userId-createdAt-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "FeedPublicationReposts",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 15,
+      "tableSizeBytes": 1369,
+      "keySchema": [
+        {
+          "AttributeName": "publicationId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "userId",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "FeedPublications",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 94,
+      "tableSizeBytes": 213945,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "authorId-createdAt-index",
+        "visibility-sortKey-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "FeedShares",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 10,
+      "tableSizeBytes": 1330,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "FeedTimeline",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 191,
+      "tableSizeBytes": 136095,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "feedScope-sortKey-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Followers",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 46,
+      "tableSizeBytes": 5791,
+      "keySchema": [
+        {
+          "AttributeName": "follow_id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "userIdIndex",
+        "followUserIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "getUserTickets",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 0,
+      "tableSizeBytes": 0,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "event_id-created_at-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "imagenes",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 492,
+      "tableSizeBytes": 113601,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "eventIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Likes",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 1,
+      "tableSizeBytes": 71,
+      "keySchema": [
+        {
+          "AttributeName": "like_id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "LogEvents",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 2,
+      "tableSizeBytes": 282,
+      "keySchema": [
+        {
+          "AttributeName": "rquid",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "timestamp",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "ENABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Media",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 0,
+      "tableSizeBytes": 0,
+      "keySchema": [
+        {
+          "AttributeName": "media_id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Notifications",
+      "tableStatus": "ACTIVE",
+      "billingMode": null,
+      "itemCount": 6921,
+      "tableSizeBytes": 4211964,
+      "keySchema": [
+        {
+          "AttributeName": "userId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "timestamp",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "id-timestamp-index",
+        "type-userId-index",
+        "eventId-timestamp-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "NotInterested",
+      "tableStatus": "ACTIVE",
+      "billingMode": null,
+      "itemCount": 6,
+      "tableSizeBytes": 1622,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "createdAt",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Orders",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 391,
+      "tableSizeBytes": 2203666,
+      "keySchema": [
+        {
+          "AttributeName": "order_id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "statusExpiryIndex",
+        "eventIdIndex",
+        "user_id-created_at-index",
+        "event_id-created_at-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "OTPCode",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 72,
+      "tableSizeBytes": 6656,
+      "keySchema": [
+        {
+          "AttributeName": "userId",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Posts",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 1,
+      "tableSizeBytes": 105,
+      "keySchema": [
+        {
+          "AttributeName": "post_id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Preferences",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 19,
+      "tableSizeBytes": 3288,
+      "keySchema": [
+        {
+          "AttributeName": "preference_id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "ProfileComments",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 17,
+      "tableSizeBytes": 5173,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "createdAt",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "userIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Reports",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 2,
+      "tableSizeBytes": 318,
+      "keySchema": [
+        {
+          "AttributeName": "report_id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Reposts",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 2,
+      "tableSizeBytes": 149,
+      "keySchema": [
+        {
+          "AttributeName": "repost_id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "RescheduleEvents",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 19,
+      "tableSizeBytes": 7036,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "orderIdIndex",
+        "eventIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Reservations",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 2,
+      "tableSizeBytes": 280,
+      "keySchema": [
+        {
+          "AttributeName": "reservation_id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "event_id-status-index",
+        "user_id-created_at-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Seats",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 5,
+      "tableSizeBytes": 710,
+      "keySchema": [
+        {
+          "AttributeName": "event_id",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "seat_id",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "event_id-section-index",
+        "event_id-status-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "StaffAccess",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 79,
+      "tableSizeBytes": 27011,
+      "keySchema": [
+        {
+          "AttributeName": "userId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "sk",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "AdminEventIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "States",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 1999,
+      "tableSizeBytes": 61746,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "id_country",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "id_country-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Tickets",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 430,
+      "tableSizeBytes": 650869,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "eventIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "ticketsCancelation",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 24,
+      "tableSizeBytes": 8859,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "orderIdIndex",
+        "eventIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "TicketScans",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 90,
+      "tableSizeBytes": 57427,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "EventScanAtIndex",
+        "TicketIdStatusIndex",
+        "EventStatusIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "TicketsDistribution",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 1099,
+      "tableSizeBytes": 23008209,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "createDate",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "ticketIdIndex",
+        "eventIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "TipoEvento",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 22,
+      "tableSizeBytes": 1821,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "TipoLugar",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 50,
+      "tableSizeBytes": 2673,
+      "keySchema": [
+        {
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "UserChannels",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 9,
+      "tableSizeBytes": 779,
+      "keySchema": [
+        {
+          "AttributeName": "channelId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "connectionId",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "ConnectionIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "userFavoriteEvents",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 57,
+      "tableSizeBytes": 5249,
+      "keySchema": [
+        {
+          "AttributeName": "userId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "eventId",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "eventIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "UserPreferences",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 56,
+      "tableSizeBytes": 6043,
+      "keySchema": [
+        {
+          "AttributeName": "UserId",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "UserTokens",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 12,
+      "tableSizeBytes": 2750,
+      "keySchema": [
+        {
+          "AttributeName": "userId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "token",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "token-index"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Usuarios",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 0,
+      "tableSizeBytes": 0,
+      "keySchema": [
+        {
+          "AttributeName": "usuario_id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "EmailIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Venue_Category",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 443,
+      "tableSizeBytes": 244055,
+      "keySchema": [
+        {
+          "AttributeName": "categoryId",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "venueIdIndex",
+        "floorIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Venue_Element",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 224,
+      "tableSizeBytes": 71278,
+      "keySchema": [
+        {
+          "AttributeName": "elementId",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "floorIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Venue_Floor",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 206,
+      "tableSizeBytes": 38019,
+      "keySchema": [
+        {
+          "AttributeName": "floorId",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "venueIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Venue_Gate",
+      "tableStatus": "ACTIVE",
+      "billingMode": null,
+      "itemCount": 164,
+      "tableSizeBytes": 48031,
+      "keySchema": [
+        {
+          "AttributeName": "gateId",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "venueIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Venue_Seat",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 9996,
+      "tableSizeBytes": 3549714,
+      "keySchema": [
+        {
+          "AttributeName": "seatId",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "categoryIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Venue_Section",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 6,
+      "tableSizeBytes": 1254,
+      "keySchema": [
+        {
+          "AttributeName": "sectionId",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "categoryIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "Venues",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 291,
+      "tableSizeBytes": 215709,
+      "keySchema": [
+        {
+          "AttributeName": "venue_id",
+          "KeyType": "HASH"
+        }
+      ],
+      "globalSecondaryIndexes": [
+        "city-name-index",
+        "ownerUserIdIndex"
+      ],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    },
+    {
+      "tableName": "WhatsAppWebhookLogs",
+      "tableStatus": "ACTIVE",
+      "billingMode": "PAY_PER_REQUEST",
+      "itemCount": 0,
+      "tableSizeBytes": 0,
+      "keySchema": [
+        {
+          "AttributeName": "messageId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "timestamp",
+          "KeyType": "RANGE"
+        }
+      ],
+      "globalSecondaryIndexes": [],
+      "localSecondaryIndexes": [],
+      "timeToLiveStatus": "DISABLED",
+      "pointInTimeRecoveryStatus": "DISABLED",
+      "inferredSampleCount": 0
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "tableName": "TicketsDistribution",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/TicketsDistribution",
+  "tableId": "093fa365-56aa-4010-b8dc-7f634d48705b",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 1099,
+  "tableSizeBytes": 23008209,
+  "creationDateTime": "2025-07-16T01:09:12.254000-05:00",
+  "deletionProtectionEnabled": true,
+  "keySchema": [
+    {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "createDate",
+      "KeyType": "RANGE"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "createDate",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "eventId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "ticketId",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "ticketIdIndex",
+      "keySchema": [
+        {
+          "AttributeName": "ticketId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "createDate",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 1080,
+      "indexSizeBytes": 22393963
+    },
+    {
+      "indexName": "eventIdIndex",
+      "keySchema": [
+        {
+          "AttributeName": "eventId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "createDate",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 1099,
+      "indexSizeBytes": 23008209
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

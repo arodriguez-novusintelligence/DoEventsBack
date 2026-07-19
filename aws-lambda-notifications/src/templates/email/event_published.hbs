@@ -1,0 +1,150 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}}</title>
+    <style>
+      body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding:
+      20px; background-color: #f4f4f4; } .container { background-color: #ffffff;
+      border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); overflow:
+      hidden; } .header { background: linear-gradient(135deg, #667eea 0%,
+      #764ba2 100%); color: white; padding: 30px; text-align: center; } .header
+      h1 { margin: 0; font-size: 28px; } .header .emoji { font-size: 48px;
+      margin-bottom: 10px; } .content { padding: 30px; } .event-details {
+      background-color: #f8f9fa; border-left: 4px solid #667eea; padding: 20px;
+      margin: 20px 0; border-radius: 5px; } .event-details h2 { color: #667eea;
+      margin-top: 0; font-size: 24px; } .detail-row { display: flex; margin:
+      10px 0; align-items: center; } .detail-label { font-weight: bold; color:
+      #666; min-width: 100px; } .detail-value { color: #333; } .cta-button {
+      display: inline-block; background: linear-gradient(135deg, #667eea 0%,
+      #764ba2 100%); color: white; padding: 15px 40px; text-decoration: none;
+      border-radius: 25px; font-weight: bold; margin: 20px 0; box-shadow: 0 4px
+      15px rgba(102, 126, 234, 0.4); transition: transform 0.3s ease; }
+      .cta-button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px
+      rgba(102, 126, 234, 0.6); } .tips-section { background-color: #fff3cd;
+      border: 1px solid #ffc107; border-radius: 5px; padding: 15px; margin: 20px
+      0; } .tips-section h3 { color: #856404; margin-top: 0; font-size: 18px; }
+      .tips-section ul { margin: 10px 0; padding-left: 20px; } .tips-section li
+      { margin: 8px 0; color: #856404; } .footer { background-color: #f8f9fa;
+      padding: 20px; text-align: center; color: #666; font-size: 14px; } .footer
+      a { color: #667eea; text-decoration: none; } .stats-box { display:
+      inline-block; background-color: #e7f3ff; border-radius: 10px; padding:
+      15px 25px; margin: 10px; text-align: center; } .stats-box .number {
+      font-size: 32px; font-weight: bold; color: #667eea; display: block; }
+      .stats-box .label { color: #666; font-size: 14px; } @media only screen and
+      (max-width: 600px) { body { padding: 10px; } .content { padding: 20px; }
+      .detail-row { flex-direction: column; align-items: flex-start; } }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <div class="emoji">🎉</div>
+        <h1>¡Tu Evento Está Publicado!</h1>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <p>Hola <strong>{{organizerName}}</strong>,</p>
+
+        <p>¡Excelentes noticias! Tu evento ha sido publicado exitosamente y ya
+          está disponible para el público en nuestra plataforma.</p>
+
+        <!-- Event Details -->
+        <div class="event-details">
+          <h2>{{eventName}}</h2>
+
+          {{#if eventDate}}
+            <div class="detail-row">
+              <span class="detail-label">📅 Fecha:</span>
+              <span class="detail-value">{{eventDate}}</span>
+            </div>
+          {{/if}}
+
+          {{#if eventLocation}}
+            <div class="detail-row">
+              <span class="detail-label">📍 Ubicación:</span>
+              <span class="detail-value">{{eventLocation}}</span>
+            </div>
+          {{/if}}
+
+          {{#if eventSlug}}
+            <div class="detail-row">
+              <span class="detail-label">🔗 URL:</span>
+              <span class="detail-value">{{eventUrl}}</span>
+            </div>
+          {{/if}}
+        </div>
+
+        <!-- CTA Button -->
+        <div style="text-align: center;">
+          <a href="{{eventUrl}}" class="cta-button">Ver Mi Evento</a>
+        </div>
+
+        <!-- Stats Preview -->
+        <div style="text-align: center; margin: 30px 0;">
+          <div class="stats-box">
+            <span class="number">0</span>
+            <span class="label">Vistas</span>
+          </div>
+          <div class="stats-box">
+            <span class="number">0</span>
+            <span class="label">Tickets Vendidos</span>
+          </div>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="tips-section">
+          <h3>💡 Próximos Pasos para Promocionar tu Evento</h3>
+          <ul>
+            <li><strong>Comparte en redes sociales:</strong>
+              Usa el enlace de tu evento para compartirlo en Facebook,
+              Instagram, Twitter y otras plataformas.</li>
+            <li><strong>Invita a tus contactos:</strong>
+              Envía invitaciones personalizadas a tu base de datos.</li>
+            <li><strong>Monitorea las estadísticas:</strong>
+              Revisa el panel de control para ver el rendimiento de tu evento.</li>
+            <li><strong>Actualiza la información:</strong>
+              Asegúrate de que todos los detalles estén completos y
+              actualizados.</li>
+            <li><strong>Responde preguntas:</strong>
+              Mantente atento a las consultas de los asistentes potenciales.</li>
+          </ul>
+        </div>
+
+        <!-- Additional Information -->
+        <p style="margin-top: 30px;">
+          Recuerda que puedes editar la información de tu evento en cualquier
+          momento desde el panel de administración. Si tienes alguna pregunta o
+          necesitas asistencia, no dudes en contactarnos.
+        </p>
+
+        <p style="margin-top: 20px;">
+          ¡Te deseamos mucho éxito con tu evento!
+        </p>
+
+        <p style="margin-top: 30px; color: #666;">
+          Saludos cordiales,<br />
+          <strong>El equipo de DoEvents</strong>
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>
+          <strong>DoEvents</strong>
+          - La plataforma líder para crear y gestionar eventos<br />
+          <a href="https://doeventsapp.com">doeventsapp.com</a>
+        </p>
+        <p style="font-size: 12px; color: #999; margin-top: 10px;">
+          Este es un mensaje automático. Por favor, no respondas a este correo.<br
+          />
+          Si deseas dejar de recibir notificaciones, puedes configurarlo en tu
+          perfil.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

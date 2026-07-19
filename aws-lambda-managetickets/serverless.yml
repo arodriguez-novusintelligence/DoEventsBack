@@ -1,0 +1,89 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: events
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: aws-lambda-managetickets
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: us-east-1
+  environment:
+    EVENT_LIFECYCLE_SCHEDULER_UPSERT_FUNCTION: events-lifecycle-manager-scheduler-upsert
+    EVENTS_TABLE: Eventos
+    TICKETS_TABLE: Tickets
+    TICKETS_DIST_TABLE: TicketsDistribution
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:PutObject
+        - lambda:InvokeFunction
+      Resource:
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Tickets
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Eventos
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Tickets/index/eventIdIndex
+        - arn:aws:dynamodb:us-east-1:519010577666:table/TicketsDistribution
+        - arn:aws:dynamodb:us-east-1:519010577666:table/TicketsDistribution/index/*
+        - arn:aws:s3:::lambdaboletasbucket
+        - arn:aws:lambda:us-east-1:519010577666:function:events-lifecycle-manager-scheduler-upsert
+
+# ✅ AGREGAR EXCLUSIONES PARA REDUCIR TAMAÑO
+package:
+  exclude:
+    # Excluir archivos de desarrollo y documentación
+    - .git/**
+    - .gitignore
+    - README.md
+    - doc/**
+    - undefined/**
+    - .serverless/**
+    - "*.md"
+    - "*.log"
+    - tests/**
+    - coverage/**
+    - .nyc_output/**
+    - .eslintrc*
+    - .prettierrc*
+    - jest.config.*
+    - "**/*.test.js"
+    - "**/*.spec.js"
+    # Excluir módulos de desarrollo específicos (pero mantener aws-sdk completo)
+    - node_modules/serverless*/**
+    - node_modules/@serverless/**
+    - node_modules/esbuild/**
+    - node_modules/@esbuild/**
+  include:
+    - src/**
+    - package.json
+    # Incluir explícitamente aws-sdk y sus dependencias
+    - node_modules/aws-sdk/**
+    - node_modules/uuid/**
+    - node_modules/jmespath/**d/**"
+
+functions:
+  createTickets:
+    handler: src/createTicket.createTicket
+    timeout: 30 # Add this line - 30 seconds timeout
+    events:
+      - httpApi:
+          path: /createTicket
+          method: post
+  updateTickets:
+    handler: src/updateTicket.updateTicket
+    events:
+      - httpApi:
+          path: /updateTicket/{id}
+          method: put
+  getTicketByEventId:
+    handler: src/getTickets.getTicketByEventId
+    events:
+      - httpApi:
+          path: /getTicketByEventId/{eventId}
+          method: get
+  getTicketByEventIdToUpd:
+    handler: src/getTicketsToUpdate.getTicketByEventId
+    events:
+      - httpApi:
+          path: /getTicketByEventIdToUpdate/{eventId}
+          method: get

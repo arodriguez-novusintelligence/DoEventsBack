@@ -1,0 +1,79 @@
+{
+  "tableName": "ticketsCancelation",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/ticketsCancelation",
+  "tableId": "6cbbd296-566b-4c51-aa51-2a100a7bbd09",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 24,
+  "tableSizeBytes": 8859,
+  "creationDateTime": "2025-09-16T21:34:43.257000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "eventId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "orderId",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "orderIdIndex",
+      "keySchema": [
+        {
+          "AttributeName": "orderId",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 24,
+      "indexSizeBytes": 8859
+    },
+    {
+      "indexName": "eventIdIndex",
+      "keySchema": [
+        {
+          "AttributeName": "eventId",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 24,
+      "indexSizeBytes": 8859
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

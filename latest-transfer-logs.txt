@@ -1,0 +1,132 @@
+aws : 
+En l?nea: 1 Car?cter: 1
++ aws logs tail /aws/lambda/aws-lambda-orders-manageTickets-dev-transfe ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+'charmap' codec can't encode character '\u274c' in position 154: character 
+maps to <undefined>
+2026-02-11T05:03:18.831000+00:00 2026/02/11/[$LATEST]da6342cf19d245b58326e4bddb135025 INIT_START Runtime Version: nodejs:24.v29	Runtime Version ARN: arn:aws:lambda:us-east-1::runtime:b0bb5dea1b12bb0e2c3b50ed434af2fd2d16d383f7324c7b455111008b6112ba
+2026-02-11T05:03:19.498000+00:00 2026/02/11/[$LATEST]da6342cf19d245b58326e4bddb135025 START RequestId: afe0d998-2fe1-4b94-992e-ca1fe2c2f72f Version: $LATEST
+2026-02-11T05:03:19.536000+00:00 2026/02/11/[$LATEST]da6342cf19d245b58326e4bddb135025 2026-02-11T05:03:19.536Z	afe0d998-2fe1-4b94-992e-ca1fe2c2f72f	INFO	[DEBUG] Event received: {
+  "resource": "/tickets/transfer",
+  "path": "/tickets/transfer",
+  "httpMethod": "POST",
+  "headers": {
+    "Accept": "*/*",
+    "Authorization": "Bearer eyJraWQiOiIxUU9pYkNNZU9CZ3E2WDllR09DZFFzWndhQUJGSGxqbHRHRm9YQk1uZ3lrPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI0MmMyZTRhNC0wMzkyLTcwNjItNDA0ZS1iNzk4NGMzYzU4YTMiLCJjb2duaXRvOmdyb3VwcyI6WyJhZG1pbiJdLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV9EMWt3WklpMHAiLCJ2ZXJzaW9uIjoyLCJjbGllbnRfaWQiOiI2dW1qOHVvZXFtNDdpYzRhN200cXExaDM4NiIsIm9yaWdpbl9qdGkiOiJlZjY5MGM4My00MDg1LTRlMWEtYTIwNC1mMmJkMjU3MjEyZTUiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIiwiYXV0aF90aW1lIjoxNzM4OTgzNzI4LCJleHAiOjE3Mzk4NjUzMzYsImlhdCI6MTczOTg2MTczNiwianRpIjoiZmJjNTkyYjUtYjQxNC00NGJmLTlmMjItMGY3NDQ5ZmIwYzU0IiwidXNlcm5hbWUiOiI0MmMyZTRhNC0wMzkyLTcwNjItNDA0ZS1iNzk4NGMzYzU4YTMifQ.VdNwLUP6M0LcjQ3l9mBwn3d1nnCmUCGhqTgRUbUCRy8V4m1xb4IQCU9TXpZkwqU8P9ky_Q-xPL_MZw-UxW5S_r8RrePQlrFTuA2VfbTsjtzFwQxGBxwzZY8BZVBdMUXP_pW5UKx8CzbDi1SZXwISW4UqTw5hRf1pYOkLG-sD-MQP6YQ_YP1aZWOIWe7wm2CzqBRwqRbcVD4mf3hJe6d1MwT9SjAGx-3PjVvG2SArPdNwScvWdgC4dKIgFbuwAZVgYTD3QVkZznBElZjR5z18rMZKNpRcZ1mJ7BEy8B4qUHBzJeRYXPSzCMqpLBFdGHYLx5Mfek_eQXUxsABx4zBB2A",
+    "CloudFront-Forwarded-Proto": "https",
+    "CloudFront-Is-Desktop-Viewer": "true",
+    "CloudFront-Is-Mobile-Viewer": "false",
+    "CloudFront-Is-SmartTV-Viewer": "false",
+    "CloudFront-Is-Tablet-Viewer": "false",
+    "CloudFront-Viewer-ASN": "13489",
+    "CloudFront-Viewer-Country": "CO",
+    "Content-Type": "application/json",
+    "Host": "rxlggkh3ud.execute-api.us-east-1.amazonaws.com",
+    "User-Agent": "curl/8.16.0",
+    "Via": "1.1 aa0960a6d36b147f4ae2f8497f1a2280.cloudfront.net (CloudFront)",
+    "X-Amz-Cf-Id": "jWcAqKTcBVpg3LKUpsKcMJvze87kUXVvVWGX4PW4HnSn3y9vfohxWg==",
+    "X-Amzn-Trace-Id": "Root=1-698c0d96-2f633af5269cf5151d24c49a",
+    "X-Forwarded-For": "181.138.10.214, 130.176.191.169",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https"
+  },
+  "multiValueHeaders": {
+    "Accept": [
+      "*/*"
+    ],
+    "Authorization": [
+      "Bearer eyJraWQiOiIxUU9pYkNNZU9CZ3E2WDllR09DZFFzWndhQUJGSGxqbHRHRm9YQk1uZ3lrPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI0MmMyZTRhNC0wMzkyLTcwNjItNDA0ZS1iNzk4NGMzYzU4YTMiLCJjb2duaXRvOmdyb3VwcyI6WyJhZG1pbiJdLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV9EMWt3WklpMHAiLCJ2ZXJzaW9uIjoyLCJjbGllbnRfaWQiOiI2dW1qOHVvZXFtNDdpYzRhN200cXExaDM4NiIsIm9yaWdpbl9qdGkiOiJlZjY5MGM4My00MDg1LTRlMWEtYTIwNC1mMmJkMjU3MjEyZTUiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIiwiYXV0aF90aW1lIjoxNzM4OTgzNzI4LCJleHAiOjE3Mzk4NjUzMzYsImlhdCI6MTczOTg2MTczNiwianRpIjoiZmJjNTkyYjUtYjQxNC00NGJmLTlmMjItMGY3NDQ5ZmIwYzU0IiwidXNlcm5hbWUiOiI0MmMyZTRhNC0wMzkyLTcwNjItNDA0ZS1iNzk4NGMzYzU4YTMifQ.VdNwLUP6M0LcjQ3l9mBwn3d1nnCmUCGhqTgRUbUCRy8V4m1xb4IQCU9TXpZkwqU8P9ky_Q-xPL_MZw-UxW5S_r8RrePQlrFTuA2VfbTsjtzFwQxGBxwzZY8BZVBdMUXP_pW5UKx8CzbDi1SZXwISW4UqTw5hRf1pYOkLG-sD-MQP6YQ_YP1aZWOIWe7wm2CzqBRwqRbcVD4mf3hJe6d1MwT9SjAGx-3PjVvG2SArPdNwScvWdgC4dKIgFbuwAZVgYTD3QVkZznBElZjR5z18rMZKNpRcZ1mJ7BEy8B4qUHBzJeRYXPSzCMqpLBFdGHYLx5Mfek_eQXUxsABx4zBB2A"
+    ],
+    "CloudFront-Forwarded-Proto": [
+      "https"
+    ],
+    "CloudFront-Is-Desktop-Viewer": [
+      "true"
+    ],
+    "CloudFront-Is-Mobile-Viewer": [
+      "false"
+    ],
+    "CloudFront-Is-SmartTV-Viewer": [
+      "false"
+    ],
+    "CloudFront-Is-Tablet-Viewer": [
+      "false"
+    ],
+    "CloudFront-Viewer-ASN": [
+      "13489"
+    ],
+    "CloudFront-Viewer-Country": [
+      "CO"
+    ],
+    "Content-Type": [
+      "application/json"
+    ],
+    "Host": [
+      "rxlggkh3ud.execute-api.us-east-1.amazonaws.com"
+    ],
+    "User-Agent": [
+      "curl/8.16.0"
+    ],
+    "Via": [
+      "1.1 aa0960a6d36b147f4ae2f8497f1a2280.cloudfront.net (CloudFront)"
+    ],
+    "X-Amz-Cf-Id": [
+      "jWcAqKTcBVpg3LKUpsKcMJvze87kUXVvVWGX4PW4HnSn3y9vfohxWg=="
+    ],
+    "X-Amzn-Trace-Id": [
+      "Root=1-698c0d96-2f633af5269cf5151d24c49a"
+    ],
+    "X-Forwarded-For": [
+      "181.138.10.214, 130.176.191.169"
+    ],
+    "X-Forwarded-Port": [
+      "443"
+    ],
+    "X-Forwarded-Proto": [
+      "https"
+    ]
+  },
+  "queryStringParameters": null,
+  "multiValueQueryStringParameters": null,
+  "pathParameters": null,
+  "stageVariables": null,
+  "requestContext": {
+    "resourceId": "wksgxr",
+    "resourcePath": "/tickets/transfer",
+    "httpMethod": "POST",
+    "extendedRequestId": "YmcPkGNYIAMEDNg=",
+    "requestTime": "11/Feb/2026:05:03:18 +0000",
+    "path": "/dev/tickets/transfer",
+    "accountId": "519010577666",
+    "protocol": "HTTP/1.1",
+    "stage": "dev",
+    "domainPrefix": "rxlggkh3ud",
+    "requestTimeEpoch": 1770786198444,
+    "requestId": "843b28b4-d75d-423d-8ba2-f83ce01968ab",
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "accountId": null,
+      "cognitoIdentityId": null,
+      "caller": null,
+      "sourceIp": "181.138.10.214",
+      "principalOrgId": null,
+      "accessKey": null,
+      "cognitoAuthenticationType": null,
+      "cognitoAuthenticationProvider": null,
+      "userArn": null,
+      "userAgent": "curl/8.16.0",
+      "user": null
+    },
+    "domainName": "rxlggkh3ud.execute-api.us-east-1.amazonaws.com",
+    "deploymentId": "41rehv",
+    "apiId": "rxlggkh3ud"
+  },
+  "body": "{orderID:test_3pdRQq,ticketIDs:[60b3c523-5e42-4ab5-947f-8c0aff371a53],currentUserID:42c2e4a4-0,newUserID:test-receiver}",
+  "isBase64Encoded": false
+}
+2026-02-11T05:03:19.539000+00:00 2026/02/11/[$LATEST]da6342cf19d245b58326e4bddb135025 2026-02-11T05:03:19.539Z	afe0d998-2fe1-4b94-992e-ca1fe2c2f72f	INFO	[DEBUG] Event.body type: string
+2026-02-11T05:03:19.539000+00:00 2026/02/11/[$LATEST]da6342cf19d245b58326e4bddb135025 2026-02-11T05:03:19.539Z	afe0d998-2fe1-4b94-992e-ca1fe2c2f72f	INFO	[DEBUG] Event.body value: {orderID:test_3pdRQq,ticketIDs:[60b3c523-5e42-4ab5-947f-8c0aff371a53],currentUserID:42c2e4a4-0,newUserID:test-receiver}
+2026-02-11T05:03:19.540000+00:00 2026/02/11/[$LATEST]da6342cf19d245b58326e4bddb135025 2026-02-11T05:03:19.540Z	afe0d998-2fe1-4b94-992e-ca1fe2c2f72f	INFO	[DEBUG] Parsing body as string

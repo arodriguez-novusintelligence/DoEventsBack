@@ -1,0 +1,147 @@
+/**
+ * ⚠️ ARCHIVO OBSOLETO - NO USAR ⚠️
+ * 
+ * Este script creaba una tabla "Refunds" pero YA NO ES NECESARIO.
+ * 
+ * ✅ SOLUCIÓN ACTUAL: Utilizamos la tabla existente "ticketsCancelation"
+ * 
+ * Razones del cambio:
+ * - Mantiene consistencia con el sistema de cancelación de eventos
+ * - Aprovecha índices ya configurados (orderIdIndex, eventIdIndex)
+ * - Unifica toda la trazabilidad de reembolsos
+ * - Evita duplicación de infraestructura
+ * 
+ * Fecha de obsolescencia: Enero 19, 2026
+ * Ver: REFUND_SERVICE_README.md para documentación actualizada
+ * 
+ * --------------------------------------------------------------------
+ * CONTENIDO ORIGINAL (Referencia histórica):
+ * --------------------------------------------------------------------
+ * 
+ * Script para crear la tabla Refunds en DynamoDB
+ * 
+ * Esta tabla almacena la trazabilidad de todos los reembolsos procesados
+ * 
+ * Ejecutar con: node create-refunds-table.js
+ */
+
+const AWS = require('aws-sdk');
+
+// Configurar región
+AWS.config.update({ region: 'us-east-1' });
+
+const dynamodb = new AWS.DynamoDB();
+
+const tableParams = {
+  TableName: 'Refunds',
+  
+  // Clave primaria
+  KeySchema: [
+    { 
+      AttributeName: 'refund_id', 
+      KeyType: 'HASH'  // Partition key
+    }
+  ],
+  
+  // Definición de atributos
+  AttributeDefinitions: [
+    { AttributeName: 'refund_id', AttributeType: 'S' },
+    { AttributeName: 'order_id', AttributeType: 'S' },
+    { AttributeName: 'user_id', AttributeType: 'S' },
+    { AttributeName: 'created_at', AttributeType: 'S' }
+  ],
+  
+  // Índices secundarios globales
+  GlobalSecondaryIndexes: [
+    {
+      IndexName: 'order_id-index',
+      KeySchema: [
+        { AttributeName: 'order_id', KeyType: 'HASH' }
+      ],
+      Projection: {
+        ProjectionType: 'ALL'
+      }
+    },
+    {
+      IndexName: 'user_id-created_at-index',
+      KeySchema: [
+        { AttributeName: 'user_id', KeyType: 'HASH' },
+        { AttributeName: 'created_at', KeyType: 'RANGE' }
+      ],
+      Projection: {
+        ProjectionType: 'ALL'
+      }
+    }
+  ],
+  
+  // Modo de facturación bajo demanda (no requiere configurar capacidad)
+  BillingMode: 'PAY_PER_REQUEST',
+  
+  // Tags para identificación
+  Tags: [
+    {
+      Key: 'Environment',
+      Value: 'production'
+    },
+    {
+      Key: 'Service',
+      Value: 'refunds'
+    },
+    {
+      Key: 'ManagedBy',
+      Value: 'aws-lambda-manageevents'
+    }
+  ]
+};
+
+async function createRefundsTable() {
+  try {
+    console.log('🚀 Creando tabla Refunds en DynamoDB...');
+    console.log('📋 Configuración:', JSON.stringify(tableParams, null, 2));
+    
+    const result = await dynamodb.createTable(tableParams).promise();
+    
+    console.log('✅ Tabla Refunds creada exitosamente!');
+    console.log('📊 ARN de la tabla:', result.TableDescription.TableArn);
+    console.log('📌 Estado:', result.TableDescription.TableStatus);
+    
+    console.log('\n⏳ Esperando a que la tabla esté ACTIVE...');
+    
+    // Esperar a que la tabla esté activa
+    await dynamodb.waitFor('tableExists', { TableName: 'Refunds' }).promise();
+    
+    console.log('✅ Tabla Refunds está ACTIVE y lista para usar!');
+    
+    // Describir la tabla para mostrar detalles finales
+    const description = await dynamodb.describeTable({ TableName: 'Refunds' }).promise();
+    
+    console.log('\n📊 Detalles de la tabla:');
+    console.log('  - Nombre:', description.Table.TableName);
+    console.log('  - Estado:', description.Table.TableStatus);
+    console.log('  - ARN:', description.Table.TableArn);
+    console.log('  - Fecha de creación:', description.Table.CreationDateTime);
+    console.log('  - Item count:', description.Table.ItemCount);
+    console.log('  - Tamaño:', description.Table.TableSizeBytes, 'bytes');
+    
+    console.log('\n📝 Índices creados:');
+    description.Table.GlobalSecondaryIndexes.forEach(index => {
+      console.log(`  - ${index.IndexName}:`, index.IndexStatus);
+    });
+    
+    console.log('\n✨ Configuración completa! La tabla está lista para recibir reembolsos.');
+    
+  } catch (error) {
+    if (error.code === 'ResourceInUseException') {
+      console.log('⚠️  La tabla Refunds ya existe!');
+      console.log('💡 Para verificar su configuración, ejecuta:');
+      console.log('   node describe-refunds-table.js');
+    } else {
+      console.error('❌ Error al crear la tabla Refunds:', error.message);
+      console.error('📋 Detalles del error:', error);
+      process.exit(1);
+    }
+  }
+}
+
+// Ejecutar la función
+createRefundsTable();

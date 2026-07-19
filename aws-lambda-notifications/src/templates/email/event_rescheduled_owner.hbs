@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reagendamiento confirmado</title>
+    <style>
+      body { margin:0;padding:0;background:#eef0f6;font-family:Arial,Helvetica,sans-serif;color:#131a31; }
+      .shell { width:100%;padding:16px 0; }
+      .container { width:100%;max-width:620px;margin:0 auto;background:#f7f8fc;border:1px solid #e5e8f3;border-radius:14px;overflow:hidden; }
+      .inner { padding:12px 12px 18px; }
+      .headline { margin:18px 4px 6px;font-size:26px;line-height:1.2;font-weight:700;color:#1a5276; }
+      .brand-logo-wrap { text-align:center;margin:6px 0 12px; }
+      .description { margin:0 4px 14px;color:#3f4660;font-size:15px;line-height:1.5; }
+      .info-box { background:#f4f5fb;border-left:4px solid #8892d4;border-radius:6px;padding:10px 14px;margin-bottom:14px; }
+      .info-box p { margin:0 0 4px;font-size:13px;color:#33418e;line-height:1.5; }
+      .info-box p:last-child { margin:0; }
+      .dates-table { width:100%;border-collapse:collapse;margin-bottom:14px; }
+      .dates-old { background:#fdecea;border:1px solid #f5c6cb;border-radius:8px;padding:10px 12px;text-align:center; }
+      .dates-old p { margin:0 0 2px;font-size:12px;color:#721c24; }
+      .dates-old .val { font-size:14px;font-weight:700;color:#c0392b;text-decoration:line-through; }
+      .dates-arrow { text-align:center;font-size:22px;color:#596ef4;padding:0 6px; }
+      .dates-new { background:#e9f7ef;border:1px solid #a9dfbf;border-radius:8px;padding:10px 12px;text-align:center; }
+      .dates-new p { margin:0 0 2px;font-size:12px;color:#1a5c34; }
+      .dates-new .val { font-size:14px;font-weight:700;color:#27ae60; }
+      .sale-box { background:#e8f4fd;border-left:4px solid #2e86c1;border-radius:6px;padding:10px 14px;margin-bottom:14px; }
+      .sale-box p { margin:0 0 4px;font-size:13px;color:#1a4a72;line-height:1.5; }
+      .sale-box p:last-child { margin:0; }
+      .stat-table { width:100%;border-collapse:collapse;margin-bottom:14px; }
+      .stat-cell { background:#f0f2fb;border:1px solid #dde1f3;border-radius:10px;text-align:center;padding:12px 8px; }
+      .stat-num { font-size:26px;font-weight:700;color:#4c5fd8;margin:0; }
+      .stat-lbl { font-size:11px;color:#5a6180;margin:2px 0 0; }
+      .steps { padding-left:0;list-style:none;margin:0 0 14px; }
+      .steps li { padding:8px 12px;background:#eef0f8;border-radius:8px;font-size:13px;margin-bottom:6px;color:#2e3455; }
+      .section-title { margin:10px 0 6px;font-size:14px;font-weight:700;color:#1f2749; }
+      .plain-list { margin:0 0 12px;padding-left:18px;color:#2e3455; }
+      .plain-list li { margin-bottom:7px;font-size:13px;line-height:1.55; }
+      .cta { margin-top:14px;text-align:center; }
+      .cta a { display:inline-block;background:#596ef4;color:#ffffff !important;text-decoration:none;border-radius:999px;padding:10px 24px;font-size:14px;font-weight:700; }
+      .footer { margin-top:16px;background:#e5e7ef;text-align:center;padding:14px 10px 16px; }
+      .footer-txt { margin:8px 0 0;font-size:12px;color:#59607a; }
+      .footer-link { color:#4f63d8 !important;text-decoration:none; }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="container">
+        <div class="inner">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin-bottom:12px;">
+            <tr>
+              <td background="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-bg.png" bgcolor="#2f366f" style="background-image:url('https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-bg.png');background-size:100% 100%;background-repeat:no-repeat;background-color:#2f366f;padding:0;border-radius:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tr><td style="padding:18px 20px 18px 24px;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:700;color:#ffffff;">Reagendamiento confirmado</td><td width="68" style="text-align:center;vertical-align:middle;padding:8px 12px 8px 8px;"><img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-icon.png" width="36" height="36" alt="" style="display:block;margin:0 auto;" /></td></tr></table></td>
+            </tr>
+          </table>
+
+          <p class="headline">{{eventName}}</p>
+
+          <div class="brand-logo-wrap" role="img" aria-label="Do.Events">
+            <img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-logo-doevents.png" width="120" height="35" alt="Do.Events" style="display:inline-block;vertical-align:middle;" />
+          </div>
+
+          <p class="description">Hola <strong>{{ownerName}}</strong>, confirmamos que tu evento <strong>{{eventName}}</strong> ha sido reagendado exitosamente.</p>
+
+          <table class="stat-table" role="presentation">
+            <tr>
+              <td class="stat-cell" style="border-radius:10px;">
+                <p class="stat-num">{{affectedOrders}}</p>
+                <p class="stat-lbl">Compradores notificados</p>
+              </td>
+            </tr>
+          </table>
+
+          <!-- Date change comparison -->
+          <table class="dates-table" role="presentation">
+            <tr>
+              <td class="dates-old">
+                <p>Fechas anteriores</p>
+                <p class="val">{{originalStartDate}}</p>
+                <p class="val">{{originalEndDate}}</p>
+              </td>
+              <td class="dates-arrow">&#x2192;</td>
+              <td class="dates-new">
+                <p>Nuevas fechas</p>
+                <p class="val">{{newStartDate}}</p>
+                <p class="val">{{newEndDate}}</p>
+              </td>
+            </tr>
+          </table>
+
+          {{#if ticketSaleStartDate}}
+          <div class="sale-box">
+            <p>&#x1F3AB; <strong>Ventana de venta de entradas actualizada</strong></p>
+            <p>Inicio: <strong>{{ticketSaleStartDate}}{{#if ticketSaleStartTime}} a las {{ticketSaleStartTime}}{{/if}}</strong></p>
+            <p>Fin: <strong>{{ticketSaleEndDate}}{{#if ticketSaleEndTime}} a las {{ticketSaleEndTime}}{{/if}}</strong></p>
+          </div>
+          {{/if}}
+
+          <div class="info-box">
+            {{#if reason}}<p><strong>Motivo:</strong> {{reason}}</p>{{/if}}
+            <p><strong>Reagendado el:</strong> {{executionDate}}</p>
+          </div>
+
+          <div class="info-box">
+            <p>Tras la reciente reprogramacion de la fecha de tu evento, <strong>{{eventName}}</strong>, te sugerimos los pasos a seguir para mantener una comunicacion clara con tus asistentes y asegurar una gestion transparente de las entradas ya adquiridas.</p>
+          </div>
+
+          <p class="section-title">1. Comunicacion Directa</p>
+          <ul class="plain-list">
+            <li>Te recomendamos enviar una notificacion formal a todos los invitados que ya cuentan con su boleta, informandoles sobre la nueva fecha y los motivos del cambio.</li>
+          </ul>
+
+          <p class="section-title">2. Uso del Chatroom</p>
+          <ul class="plain-list">
+            <li>Una excelente herramienta para centralizar la informacion es el chatroom del evento. Te sugerimos publicar un mensaje fijado con la nueva fecha para resolver dudas de inmediato.</li>
+          </ul>
+
+          <p class="section-title">3. Comunicacion de Nueva Fecha</p>
+          <ul class="plain-list">
+            <li>Sus asistentes han sido informados de que sus boletos actuales siguen siendo validos para la nueva fecha y no requieren tramites adicionales para asistir.</li>
+          </ul>
+
+          <p class="section-title">4. Gestion de Reembolsos por Categoria</p>
+          <ul class="plain-list">
+            <li><strong>Gestion por Do.Events:</strong> para quienes seleccionaron "No conozco al creador del evento", gestionaremos el reembolso automaticamente a su medio original en un plazo de 10 dias habiles tras su solicitud en la plataforma.</li>
+            <li><strong>Gestion por el Organizador:</strong> para los compradores que autorizaron el "Pago Directo", usted debera coordinar la devolucion de forma personalizada utilizando los datos de contacto en su registro, ya que esos fondos le fueron transferidos anticipadamente.</li>
+          </ul>
+
+          <p class="section-title">5. Acceso a la Informacion y Descarga</p>
+          <ul class="plain-list">
+            <li>Desde Mi Perfil - Mis Estadisticas, puede visualizar la lista completa de compradores con nombres, correos y telefonos.</li>
+            <li>Tambien puede descargar un archivo en formato Excel con el detalle totalizado de ventas, comisiones y estados de pago para facilitar su conciliacion contable.</li>
+          </ul>
+
+          <div class="info-box">
+            <p><strong>Mis Estadisticas de Ventas:</strong> https://doeventsapp.com/MiPerfil/Estadisticas</p>
+            <p>Mantener esta proactividad ayudara a que la confianza en tu evento se mantenga intacta a pesar del cambio de agenda.</p>
+            <p>Quedamos a su disposicion para apoyarle en el uso de estas herramientas para realizar estos reembolsos de ser necesario.</p>
+          </div>
+
+          <div class="cta">
+            <a href="https://doeventsapp.com/Wall/DetalleEvento?eventId={{eventId}}">Ver detalle del evento</a>
+          </div>
+          <p style="margin-top:6px;font-size:11px;color:#6f7895;text-align:center;word-break:break-all;">https://doeventsapp.com/Wall/DetalleEvento?eventId={{eventId}}</p>
+
+        </div>
+
+        <div class="footer">
+          <div class="footer-brand" role="img" aria-label="Do.Events">
+            <img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-logo-doevents.png" width="96" height="28" alt="Do.Events" style="display:inline-block;vertical-align:middle;" />
+          </div>
+          <p class="footer-txt">Soporte: <a class="footer-link" href="mailto:management@doeventsapp.com">management@doeventsapp.com</a></p>
+          <p class="footer-txt"><a class="footer-link" href="https://www.doeventsapp.com">www.doeventsapp.com</a></p>
+          <p class="footer-txt">&copy; {{year}} Do eventsapp. Todos los derechos reservados</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

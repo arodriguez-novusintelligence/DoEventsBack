@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evento reprogramado</title>
+    <style>
+      body { margin:0;padding:0;background:#eef0f6;font-family:Arial,Helvetica,sans-serif;color:#131a31; }
+      .shell { width:100%;padding:16px 0; }
+      .container { width:100%;max-width:620px;margin:0 auto;background:#f7f8fc;border:1px solid #e5e8f3;border-radius:14px;overflow:hidden; }
+      .inner { padding:12px 12px 18px; }
+      .headline { margin:18px 4px 6px;font-size:26px;line-height:1.2;font-weight:700;color:#1a5276; }
+      .brand-logo-wrap { text-align:center;margin:6px 0 12px; }
+      .description { margin:0 4px 14px;color:#3f4660;font-size:15px;line-height:1.5; }
+      .alert-box { background:#fff8e1;border-left:4px solid #f39c12;border-radius:6px;padding:10px 14px;margin-bottom:14px; }
+      .alert-box p { margin:0 0 4px;font-size:14px;color:#7d5100;line-height:1.5; }
+      .alert-box p:last-child { margin:0; }
+      .event-card { background:#f0f2fb;border:1px solid #dde1f3;border-radius:10px;overflow:hidden;margin-bottom:14px; }
+      .event-img { width:100%;height:160px;object-fit:cover;display:block; }
+      .event-card-body { padding:12px 14px; }
+      .event-card-body h3 { margin:0 0 8px;font-size:16px;font-weight:700;color:#222c55; }
+      .event-card-body p { margin:0 0 4px;font-size:13px;color:#4a516e; }
+      .dates-table { width:100%;border-collapse:collapse;margin-bottom:14px; }
+      .dates-old { background:#fdecea;border:1px solid #f5c6cb;border-radius:8px;padding:10px 12px;text-align:center; }
+      .dates-old p { margin:0 0 2px;font-size:12px;color:#721c24; }
+      .dates-old .val { font-size:14px;font-weight:700;color:#c0392b;text-decoration:line-through; }
+      .dates-arrow { text-align:center;font-size:22px;color:#596ef4;padding:0 6px; }
+      .dates-new { background:#e9f7ef;border:1px solid #a9dfbf;border-radius:8px;padding:10px 12px;text-align:center; }
+      .dates-new p { margin:0 0 2px;font-size:12px;color:#1a5c34; }
+      .dates-new .val { font-size:14px;font-weight:700;color:#27ae60; }
+      .sale-box { background:#e8f4fd;border-left:4px solid #2e86c1;border-radius:6px;padding:10px 14px;margin-bottom:14px; }
+      .sale-box p { margin:0 0 4px;font-size:13px;color:#1a4a72;line-height:1.5; }
+      .sale-box p:last-child { margin:0; }
+      .info-box { background:#f4f5fb;border-left:4px solid #8892d4;border-radius:6px;padding:10px 14px;margin-bottom:14px; }
+      .info-box p { margin:0 0 4px;font-size:13px;color:#33418e;line-height:1.5; }
+      .info-box p:last-child { margin:0; }
+      .steps-title { margin:14px 0 8px;font-size:14px;font-weight:700;color:#1f2749; }
+      .steps { margin:0 0 14px;padding-left:18px;color:#2e3455; }
+      .steps li { margin-bottom:8px;font-size:13px;line-height:1.55; }
+      .cta { margin-top:14px;text-align:center; }
+      .cta a { display:inline-block;background:#596ef4;color:#ffffff !important;text-decoration:none;border-radius:999px;padding:10px 24px;font-size:14px;font-weight:700; }
+      .footer { margin-top:16px;background:#e5e7ef;text-align:center;padding:14px 10px 16px; }
+      .footer-txt { margin:8px 0 0;font-size:12px;color:#59607a; }
+      .footer-link { color:#4f63d8 !important;text-decoration:none; }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="container">
+        <div class="inner">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin-bottom:12px;">
+            <tr>
+              <td background="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-bg.png" bgcolor="#2f366f" style="background-image:url('https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-bg.png');background-size:100% 100%;background-repeat:no-repeat;background-color:#2f366f;padding:0;border-radius:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tr><td style="padding:18px 20px 18px 24px;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:700;color:#ffffff;">Evento reprogramado</td><td width="68" style="text-align:center;vertical-align:middle;padding:8px 12px 8px 8px;"><img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-icon.png" width="36" height="36" alt="" style="display:block;margin:0 auto;" /></td></tr></table></td>
+            </tr>
+          </table>
+
+          <p class="headline">{{eventName}}</p>
+
+          <div class="brand-logo-wrap" role="img" aria-label="Do.Events">
+            <img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-logo-doevents.png" width="120" height="35" alt="Do.Events" style="display:inline-block;vertical-align:middle;" />
+          </div>
+
+          <p class="description">Hola <strong>{{userName}}</strong>, sabemos cuanto esperabas este evento y entendemos que los cambios de planes pueden ser decepcionantes.</p>
+
+          <div class="alert-box">
+            <p>&#x1F4C5; <strong>Por motivos de fuerza mayor, {{eventName}} ha sido reprogramado para {{newStartDate}}.</strong></p>
+            {{#if venue}}<p>Lugar/Hora: {{venue}}</p>{{/if}}
+            {{#if reason}}<p>Motivo: {{reason}}</p>{{/if}}
+          </div>
+
+          {{#if eventImage}}
+          <div class="event-card">
+            <img class="event-img" src="{{eventImage}}" alt="{{eventName}}" />
+            <div class="event-card-body">
+              <h3>{{eventName}}</h3>
+              {{#if venue}}<p>&#x1F4CD; {{venue}}</p>{{/if}}
+            </div>
+          </div>
+          {{/if}}
+
+          <!-- Date change comparison -->
+          <table class="dates-table" role="presentation">
+            <tr>
+              <td class="dates-old">
+                <p>Fechas anteriores</p>
+                <p class="val">{{originalStartDate}}</p>
+                <p class="val">{{originalEndDate}}</p>
+              </td>
+              <td class="dates-arrow">&#x2192;</td>
+              <td class="dates-new">
+                <p>Nuevas fechas</p>
+                <p class="val">{{newStartDate}}</p>
+                <p class="val">{{newEndDate}}</p>
+              </td>
+            </tr>
+          </table>
+
+          {{#if ticketSaleStartDate}}
+          <div class="sale-box">
+            <p>&#x1F3AB; <strong>Ventana de venta de entradas</strong></p>
+            <p>Inicio: <strong>{{ticketSaleStartDate}}{{#if ticketSaleStartTime}} a las {{ticketSaleStartTime}}{{/if}}</strong></p>
+            <p>Fin: <strong>{{ticketSaleEndDate}}{{#if ticketSaleEndTime}} a las {{ticketSaleEndTime}}{{/if}}</strong></p>
+          </div>
+          {{/if}}
+
+          <p class="steps-title">Tus boletos siguen siendo validos</p>
+          <div class="info-box">
+            <p>La buena noticia es que no necesitas realizar ningun tramite adicional. Tus boletos actuales son totalmente validos para la nueva fecha; solo deberas presentarlos el dia del evento como estaba previsto.</p>
+          </div>
+
+          <p class="steps-title">Opciones de Reembolso</p>
+          <div class="info-box">
+            <p>Si por algun motivo la nueva fecha no se ajusta a tu agenda, respetamos tu decision y ponemos a tu disposicion las opciones de reembolso dependiendo de la modalidad que seleccionaste al momento de adquirir tu boleta.</p>
+          </div>
+
+          <p class="steps-title">1. Si seleccionaste "No conozco al creador del evento":</p>
+          <ul class="steps">
+            <li>Al elegir esta opcion para garantizar una compra transparente, autorizaste la transferencia del pago de tu boleta unicamente despues de finalizado el evento.</li>
+            <li>Do.Events tiene el control de estos fondos y podra gestionar el reembolso a tu medio de pago original en un plazo aproximado de 10 dias habiles.</li>
+            <li>Debes solicitar el reembolso directamente desde la plataforma Mi Perfil - Mis Boletos - Solicitar Reembolso.</li>
+          </ul>
+
+          <p class="steps-title">2. Si seleccionaste "Conozco al creador del evento" (Pago Directo):</p>
+          <ul class="steps">
+            <li>Al seleccionar esta opcion, confirmaste que confias en el creador del evento y autorizaste la transferencia del pago de manera inmediata para los preparativos del mismo.</li>
+            <li>Tal como se informo en las advertencias de seguridad durante la compra, en esta modalidad la plataforma no garantiza la devolucion del dinero, ya que los fondos fueron entregados directamente al organizador.</li>
+            <li>En consecuencia, debes contactar directamente al Organizador para coordinar la devolucion personalizada de tus fondos.</li>
+          </ul>
+
+          <p class="steps-title">Detalles de tu Transaccion para referencia</p>
+          <div class="info-box">
+            <p><strong>Fecha de compra:</strong> {{purchaseDate}}</p>
+            <p><strong>OrderID:</strong> {{orderId}}</p>
+            <p><strong>Costo pagado por el/los boleto:</strong> {{ticketPaidAmount}}</p>
+            <p><strong>Opcion seleccionada:</strong> {{purchaseOptionSelected}}</p>
+          </div>
+
+          <div class="info-box">
+            <p>Agradecemos tu comprension ante esta situacion inesperada. Estamos trabajando arduamente junto al organizador para que la espera valga la pena y brindarte el mejor servicio posible.</p>
+          </div>
+
+          <div class="cta">
+            <a href="https://doeventsapp.com/Wall/DetalleEvento?eventId={{eventId}}">Ver detalle del evento</a>
+          </div>
+          <p style="margin-top:6px;font-size:11px;color:#6f7895;text-align:center;word-break:break-all;">https://doeventsapp.com/Wall/DetalleEvento?eventId={{eventId}}</p>
+
+        </div>
+
+        <div class="footer">
+          <div class="footer-brand" role="img" aria-label="Do.Events">
+            <img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-logo-doevents.png" width="96" height="28" alt="Do.Events" style="display:inline-block;vertical-align:middle;" />
+          </div>
+          <p class="footer-txt">Cualquier duda: <a class="footer-link" href="mailto:management@doeventsapp.com">management@doeventsapp.com</a></p>
+          <p class="footer-txt"><a class="footer-link" href="https://www.doeventsapp.com">www.doeventsapp.com</a></p>
+          <p class="footer-txt">&copy; {{year}} Do eventsapp. Todos los derechos reservados</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,41 @@
+{
+  "tableName": "ChatMessageIdempotency",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/ChatMessageIdempotency",
+  "tableId": "da21dae2-4ae3-4e73-9c76-89445485d686",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 81,
+  "tableSizeBytes": 28191,
+  "creationDateTime": "2026-03-30T20:50:46.124000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "idempotencyKey",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "idempotencyKey",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "ENABLED",
+    "AttributeName": "ttl"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

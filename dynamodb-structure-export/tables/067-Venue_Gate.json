@@ -1,0 +1,60 @@
+{
+  "tableName": "Venue_Gate",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/Venue_Gate",
+  "tableId": "7c342571-c8aa-4567-8b25-6e178be9c250",
+  "tableStatus": "ACTIVE",
+  "billingMode": null,
+  "itemCount": 164,
+  "tableSizeBytes": 48031,
+  "creationDateTime": "2026-01-28T17:03:46.211000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "gateId",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "gateId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "venueId",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "venueIdIndex",
+      "keySchema": [
+        {
+          "AttributeName": "venueId",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 164,
+      "indexSizeBytes": 48031
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "aws-lambda-services",
+  "version": "1.0.0",
+  "description": "Marketplace de proveedores de servicios para eventos (geo + ratings)",
+  "main": "src/getNearby.js",
+  "scripts": {
+    "deploy:qa": "serverless deploy --config serverless.qa.yml --stage qa --region us-east-2"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1400.0"
+  },
+  "devDependencies": {
+    "serverless": "^3.30.0"
+  }
+}

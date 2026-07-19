@@ -1,0 +1,79 @@
+{
+  "tableName": "Followers",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/Followers",
+  "tableId": "6a2bfa62-41bb-42f5-8514-d12c098cff55",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 46,
+  "tableSizeBytes": 5791,
+  "creationDateTime": "2025-04-04T11:32:59.041000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "follow_id",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "follow_id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "follow_userId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "userId",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "userIdIndex",
+      "keySchema": [
+        {
+          "AttributeName": "userId",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 45,
+      "indexSizeBytes": 5772
+    },
+    {
+      "indexName": "followUserIdIndex",
+      "keySchema": [
+        {
+          "AttributeName": "follow_userId",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 45,
+      "indexSizeBytes": 5772
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

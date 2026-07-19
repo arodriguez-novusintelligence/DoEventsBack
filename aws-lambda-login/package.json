@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "aws-sdk": "^2.1645.0",
+    "bcryptjs": "^3.0.2",
+    "jsonwebtoken": "^9.0.2",
+    "jwks-rsa": "^3.1.0",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.3",
+    "serverless-offline": "^14.3.3"
+  },
+  "scripts": {
+    "offline": "serverless offline",
+    "start": "serverless offline",
+    "deploy:qa": "serverless deploy --config serverless.qa.yml --stage qa --region us-east-2"
+  }
+}

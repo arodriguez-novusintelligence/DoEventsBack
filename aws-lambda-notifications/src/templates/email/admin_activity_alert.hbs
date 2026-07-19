@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{title}}</title>
+  </head>
+  <body style="margin:0;padding:0;background:#f6f7fb;font-family:Arial,Helvetica,sans-serif;color:#1a2340;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f6f7fb;padding:20px 12px;">
+      <tr><td align="center">
+        <table role="presentation" width="620" cellpadding="0" cellspacing="0" border="0" style="width:620px;max-width:100%;background:#fff;border:1px solid #dfe5f5;border-radius:14px;overflow:hidden;">
+          <tr><td style="padding:18px 22px;background:linear-gradient(90deg,#11326a,#2256a8);color:#fff;">
+            <div style="font-size:13px;opacity:.9;">DoEvents • Monitoreo</div>
+            <div style="font-size:22px;font-weight:700;line-height:1.2;margin-top:6px;">Alerta de actividad</div>
+          </td></tr>
+          <tr><td style="padding:20px 22px;">
+            <p style="margin:0 0 10px;font-size:15px;line-height:1.6;"><strong>Evento:</strong> {{eventName}}</p>
+            <p style="margin:0 0 8px;font-size:15px;line-height:1.6;">{{body}}</p>
+            {{#if metric}}<p style="margin:0 0 12px;font-size:14px;color:#264f9f;"><strong>Metricas:</strong> {{metric}}</p>{{/if}}
+            <p style="margin:0;font-size:13px;line-height:1.6;color:#5f6b8a;">Valida si se requiere moderacion, mensajes fijados o comunicacion oficial en el chat.</p>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table>
+  </body>
+</html>

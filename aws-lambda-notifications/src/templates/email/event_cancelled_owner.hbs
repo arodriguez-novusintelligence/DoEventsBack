@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tu evento fue cancelado</title>
+    <style>
+      body { margin:0;padding:0;background:#eef0f6;font-family:Arial,Helvetica,sans-serif;color:#131a31; }
+      .shell { width:100%;padding:16px 0; }
+      .container { width:100%;max-width:620px;margin:0 auto;background:#f7f8fc;border:1px solid #e5e8f3;border-radius:14px;overflow:hidden; }
+      .inner { padding:12px 12px 18px; }
+      .headline { margin:18px 4px 6px;font-size:26px;line-height:1.2;font-weight:700;color:#c0392b; }
+      .brand-logo-wrap { text-align:center;margin:6px 0 12px; }
+      .description { margin:0 4px 14px;color:#3f4660;font-size:15px;line-height:1.5; }
+      .stat-table { width:100%;border-collapse:collapse;margin-bottom:14px; }
+      .stat-cell { background:#f0f2fb;border:1px solid #dde1f3;border-radius:10px;text-align:center;padding:12px 8px;width:33%; }
+      .stat-num { font-size:26px;font-weight:700;color:#4c5fd8;margin:0; }
+      .stat-lbl { font-size:11px;color:#5a6180;margin:2px 0 0; }
+      .info-box { background:#f4f5fb;border-left:4px solid #8892d4;border-radius:6px;padding:10px 14px;margin-bottom:14px; }
+      .info-box p { margin:0 0 4px;font-size:13px;color:#33418e;line-height:1.5; }
+      .info-box p:last-child { margin:0; }
+      .steps { padding-left:0;list-style:none;margin:0 0 14px; }
+      .steps li { padding:8px 12px;background:#eef0f8;border-radius:8px;font-size:13px;margin-bottom:6px;color:#2e3455; }
+      .section-title { margin:10px 0 6px;font-size:14px;font-weight:700;color:#1f2749; }
+      .plain-list { margin:0 0 12px;padding-left:18px;color:#2e3455; }
+      .plain-list li { margin-bottom:7px;font-size:13px;line-height:1.55; }
+      .cta { margin-top:14px;text-align:center; }
+      .cta a { display:inline-block;background:#596ef4;color:#ffffff !important;text-decoration:none;border-radius:999px;padding:10px 24px;font-size:14px;font-weight:700; }
+      .footer { margin-top:16px;background:#e5e7ef;text-align:center;padding:14px 10px 16px; }
+      .footer-txt { margin:8px 0 0;font-size:12px;color:#59607a; }
+      .footer-link { color:#4f63d8 !important;text-decoration:none; }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="container">
+        <div class="inner">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin-bottom:12px;">
+            <tr>
+              <td background="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-bg.png" bgcolor="#2f366f" style="background-image:url('https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-bg.png');background-size:100% 100%;background-repeat:no-repeat;background-color:#2f366f;padding:0;border-radius:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tr><td style="padding:18px 20px 18px 24px;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:700;color:#ffffff;">Tu evento fue cancelado</td><td width="68" style="text-align:center;vertical-align:middle;padding:8px 12px 8px 8px;"><img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-icon.png" width="36" height="36" alt="" style="display:block;margin:0 auto;" /></td></tr></table></td>
+            </tr>
+          </table>
+
+          <p class="headline">{{eventName}}</p>
+
+          <div class="brand-logo-wrap" role="img" aria-label="Do.Events">
+            <img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-logo-doevents.png" width="120" height="35" alt="Do.Events" style="display:inline-block;vertical-align:middle;" />
+          </div>
+
+          <p class="description">Hola <strong>{{ownerName}}</strong>, confirmamos que tu evento <strong>{{eventName}}</strong> ha sido cancelado exitosamente.</p>
+
+          <table class="stat-table" role="presentation">
+            <tr>
+              <td class="stat-cell" style="border-radius:10px;">
+                <p class="stat-num">{{affectedOrders}}</p>
+                <p class="stat-lbl">&#xD3;rdenes afectadas</p>
+              </td>
+              <td style="width:8px;"></td>
+              <td class="stat-cell" style="border-radius:10px;">
+                <p class="stat-num">{{affectedUsers}}</p>
+                <p class="stat-lbl">Compradores notificados</p>
+              </td>
+              <td style="width:8px;"></td>
+              <td class="stat-cell" style="border-radius:10px;">
+                <p class="stat-num">{{refundsPending}}</p>
+                <p class="stat-lbl">Reembolsos pendientes</p>
+              </td>
+            </tr>
+          </table>
+
+          <div class="info-box">
+            <p><strong>Fechas originales:</strong> {{originalStartDate}} &mdash; {{originalEndDate}}</p>
+            {{#if reason}}<p><strong>Motivo:</strong> {{reason}}</p>{{/if}}
+            <p><strong>Cancelado el:</strong> {{executionDate}}</p>
+          </div>
+
+          <div class="info-box">
+            <p>Lamentamos los inconvenientes que han llevado a la cancelacion de su evento, <strong>{{eventName}}</strong>.</p>
+            <p>Como plataforma, nuestro objetivo es apoyarle para que este proceso de cierre sea lo mas fluido posible para usted y sus asistentes, manteniendo el compromiso con la seguridad de la informacion y la satisfaccion de los clientes.</p>
+          </div>
+
+          <p class="section-title">Canal de Comunicacion Sugerido</p>
+          <ul class="plain-list">
+            <li>Le recomendamos utilizar el chatroom del evento o los datos de contacto proporcionados en el registro para informar estos pasos.</li>
+            <li>Mantener un contacto directo y transparente es fundamental para preservar su buena voluntad y reputacion como organizador.</li>
+          </ul>
+
+          <p class="section-title">Opciones de Gestion de Pagos y Reembolsos</p>
+          <ul class="plain-list">
+            <li><strong>Pagos a traves de Do.Events:</strong> para aquellos asistentes que procesaron su pago mediante la plataforma y no estipularon conocer al organizador, Do.Events gestionara automaticamente el reembolso a su medio de pago original en un plazo aproximado de 10 dias habiles.</li>
+            <li><strong>Pagos con Autorizacion Directa:</strong> en los casos donde el asistente autorizo el pago directo hacia usted antes de la realizacion del evento, la plataforma no tiene control sobre esos fondos. En consecuencia, le sugerimos contactarlos directamente para coordinar la devolucion personalizada de sus fondos.</li>
+          </ul>
+
+          <p class="section-title">Acceso a la Informacion de Compradores</p>
+          <ul class="plain-list">
+            <li>Desde su panel de control en Mi Perfil - Mis Estadisticas, usted tiene acceso completo a la Lista de Compradores (nombre, correo electronico y telefono).</li>
+            <li>Asimismo, podra verificar el detalle financiero de cada transaccion: fecha de compra, monto total pagado, desglose de costos y estado del pago.</li>
+          </ul>
+
+          <p class="section-title">Gestion de Reembolsos por Categoria</p>
+          <ul class="plain-list">
+            <li><strong>Gestion por Do.Events:</strong> asistentes cuyos reembolsos seran tramitados automaticamente por la plataforma a su medio de pago original en un plazo de 10 dias habiles.</li>
+            <li><strong>Gestion por el Organizador:</strong> compradores que autorizaron pago directo hacia usted y requieren coordinacion personalizada para la devolucion.</li>
+          </ul>
+
+          <p class="section-title">Herramientas de Analisis y Descarga</p>
+          <ul class="plain-list">
+            <li>En la seccion de Estadisticas de Ventas encontrara un resumen por categorias (VIP, Palco, Terraza, General) y estado de ocupacion.</li>
+            <li>Desde este modulo puede descargar un archivo en formato Excel con el detalle totalizado y pormenorizado de ventas y asistentes para facilitar la conciliacion.</li>
+          </ul>
+
+          <div class="info-box">
+            <p><strong>Mis Estadisticas de Ventas:</strong> https://doeventsapp.com/MiPerfil/Estadisticas</p>
+            <p>Quedamos a su disposicion para apoyarle en el uso de estas herramientas y asegurar que todos los asistentes reciban su reembolso conforme a nuestras politicas.</p>
+            <p>Le recordamos que, ante una cancelacion de esta naturaleza, todos los asistentes son elegibles para un reembolso completo.</p>
+          </div>
+
+          <div class="cta">
+            <a href="https://doeventsapp.com/Wall/DetalleEvento?eventId={{eventId}}">Ver detalle del evento</a>
+          </div>
+          <p style="margin-top:6px;font-size:11px;color:#6f7895;text-align:center;word-break:break-all;">https://doeventsapp.com/Wall/DetalleEvento?eventId={{eventId}}</p>
+
+        </div>
+
+        <div class="footer">
+          <div class="footer-brand" role="img" aria-label="Do.Events">
+            <img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-logo-doevents.png" width="96" height="28" alt="Do.Events" style="display:inline-block;vertical-align:middle;" />
+          </div>
+          <p class="footer-txt">Soporte: <a class="footer-link" href="mailto:management@doeventsapp.com">management@doeventsapp.com</a></p>
+          <p class="footer-txt"><a class="footer-link" href="https://www.doeventsapp.com">www.doeventsapp.com</a></p>
+          <p class="footer-txt">&copy; {{year}} Do eventsapp. Todos los derechos reservados</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

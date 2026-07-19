@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{title}}</title>
+  </head>
+  <body style="margin:0;padding:0;background:#eff2fa;font-family:Arial,Helvetica,sans-serif;color:#1a2340;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#eff2fa;padding:20px 12px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="620" style="width:620px;max-width:100%;background:#ffffff;border:1px solid #dfe5f5;border-radius:14px;overflow:hidden;">
+            <tr>
+              <td style="padding:18px 22px;background:linear-gradient(90deg,#24388f,#3953bf);color:#ffffff;">
+                <div style="font-size:13px;opacity:.9;">DoEvents • Chat del evento</div>
+                <div style="font-size:24px;font-weight:700;line-height:1.2;margin-top:6px;">El chat ya esta abierto</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:20px 22px;">
+                <p style="margin:0 0 10px;font-size:16px;line-height:1.5;">Hola{{#if userName}} <strong>{{userName}}</strong>{{/if}},</p>
+                <p style="margin:0 0 12px;font-size:15px;line-height:1.6;">La conversacion de <strong>{{eventName}}</strong> ya esta disponible. Entra ahora para presentarte y ver las novedades del evento.</p>
+                {{#if link}}
+                  <div style="margin:18px 0 8px;">
+                    <a href="{{link}}" style="display:inline-block;background:#4e68ef;color:#ffffff;text-decoration:none;padding:11px 18px;border-radius:999px;font-size:14px;font-weight:700;">Entrar al chat</a>
+                  </div>
+                  <div style="font-size:12px;color:#627091;word-break:break-all;">Si el boton no funciona, usa este enlace: <a href="{{link}}" style="color:#4e68ef;">{{link}}</a></div>
+                {{/if}}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

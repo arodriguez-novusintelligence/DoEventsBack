@@ -1,0 +1,114 @@
+{
+  "tableName": "TicketScans",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/TicketScans",
+  "tableId": "e7b92c1b-167d-4330-8729-c4ba1944f823",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 90,
+  "tableSizeBytes": 57427,
+  "creationDateTime": "2026-03-19T06:24:53.550000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "eventId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "scanAt",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "statusResult",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "ticketId",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "EventScanAtIndex",
+      "keySchema": [
+        {
+          "AttributeName": "eventId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "scanAt",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 90,
+      "indexSizeBytes": 57427
+    },
+    {
+      "indexName": "TicketIdStatusIndex",
+      "keySchema": [
+        {
+          "AttributeName": "ticketId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "statusResult",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 90,
+      "indexSizeBytes": 57427
+    },
+    {
+      "indexName": "EventStatusIndex",
+      "keySchema": [
+        {
+          "AttributeName": "eventId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "statusResult",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 90,
+      "indexSizeBytes": 57427
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

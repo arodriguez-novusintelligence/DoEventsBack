@@ -1,0 +1,199 @@
+org: events
+service: aws-lambda-services
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: sa-east-1
+  stage: dev
+  environment:
+    SERVICES_TABLE: ServiceProviders-dev
+    SERVICE_RATINGS_TABLE: ServiceCalification-dev
+    CLIENT_TABLE: Client-dev
+    FOLLOWERS_TABLE: Followers-dev
+    DYNAMODB_FOLLOWERS_TABLE: Followers-dev
+    ORDERS_TABLE: Orders-dev
+    SERVICE_BOOKINGS_TABLE: ServiceBookings-dev
+    SERVICE_LIKES_TABLE: Service_Likes-dev
+    SERVICE_PROMO_CODES_TABLE: ServicePromoCodes-dev
+    NOTIFICATIONS_LAMBDA: notifications-dev-triggerNotification
+    DYNAMODB_REGION: sa-east-1
+    PROFILE_IMAGES_BUCKET: doevents-profile-media-dev
+    PROFILE_BUCKET: doevents-profile-media-dev
+    PROFILE_BUCKET_REGION: sa-east-1
+    ENTITY_MEDIA_BUCKET: doevent-venue-images
+    ENTITY_MEDIA_REGION: us-east-1
+    VENUE_IMAGES_BUCKET: doevent-venue-images
+    CORS_ALLOWED_ORIGINS: https://dev.doeventsapp.com,http://localhost:5173,https://localhost,capacitor://localhost
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:BatchGetItem
+        - dynamodb:Query
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/ServiceProviders-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/ServiceCalification-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/ServiceCalification-dev/index/*
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/Client-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/Followers-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/Followers-dev/index/*
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/Orders-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/ServiceBookings-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/ServiceBookings-dev/index/*
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/Service_Likes-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/Service_Likes-dev/index/*
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/ServicePromoCodes-dev
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:PutObject
+        - s3:CopyObject
+      Resource:
+        - arn:aws:s3:::doeventprofileimagesbucket/*
+        - arn:aws:s3:::doevents-profile-media-dev/*
+        - arn:aws:s3:::doevent-venue-images/*
+    - Effect: Allow
+      Action:
+        - dynamodb:GetItem
+      Resource:
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/Client-dev
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource:
+        - arn:aws:lambda:sa-east-1:519010577666:function:notifications-dev-triggerNotification
+
+functions:
+  getNearby:
+    handler: src/getNearby.handler
+    events:
+      - httpApi:
+          path: /nearby
+          method: post
+  getById:
+    handler: src/getById.handler
+    events:
+      - httpApi:
+          path: /{serviceId}
+          method: get
+  getByUserId:
+    handler: src/getByUserId.handler
+    events:
+      - httpApi:
+          path: /users/{userId}
+          method: get
+  listCategories:
+    handler: src/listCategories.handler
+    events:
+      - httpApi:
+          path: /categories
+          method: get
+  createService:
+    handler: src/createService.handler
+    events:
+      - httpApi:
+          path: /
+          method: post
+  rateService:
+    handler: src/rateService.handler
+    events:
+      - httpApi:
+          path: /{serviceId}/rate
+          method: post
+  deleteService:
+    handler: src/deleteService.handler
+    events:
+      - httpApi:
+          path: /{serviceId}
+          method: delete
+  updateService:
+    handler: src/updateService.handler
+    events:
+      - httpApi:
+          path: /{serviceId}
+          method: put
+  assignServiceCoAdmin:
+    handler: src/assignServiceCoAdmin.handler
+    events:
+      - httpApi:
+          path: /{serviceId}/co-admins
+          method: post
+  getServiceBookingAvailability:
+    handler: src/getServiceBookingAvailabilityHandler.handler
+    events:
+      - httpApi:
+          path: /{serviceId}/bookings/availability
+          method: get
+  createServiceBooking:
+    handler: src/createServiceBookingHandler.handler
+    events:
+      - httpApi:
+          path: /{serviceId}/bookings
+          method: post
+  getUserServiceBookings:
+    handler: src/getUserServiceBookingsHandler.handler
+    events:
+      - httpApi:
+          path: /bookings/user/{userId}
+          method: get
+  likeService:
+    handler: src/likeServiceHandler.handler
+    events:
+      - httpApi:
+          path: /{serviceId}/like
+          method: post
+  getServiceLikeByUser:
+    handler: src/getServiceLikeByUserHandler.handler
+    events:
+      - httpApi:
+          path: /{serviceId}/like/user/{userId}
+          method: get
+  servicePromoCodes:
+    handler: src/servicePromoCodes.handler
+    events:
+      - httpApi:
+          path: /{serviceId}/promo-codes
+          method: get
+      - httpApi:
+          path: /{serviceId}/promo-codes/batches
+          method: post
+      - httpApi:
+          path: /{serviceId}/promo-codes/sync
+          method: post
+      - httpApi:
+          path: /{serviceId}/promo-codes/share
+          method: post
+      - httpApi:
+          path: /{serviceId}/promo-codes/cancel
+          method: post
+      - httpApi:
+          path: /{serviceId}/promo-codes/validate
+          method: post
+
+  getUserServicesStatistics:
+    handler: src/getUserServicesStatisticsHandler.handler
+    events:
+      - httpApi:
+          path: /users/{userId}/statistics
+          method: get
+
+  getServiceStatistics:
+    handler: src/getServiceStatisticsHandler.handler
+    events:
+      - httpApi:
+          path: /{serviceId}/statistics
+          method: get
+
+  exportServiceStatistics:
+    handler: src/exportServiceStatisticsHandler.handler
+    events:
+      - httpApi:
+          path: /{serviceId}/statistics/export
+          method: get
+

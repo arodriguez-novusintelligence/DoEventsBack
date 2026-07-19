@@ -1,0 +1,16 @@
+{
+  "name": "aws-lambda-backoffice",
+  "private": true,
+  "scripts": {
+    "deploy:qa": "serverless deploy --config serverless.qa.yml",
+    "bootstrap:admins": "node scripts/bootstrap-admins.js"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1692.0",
+    "axios": "^1.9.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "serverless": "^4.0.0"
+  }
+}

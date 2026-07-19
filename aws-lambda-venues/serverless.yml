@@ -1,0 +1,464 @@
+service: aws-lambda-venues
+
+frameworkVersion: "4"
+
+package:
+  patterns:
+    - src/**
+    - package.json
+    - package-lock.json
+    - node_modules/aws-sdk/**
+    - node_modules/uuid/**
+    - "!**/*.md"
+    - "!**/*.ps1"
+    - "!**/*.txt"
+    - "!**/*.py"
+    - "!.serverless/**"
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: ${self:custom.region.${self:provider.stage}, 'us-east-1'}
+  stage: ${opt:stage, 'dev'}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:BatchGetItem
+            - dynamodb:BatchWriteItem
+            - lambda:InvokeFunction
+          Resource:
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venues
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venue_Floor
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venue_Element
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venue_Category
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venue_Seat
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venue_Gate
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venues/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venue_Floor/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venue_Element/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venue_Category/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venue_Seat/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venue_Gate/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Tickets
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Tickets/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/TicketsDistribution
+            - arn:aws:dynamodb:${self:provider.region}:*:table/TicketsDistribution/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Eventos
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Eventos/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venues-qa
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venues-qa/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venue_Likes-qa
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venue_Likes-qa/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/VenueCalification-qa
+            - arn:aws:dynamodb:${self:provider.region}:*:table/VenueCalification-qa/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Client-qa
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Orders-qa
+            - arn:aws:dynamodb:${self:provider.region}:*:table/VenueBookings-qa
+            - arn:aws:dynamodb:${self:provider.region}:*:table/VenueBookings-qa/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Orders
+            - arn:aws:dynamodb:${self:provider.region}:*:table/VenueBookings
+            - arn:aws:dynamodb:${self:provider.region}:*:table/VenueBookings/index/*
+            - arn:aws:lambda:${self:provider.region}:*:function:events-lifecycle-manager-scheduler-upsert
+            - arn:aws:lambda:${self:provider.region}:*:function:notifications-qa-triggerNotification
+            - arn:aws:lambda:us-east-1:*:function:notifications-dev-triggerNotification
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:PutObjectAcl
+            - s3:GetObject
+            - s3:DeleteObject
+            - s3:CopyObject
+          Resource:
+            - arn:aws:s3:::doevent-venue-images
+            - arn:aws:s3:::doevent-venue-images/*
+            - arn:aws:s3:::doevents-profile-media-qa
+            - arn:aws:s3:::doevents-profile-media-qa/*
+  environment:
+    VENUE_TABLE: Venues${self:custom.tableSuffix.${self:provider.stage}, ''}
+    VENUE_FLOOR_TABLE: Venue_Floor${self:custom.tableSuffix.${self:provider.stage}, ''}
+    VENUE_ELEMENT_TABLE: Venue_Element${self:custom.tableSuffix.${self:provider.stage}, ''}
+    VENUE_CATEGORY_TABLE: Venue_Category${self:custom.tableSuffix.${self:provider.stage}, ''}
+    VENUE_SEAT_TABLE: Venue_Seat${self:custom.tableSuffix.${self:provider.stage}, ''}
+    VENUE_GATE_TABLE: Venue_Gate${self:custom.tableSuffix.${self:provider.stage}, ''}
+    EVENTS_TABLE: Eventos${self:custom.tableSuffix.${self:provider.stage}, ''}
+    TICKETS_TABLE: Tickets${self:custom.tableSuffix.${self:provider.stage}, ''}
+    TICKETS_DIST_TABLE: TicketsDistribution${self:custom.tableSuffix.${self:provider.stage}, ''}
+    VENUE_IMAGES_BUCKET: doevent-venue-images
+    PROFILE_BUCKET: doevents-profile-media-qa
+    PROFILE_BUCKET_REGION: us-east-2
+    VENUE_LIKES_TABLE: Venue_Likes${self:custom.tableSuffix.${self:provider.stage}, ''}
+    VENUE_RATINGS_TABLE: VenueCalification${self:custom.tableSuffix.${self:provider.stage}, ''}
+    CLIENT_TABLE: Client${self:custom.tableSuffix.${self:provider.stage}, ''}
+    ORDERS_TABLE: Orders${self:custom.tableSuffix.${self:provider.stage}, ''}
+    VENUE_BOOKINGS_TABLE: VenueBookings${self:custom.tableSuffix.${self:provider.stage}, ''}
+    NOTIFICATIONS_LAMBDA: notifications${self:custom.functionSuffix.${self:provider.stage}, ''}-triggerNotification
+    EVENT_LIFECYCLE_SCHEDULER_UPSERT_FUNCTION: events-lifecycle-manager-scheduler-upsert${self:custom.functionSuffix.${self:provider.stage}, ''}
+    DYNAMODB_REGION: ${self:custom.region.${self:provider.stage}, self:provider.region}
+
+custom:
+  tableSuffix:
+    qa: '-qa'
+    dev: ''
+  functionSuffix:
+    qa: '-qa'
+    dev: ''
+  region:
+    qa: us-east-2
+
+functions:
+  # Venue CRUD
+  createVenue:
+    handler: src/createVenueHandler.handler
+    timeout: 120
+    events:
+      - http:
+          path: /venues
+          method: post
+          cors: true
+
+  getVenue:
+    handler: src/getVenueHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}
+          method: get
+          cors: true
+
+  listVenues:
+    handler: src/listVenuesHandler.handler
+    events:
+      - http:
+          path: /venues
+          method: get
+          cors: true
+
+  updateVenue:
+    handler: src/updateVenueHandler.handler
+    timeout: 29
+    memorySize: 512
+    events:
+      - http:
+          path: /venues/{venueId}
+          method: put
+          cors: true
+
+  deleteVenue:
+    handler: src/deleteVenueHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}
+          method: delete
+          cors: true
+
+  cloneVenueForEvent:
+    handler: src/cloneVenueForEventHandler.handler
+    events:
+      - http:
+          path: /venues/clone-for-event
+          method: post
+          cors: true
+
+  ensureEventDistributions:
+    handler: src/ensureEventDistributionsHandler.handler
+    events:
+      - http:
+          path: /venues/events/{eventId}/ensure-distributions
+          method: post
+          cors: true
+
+  uploadVenueImage:
+    handler: src/uploadVenueImageHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/images
+          method: post
+          cors: true
+
+  # Floor CRUD
+  createFloor:
+    handler: src/createFloorHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/floors
+          method: post
+          cors: true
+
+  # Element CRUD
+  createElement:
+    handler: src/createElementHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/floors/{floorId}/elements
+          method: post
+          cors: true
+
+  uploadElementImage:
+    handler: src/uploadElementImageHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/floors/{floorId}/elements/{elementId}/image
+          method: post
+          cors: true
+
+  # Category CRUD
+  createCategory:
+    handler: src/createCategoryHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/floors/{floorId}/categories
+          method: post
+          cors: true
+
+  updateCategory:
+    handler: src/updateCategoryHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/floors/{floorId}/categories/{categoryId}
+          method: put
+          cors: true
+
+  deleteCategory:
+    handler: src/deleteCategoryHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/floors/{floorId}/categories/{categoryId}
+          method: delete
+          cors: true
+
+  # Seat CRUD
+  createSeats:
+    handler: src/createSeatsHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/floors/{floorId}/categories/{categoryId}/seats
+          method: post
+          cors: true
+
+  updateSeat:
+    handler: src/updateSeatHandler.handler
+  deleteSeat:
+    handler: src/deleteSeatHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/seats/{seatId}
+          method: delete
+          cors: true
+
+  # Entrance CRUD
+  createEntrance:
+    handler: src/createEntranceHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/entrances
+          method: post
+          cors: true
+
+  getEntrances:
+    handler: src/getEntrancesHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/entrances
+          method: get
+          cors: true
+
+  getEntranceById:
+    handler: src/getEntranceByIdHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/entrances/{entranceId}
+          method: get
+          cors: true
+
+  updateEntrance:
+    handler: src/updateEntranceHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/entrances/{entranceId}
+          method: put
+          cors: true
+
+  deleteEntrance:
+    handler: src/deleteEntranceHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/entrances/{entranceId}
+          method: delete
+          cors: true
+
+  # Entrance Category CRUD
+  createEntranceCategory:
+    handler: src/createEntranceCategoryHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/entrances/{entranceId}/categories
+          method: post
+          cors: true
+
+  updateEntranceCategory:
+    handler: src/updateEntranceCategoryHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/entrances/{entranceId}/categories/{categoryId}
+          method: put
+          cors: true
+
+  likeVenue:
+    handler: src/likeVenueHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/like
+          method: post
+          cors: true
+
+  getVenueLikeByUser:
+    handler: src/getVenueLikeByUserHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/like/user/{userId}
+          method: get
+          cors: true
+
+  rateVenue:
+    handler: src/rateVenueHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/rate
+          method: post
+          cors: true
+
+  getVenueCalifications:
+    handler: src/getVenueCalificationsHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/califications
+          method: get
+          cors: true
+
+  updateRentalVenue:
+    handler: src/updateRentalVenueHandler.handler
+    timeout: 60
+    events:
+      - http:
+          path: /venues/{venueId}/listing
+          method: put
+          cors: true
+
+  getVenueBookingAvailability:
+    handler: src/getVenueBookingAvailabilityHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/bookings/availability
+          method: get
+          cors: true
+
+  createVenueBooking:
+    handler: src/createVenueBookingHandler.handler
+    timeout: 29
+    events:
+      - http:
+          path: /venues/{venueId}/bookings
+          method: post
+          cors: true
+
+  getUserVenueBookings:
+    handler: src/getUserVenueBookingsHandler.handler
+    events:
+      - http:
+          path: /venues/bookings/user/{userId}
+          method: get
+          cors: true
+
+  assignVenueCoAdmin:
+    handler: src/assignVenueCoAdminHandler.handler
+    events:
+      - http:
+          path: /venues/{venueId}/co-admins
+          method: post
+          cors: true
+
+resources:
+  Resources:
+    VenueLikesTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      UpdateReplacePolicy: Retain
+      Properties:
+        TableName: Venue_Likes${self:custom.tableSuffix.${self:provider.stage}, ''}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: venueId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: venueId
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: venueIdIndex
+            KeySchema:
+              - AttributeName: venueId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+
+    VenueCalificationTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      UpdateReplacePolicy: Retain
+      Properties:
+        TableName: VenueCalification${self:custom.tableSuffix.${self:provider.stage}, ''}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: venueId
+            AttributeType: S
+          - AttributeName: calificationId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: venueId
+            KeyType: HASH
+          - AttributeName: calificationId
+            KeyType: RANGE
+
+    VenueBookingsTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      UpdateReplacePolicy: Retain
+      Properties:
+        TableName: VenueBookings${self:custom.tableSuffix.${self:provider.stage}, ''}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: venueId
+            AttributeType: S
+          - AttributeName: bookingId
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: created_at_ts
+            AttributeType: N
+        KeySchema:
+          - AttributeName: venueId
+            KeyType: HASH
+          - AttributeName: bookingId
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: userIdIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: created_at_ts
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true

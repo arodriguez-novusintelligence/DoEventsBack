@@ -1,0 +1,32 @@
+openapi: 3.0.1
+info:
+  title: AWS Lambda Manage Tickets with Orders API
+  description: API para la gestion de las ordenes con tickets en AWS Lambda.
+  version: "1.0.0"
+paths:
+/tickets:
+  post:
+    summary: Crear ordenes.
+    description: Crea una nueva orden con los detalles del ticket, segun el estado de la orden.
+    tags:
+      - tickets
+    requestBody:
+      description: Detalles de la orden a crear.
+      required: true
+      content:
+      application/json:
+        schema:
+          $ref: '#/components/schemas/Orders'
+    responses:
+      '200':
+        description: Orden creada exitosamente.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Orders'
+      '500':
+        description: Error al crear la orden.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'

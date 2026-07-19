@@ -1,0 +1,60 @@
+{
+  "tableName": "Venue_Floor",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/Venue_Floor",
+  "tableId": "e7dc5deb-e927-4fe8-916a-5d72f55b8f31",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 206,
+  "tableSizeBytes": 38019,
+  "creationDateTime": "2025-11-12T23:09:56.334000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "floorId",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "floorId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "venueId",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "venueIdIndex",
+      "keySchema": [
+        {
+          "AttributeName": "venueId",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 206,
+      "indexSizeBytes": 38019
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

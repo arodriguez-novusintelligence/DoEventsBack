@@ -1,0 +1,48 @@
+# Script para crear venue BASE con colores en categorías
+# Este venue NO tiene eventId (es un venue base/template)
+
+$endpoint = "https://6jmu2drmce.execute-api.us-east-1.amazonaws.com/dev/venues"
+
+# Leer el payload desde el archivo JSON
+$payload = Get-Content -Path ".\create-base-venue-payload.json" -Raw
+
+Write-Host "🏟️  Creando venue BASE con colores en categorías..." -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Endpoint: $endpoint" -ForegroundColor Gray
+Write-Host ""
+Write-Host "Categorías con colores:" -ForegroundColor Yellow
+Write-Host "  - GENERAL: #BBDEFB (azul claro)" -ForegroundColor Blue
+Write-Host "  - PALCO: #E1BEE7 (morado claro)" -ForegroundColor Magenta
+Write-Host ""
+
+try {
+    $response = Invoke-RestMethod -Uri $endpoint -Method POST -Body $payload -ContentType 'application/json'
+    
+    Write-Host "✅ Venue BASE creado exitosamente!" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "VenueId: $($response.venue.venueId)" -ForegroundColor White
+    Write-Host "Name: $($response.venue.name)" -ForegroundColor White
+    Write-Host "IsTemplate: $($response.venue.isTemplate)" -ForegroundColor White
+    Write-Host "IsEventVenue: $($response.venue.isEventVenue)" -ForegroundColor White
+    Write-Host ""
+    
+    if ($response.ticket) {
+        Write-Host "❌ ERROR: Se creó un ticket cuando NO debería (venue base no debe tener tickets)" -ForegroundColor Red
+    } else {
+        Write-Host "✅ Correcto: No se creó ticket (venue base)" -ForegroundColor Green
+    }
+    
+    Write-Host ""
+    Write-Host "Response completo:" -ForegroundColor Gray
+    Write-Host ($response | ConvertTo-Json -Depth 10) -ForegroundColor DarkGray
+    
+} catch {
+    Write-Host "❌ Error al crear venue:" -ForegroundColor Red
+    Write-Host $_.Exception.Message -ForegroundColor Red
+    Write-Host ""
+    Write-Host "Response:" -ForegroundColor Gray
+    Write-Host $_.ErrorDetails.Message -ForegroundColor DarkGray
+}
+
+Write-Host ""
+Write-Host "Ahora puedes clonar este venue para un evento y verificar que el color se propague correctamente" -ForegroundColor Cyan

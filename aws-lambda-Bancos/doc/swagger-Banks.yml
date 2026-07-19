@@ -1,0 +1,128 @@
+openapi: 3.0.1
+info:
+  title: "Bancos API"
+  description: "API para gestionar entidades bancarias: crear, consultar y actualizar bancos por país."
+  version: "1.0.0"
+
+paths:
+  /CrearBanco:
+    post:
+      operationId: crearBanco
+      summary: Crear banco
+      description: Crea un nuevo banco usando su código SWIFT como identificador.
+      tags:
+        - Bancos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearBancoRequest'
+            example:
+              id_country: "CO"
+              nombre: "Banco de Bogotá"
+              codigo_swift: "BOGOCOPS"
+      responses:
+        '200':
+          description: Banco creado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Error al crear el banco
+
+  /getBanco/{id_country}:
+    get:
+      operationId: getBanco
+      summary: Obtener bancos por país
+      description: Devuelve una lista de bancos asociados a un país dado por su ID.
+      tags:
+        - Bancos
+      parameters:
+        - name: id_country
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de bancos recuperada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBancosResponse'
+        '400':
+          description: ID del país no proporcionado
+        '500':
+          description: Error interno al consultar bancos
+
+  /updateBanco:
+    put:
+      operationId: updateBanco
+      summary: Actualizar banco
+      description: Actualiza el nombre y código SWIFT de un banco existente por país.
+      tags:
+        - Bancos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBancoRequest'
+            example:
+              id_country: "CO"
+              nombre: "Banco Actualizado"
+              codigo_swift: "XYZ789"
+      responses:
+        '200':
+          description: Banco actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  Attributes:
+                    nombre: "Banco Actualizado"
+                    codigo_swift: "XYZ789"
+        '500':
+          description: Error al actualizar el banco
+
+components:
+  schemas:
+    CrearBancoRequest:
+      type: object
+      properties:
+        id_country:
+          type: string
+        nombre:
+          type: string
+        codigo_swift:
+          type: string
+
+    UpdateBancoRequest:
+      type: object
+      properties:
+        id_country:
+          type: string
+        nombre:
+          type: string
+        codigo_swift:
+          type: string
+
+    GetBancosResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+          id_country:
+            type: string
+          nombre:
+            type: string
+          codigo_swift:
+            type: string

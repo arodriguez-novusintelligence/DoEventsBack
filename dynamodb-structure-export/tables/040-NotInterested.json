@@ -1,0 +1,48 @@
+{
+  "tableName": "NotInterested",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/NotInterested",
+  "tableId": "1a419c0f-9e84-4d27-aca3-1c7b2ca2a1f7",
+  "tableStatus": "ACTIVE",
+  "billingMode": null,
+  "itemCount": 6,
+  "tableSizeBytes": 1622,
+  "creationDateTime": "2025-05-03T08:22:59.332000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "createdAt",
+      "KeyType": "RANGE"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "createdAt",
+      "AttributeType": "N"
+    },
+    {
+      "AttributeName": "id",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}
