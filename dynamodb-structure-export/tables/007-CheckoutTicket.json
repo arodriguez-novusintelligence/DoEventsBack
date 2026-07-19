@@ -1,0 +1,152 @@
+{
+  "tableName": "CheckoutTicket",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/CheckoutTicket",
+  "tableId": "ee27fb78-3808-4e3a-9903-e70005ab2665",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 30,
+  "tableSizeBytes": 8059,
+  "creationDateTime": "2025-05-14T19:29:41.923000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "ticket_id",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "event_id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "order_id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "qr_code",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "status",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "ticketName",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "ticket_id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "user_id",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "qr_code-index",
+      "keySchema": [
+        {
+          "AttributeName": "qr_code",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 3,
+      "indexSizeBytes": 492
+    },
+    {
+      "indexName": "user_id-event_id-index",
+      "keySchema": [
+        {
+          "AttributeName": "user_id",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "event_id",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 21,
+      "indexSizeBytes": 5681
+    },
+    {
+      "indexName": "event_id-status-index",
+      "keySchema": [
+        {
+          "AttributeName": "event_id",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "status",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 28,
+      "indexSizeBytes": 7523
+    },
+    {
+      "indexName": "order_id-index",
+      "keySchema": [
+        {
+          "AttributeName": "order_id",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 30,
+      "indexSizeBytes": 8059
+    },
+    {
+      "indexName": "event_id-ticketName-index",
+      "keySchema": [
+        {
+          "AttributeName": "event_id",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "ticketName",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 4,
+      "indexSizeBytes": 1228
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

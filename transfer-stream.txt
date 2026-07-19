@@ -1,0 +1,15 @@
+﻿{
+    "events": [
+        {
+            "timestamp": 1770785463695,
+            "message": "INIT_START Runtime Version: nodejs:24.v29\tRuntime Version ARN: arn:aws:lambda:us-east-1::runtime:b0bb5dea1b12bb0e2c3b50ed434af2fd2d16d383f7324c7b455111008b6112ba\n",
+            "ingestionTime": 1770785471605
+        },
+        {
+            "timestamp": 1770785464486,
+            "message": "START RequestId: f1a95cb0-99fa-49dc-83f5-0500b238ee03 Version: $LATEST\n",
+            "ingestionTime": 1770785471605
+        },
+        {
+            "timestamp": 1770785464527,
+            "message": 

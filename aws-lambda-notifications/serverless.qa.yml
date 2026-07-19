@@ -1,0 +1,153 @@
+org: events
+service: notifications
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-2
+  stage: qa
+  logRetentionInDays: 14
+  tracing:
+    lambda: true
+    apiGateway: true
+  environment:
+    EMAIL_FROM: notificaciones.doevents@doeventsapp.com
+    NOTIFICATIONS_TABLE: Notifications-qa
+    USER_CHANNELS_TABLE: UserChannels-qa
+    CLIENT_TABLE: Client-qa
+    ORDERS_TABLE: Orders-qa
+    FAVORITE_USERS_TABLE: FavoriteUsers-qa
+    USER_TOKENS_TABLE: UserTokens-qa
+    WEBHOOK_LOGS_TABLE: WhatsAppWebhookLogs-qa
+    IMAGES_TABLE: imagenes-qa
+    META_ACCESS_TOKEN: ${env:META_ACCESS_TOKEN, ''}
+    WHATSAPP_PHONE_ID: ${env:WHATSAPP_PHONE_ID, ''}
+    WHATSAPP_VERIFY_TOKEN: doevents_webhook_2026
+    STAGE: qa
+    DYNAMODB_REGION: us-east-2
+    WS_API_ENDPOINT: wss://zjg66jel41.execute-api.us-east-2.amazonaws.com/qa
+    WEB_APP_BASE_URL: https://qa.doeventsapp.com
+    CORS_ALLOWED_ORIGINS: https://qa.doeventsapp.com,http://localhost:5173,https://localhost,capacitor://localhost
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:*
+        - lambda:InvokeFunction
+        - sns:Publish
+        - logs:*
+        - xray:*
+        - ses:SendEmail
+        - ses:SendRawEmail
+        - execute-api:ManageConnections
+      Resource: "*"
+
+functions:
+  getNotificationByUserId:
+    handler: src/apis/getNotificationsByUserId.handler
+    events:
+      - http:
+          path: notifications-by-user/{userId}
+          method: get
+          cors: true
+  updateNotificationsById:
+    handler: src/apis/updateNotificationsById.handler
+    events:
+      - http:
+          path: update-notification/{id}
+          method: put
+          cors: true
+  deleteNotificationById:
+    handler: src/apis/deleteNotificationById.handler
+    events:
+      - http:
+          path: notifications/{userId}/{notificationId}
+          method: delete
+          cors: true
+  deleteAllNotificationsByUserId:
+    handler: src/apis/deleteAllNotificationsByUserId.handler
+    events:
+      - http:
+          path: notifications/{userId}/all
+          method: delete
+          cors: true
+  getUserMessagingTokenByUserId:
+    handler: src/apis/getUserMessagingTokenByUserId.handler
+    events:
+      - http:
+          path: get-user-messaging-token/{userId}
+          method: get
+          cors: true
+  createUserMessagingToken:
+    handler: src/apis/createUserMessagingToken.handler
+    events:
+      - http:
+          path: create-user-messaging-token
+          method: post
+          cors: true
+  updateUserMessagingToken:
+    handler: src/apis/updateUserMessagingToken.handler
+    events:
+      - http:
+          path: update-user-messaging-token
+          method: post
+          cors: true
+  deleteUserMessagingToken:
+    handler: src/apis/deleteUserMessagingToken.handler
+    events:
+      - http:
+          path: delete-user-messaging-token/{userId}
+          method: delete
+          cors: true
+  triggerNotification:
+    handler: src/apis/triggerNotification.handler
+    events:
+      - http:
+          path: trigger-notification
+          method: post
+          cors: true
+  whatsappWebhook:
+    handler: src/webhooks/whatsappWebhook.handler
+    timeout: 30
+    events:
+      - http:
+          path: webhooks/whatsapp
+          method: get
+          cors: true
+      - http:
+          path: webhooks/whatsapp
+          method: post
+          cors: true
+  notifyEventAffectedUsers:
+    handler: src/apis/notifyEventAffectedUsers.handler
+    timeout: 29
+    events:
+      - http:
+          path: notify-event-affected-users
+          method: post
+          cors: true
+  pushNotificationHandler:
+    handler: src/gateways/pushNotification.handler
+    timeout: 30
+    events:
+      - websocket:
+          route: pushNotification
+  emailNotificationHandler:
+    handler: src/gateways/emailNotification.handler
+    timeout: 30
+    events:
+      - websocket:
+          route: emailNotification
+  inAppNotificationHandler:
+    handler: src/gateways/inAppNotification.handler
+    timeout: 30
+    events:
+      - websocket:
+          route: inAppNotification
+  whatsappNotificationHandler:
+    handler: src/gateways/whatsappNotification.handler
+    timeout: 30
+    events:
+      - websocket:
+          route: whatsappNotification

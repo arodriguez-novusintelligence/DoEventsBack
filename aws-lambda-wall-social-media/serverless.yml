@@ -1,0 +1,818 @@
+org: events
+service: aws-lambda-wall-social-media
+frameworkVersion: "4"
+
+package:
+  patterns:
+    - 'src/**'
+    - 'node_modules/**'
+    - 'package.json'
+    - 'package-lock.json'
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    DYNAMODB_CLIENT_TABLE: Client
+    DYNAMODB_POSTS_TABLE: Posts
+    DYNAMODB_EVENTS_TABLE: Eventos
+    DYNAMODB_EVENT_INVITATIONS_TABLE: EventInvitations
+    DYNAMODB_EVENT_IMAGES_TABLE: imagenes
+    DYNAMODB_PLACES_TABLE: Places
+    DYNAMODB_FOLLOWERS_TABLE: Followers
+    DYNAMODB_FOLLOWERS_BY_TARGET_INDEX: followUserIdIndex
+    DYNAMODB_REPOSTS_TABLE: Reposts
+    DYNAMODB_LIKES_TABLE: Likes
+    DYNAMODB_COMMENTS_TABLE: Comments
+    DYNAMODB_REPORTS_TABLE: Reports
+    DYNAMODB_BLOCKUSER_TABLE: BlockUser
+    DYNAMODB_NOTINTERESTED_TABLE: NotInterested
+    DYNAMODB_FEED_PUBLICATIONS_TABLE: FeedPublications
+    DYNAMODB_FEED_TIMELINE_TABLE: FeedTimeline
+    DYNAMODB_FEED_PUBLICATION_LIKES_TABLE: FeedPublicationLikes
+    DYNAMODB_FEED_STORY_VIEWS_TABLE: FeedStoryViews
+    DYNAMODB_FEED_PUBLICATION_REPOSTS_TABLE: FeedPublicationReposts
+    DYNAMODB_FEED_COMMENTS_TABLE: FeedComments
+    DYNAMODB_FEED_COMMENT_LIKES_TABLE: FeedCommentLikes
+    DYNAMODB_FEED_SHARES_TABLE: FeedShares
+    DYNAMODB_FEED_MEDIA_TABLE: FeedMedia
+    DYNAMODB_FEED_IDEMPOTENCY_TABLE: FeedIdempotency
+    DYNAMODB_SERVICES_TABLE: ServiceProviders
+    DYNAMODB_VENUES_TABLE: Venues
+    DYNAMODB_EXTENDED_REGION: us-east-2
+    FEED_MEDIA_BUCKET: ${self:custom.feedMediaBucketName}
+    EVENT_IMAGES_BUCKET: doeventimageeventbucket
+    FEED_PUBLIC_BASE_URL: https://doevents.app/p
+    NOTIFICATIONS_TRIGGER_FUNCTION_NAME: ${self:custom.notificationsTriggerFunctionName}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Client
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Posts
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Eventos
+        - arn:aws:dynamodb:us-east-1:519010577666:table/EventInvitations
+        - arn:aws:dynamodb:us-east-1:519010577666:table/imagenes
+        - arn:aws:dynamodb:us-east-1:519010577666:table/imagenes/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/EventInvitations/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Places
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Followers
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Reposts
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Likes
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Comments
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Reports
+        - arn:aws:dynamodb:us-east-1:519010577666:table/BlockUser
+        - arn:aws:dynamodb:us-east-1:519010577666:table/NotInterested
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedPublications
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedPublications/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedTimeline
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedTimeline/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedPublicationLikes
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedPublicationLikes/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedStoryViews
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedPublicationReposts
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedPublicationReposts/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedComments
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedComments/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedCommentLikes
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedCommentLikes/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedShares
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedShares/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedMedia
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedMedia/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedIdempotency
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FeedIdempotency/index/*
+        - arn:aws:dynamodb:us-east-2:519010577666:table/ServiceProviders
+        - arn:aws:dynamodb:us-east-2:519010577666:table/ServiceProviders-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Venues
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Venues-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/*-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/*-qa/index/*
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:GetObjectVersion
+      Resource:
+        - arn:aws:s3:::doeventprofileimagesbucket/*
+        - arn:aws:s3:::doeventimageeventbucket/*
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+        - s3:DeleteObject
+      Resource:
+        - arn:aws:s3:::${self:custom.feedMediaBucketName}/*
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource:
+        - arn:aws:lambda:us-east-1:519010577666:function:${self:custom.notificationsTriggerFunctionName}
+        - arn:aws:lambda:us-east-2:519010577666:function:${self:custom.notificationsTriggerFunctionName}
+
+custom:
+  feedMediaBucketName: ${self:service}-${sls:stage}-media-${aws:accountId}
+  notificationsTriggerFunctionName: notifications-${sls:stage}-triggerNotification
+functions:
+  eventsByLocation:
+    handler: src/events/byLocation.handler
+    events:
+      - http:
+          path: events/location
+          method: get
+          cors: true
+
+  followUser:
+    handler: src/followUser.handler
+    events:
+      - http:
+          path: client/follow
+          method: post
+          cors: true
+
+  unfollowUser:
+    handler: src/unfollowUser.handler
+    events:
+      - http:
+          path: client/unfollow
+          method: post
+          cors: true
+
+  respondFollowRequest:
+    handler: src/respondFollowRequest.handler
+    events:
+      - http:
+          path: client/follow/respond
+          method: post
+          cors: true
+
+  getFollowState:
+    handler: src/getFollowUser.handler
+    events:
+      - http:
+          path: follow/{follow_id}
+          method: get
+          cors: true
+
+  getFollowers:
+    handler: src/getFollowers.handler
+    events:
+      - http:
+          path: client/{userId}/followers
+          method: get
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+
+  getFollowing:
+    handler: src/getFollowing.handler
+    events:
+      - http:
+          path: client/{userId}/following
+          method: get
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+
+  getFollowersCount:
+    handler: src/getFollowersCount.handler
+    events:
+      - http:
+          path: client/{userId}/followers/count
+          method: get
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+
+  getFollowingCount:
+    handler: src/getFollowingCount.handler
+    events:
+      - http:
+          path: client/{userId}/following/count
+          method: get
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+
+  getPendingFollowRequests:
+    handler: src/getPendingFollowRequests.handler
+    events:
+      - http:
+          path: client/{userId}/follow-requests
+          method: get
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: false
+
+  blockUser:
+    handler: src/client/blockUser.handler
+    events:
+      - http:
+          path: client/block
+          method: post
+          cors: true
+
+  getBlockState:
+    handler: src/client/getBlockUser.handler
+    events:
+      - http:
+          path: block/{block_id}
+          method: get
+          cors: true
+
+  publishState:
+    handler: src/publishState.handler
+    events:
+      - http:
+          path: /publish
+          method: post
+          cors: true
+
+  getPublishState:
+    handler: src/getPublishState.handler
+    events:
+      - http:
+          path: publish/{post_id}
+          method: get
+          cors: true
+
+  repostState:
+    handler: src/repostState.handler
+    events:
+      - http:
+          path: /repost
+          method: post
+          cors: true
+
+  getRepostState:
+    handler: src/getRepostState.handler
+    events:
+      - http:
+          path: repost/{repost_id}
+          method: get
+          cors: true
+
+  likeState:
+    handler: src/likeState.handler
+    events:
+      - http:
+          path: /like
+          method: post
+          cors: true
+
+  getLikeState:
+    handler: src/getLikeState.handler
+    events:
+      - http:
+          path: like/{like_id}
+          method: get
+          cors: true
+
+  addCommentsState:
+    handler: src/addCommentsState.handler
+    events:
+      - http:
+          path: /comment
+          method: post
+          cors: true
+
+  getCommentState:
+    handler: src/getCommentsState.handler
+    events:
+      - http:
+          path: /comments/{comment_id}
+          method: get
+          cors: true
+
+  reportState:
+    handler: src/reportState.handler
+    events:
+      - http:
+          path: /report
+          method: post
+          cors: true
+
+  getReportState:
+    handler: src/getReportState.handler
+    events:
+      - http:
+          path: report/{report_id}
+          method: get
+          cors: true
+
+  removeFollower:
+    handler: src/removeFollower.handler
+    events:
+      - http:
+          path: client/follower/remove
+          method: post
+          cors: true
+
+  blockFollower:
+    handler: src/blockFollower.handler
+    events:
+      - http:
+          path: client/follower/block
+          method: post
+          cors: true
+
+  unblockFollower:
+    handler: src/unblockFollower.handler
+    events:
+      - http:
+          path: client/follower/unblock
+          method: post
+          cors: true
+
+  feedHome:
+    handler: src/feedHandlers.getHomeFeed
+    events:
+      - http:
+          path: v1/feed/home
+          method: get
+          cors: true
+
+  feedStories:
+    handler: src/feedHandlers.getStories
+    events:
+      - http:
+          path: v1/feed/stories
+          method: get
+          cors: true
+
+  feedRecordStoryView:
+    handler: src/feedHandlers.recordStoryView
+    events:
+      - http:
+          path: v1/feed/stories/{publicationId}/view
+          method: post
+          cors: true
+
+  feedListStoryViewers:
+    handler: src/feedHandlers.listStoryViewers
+    events:
+      - http:
+          path: v1/feed/stories/{publicationId}/viewers
+          method: get
+          cors: true
+
+  feedCreatePublication:
+    handler: src/feedHandlers.createPublication
+    events:
+      - http:
+          path: v1/feed/publications
+          method: post
+          cors: true
+
+  feedGetPublication:
+    handler: src/feedHandlers.getPublication
+    events:
+      - http:
+          path: v1/feed/publications/{publicationId}
+          method: get
+          cors: true
+
+  feedUpdatePublication:
+    handler: src/feedHandlers.updatePublication
+    events:
+      - http:
+          path: v1/feed/publications/{publicationId}
+          method: put
+          cors: true
+
+  feedAssignPublicationCoAdmin:
+    handler: src/feedHandlers.assignPublicationCoAdmin
+    events:
+      - http:
+          path: v1/feed/publications/{publicationId}/co-admins
+          method: post
+          cors: true
+
+  feedDeletePublication:
+    handler: src/feedHandlers.deletePublication
+    events:
+      - http:
+          path: v1/feed/publications/{publicationId}
+          method: delete
+          cors: true
+
+  feedCreateRepost:
+    handler: src/feedHandlers.createRepost
+    events:
+      - http:
+          path: v1/feed/reposts
+          method: post
+          cors: true
+
+  feedLikePublication:
+    handler: src/feedHandlers.setPublicationLike
+    events:
+      - http:
+          path: v1/feed/publications/{publicationId}/like
+          method: put
+          cors: true
+
+  feedListPublicationLikes:
+    handler: src/feedHandlers.listPublicationLikes
+    events:
+      - http:
+          path: v1/feed/publications/{publicationId}/likes
+          method: get
+          cors: true
+
+  feedListPublicationReposts:
+    handler: src/feedHandlers.listPublicationReposts
+    events:
+      - http:
+          path: v1/feed/publications/{publicationId}/reposts
+          method: get
+          cors: true
+
+  feedSharePublication:
+    handler: src/feedHandlers.sharePublication
+    events:
+      - http:
+          path: v1/feed/publications/{publicationId}/share
+          method: post
+          cors: true
+
+  feedHidePublication:
+    handler: src/feedHandlers.setPublicationHidden
+    events:
+      - http:
+          path: v1/feed/publications/{publicationId}/hide
+          method: put
+          cors: true
+
+  feedNotInterestedPublication:
+    handler: src/feedHandlers.setPublicationNotInterested
+    events:
+      - http:
+          path: v1/feed/publications/{publicationId}/not-interested
+          method: put
+          cors: true
+
+  feedSavePublication:
+    handler: src/feedHandlers.setPublicationSaved
+    events:
+      - http:
+          path: v1/feed/publications/{publicationId}/save
+          method: put
+          cors: true
+
+  feedReportPublication:
+    handler: src/feedHandlers.reportPublication
+    events:
+      - http:
+          path: v1/feed/publications/{publicationId}/report
+          method: post
+          cors: true
+
+  feedListComments:
+    handler: src/feedHandlers.listPublicationComments
+    events:
+      - http:
+          path: v1/feed/publications/{publicationId}/comments
+          method: get
+          cors: true
+
+  feedCreateComment:
+    handler: src/feedHandlers.createPublicationComment
+    events:
+      - http:
+          path: v1/feed/publications/{publicationId}/comments
+          method: post
+          cors: true
+
+  feedUpdateComment:
+    handler: src/feedHandlers.updateComment
+    events:
+      - http:
+          path: v1/feed/comments/{commentId}
+          method: put
+          cors: true
+
+  feedDeleteComment:
+    handler: src/feedHandlers.deleteComment
+    events:
+      - http:
+          path: v1/feed/comments/{commentId}
+          method: delete
+          cors: true
+
+  feedLikeComment:
+    handler: src/feedHandlers.setCommentLike
+    events:
+      - http:
+          path: v1/feed/comments/{commentId}/like
+          method: put
+          cors: true
+
+  feedReportComment:
+    handler: src/feedHandlers.reportComment
+    events:
+      - http:
+          path: v1/feed/comments/{commentId}/report
+          method: post
+          cors: true
+
+  feedListUserLikes:
+    handler: src/feedHandlers.listUserLikedItems
+    events:
+      - http:
+          path: v1/feed/users/{userId}/likes
+          method: get
+          cors: true
+
+  feedListUserPublications:
+    handler: src/feedHandlers.listUserPublications
+    events:
+      - http:
+          path: v1/feed/users/{userId}/publications
+          method: get
+          cors: true
+
+  feedSearchPublications:
+    handler: src/feedHandlers.searchFeedPublications
+    events:
+      - http:
+          path: v1/feed/search
+          method: get
+          cors: true
+
+  feedUploadMediaUrl:
+    handler: src/feedHandlers.createMediaUploadUrl
+    events:
+      - http:
+          path: v1/media/upload-url
+          method: post
+          cors: true
+
+resources:
+  Resources:
+    FeedMediaBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.feedMediaBucketName}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          IgnorePublicAcls: true
+          BlockPublicPolicy: true
+          RestrictPublicBuckets: true
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: BucketOwnerEnforced
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - "*"
+              AllowedMethods:
+                - GET
+                - PUT
+                - HEAD
+              AllowedOrigins:
+                - "*"
+              ExposedHeaders:
+                - ETag
+              MaxAge: 3000
+    FeedPublicationsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: FeedPublications
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: visibility
+            AttributeType: S
+          - AttributeName: sortKey
+            AttributeType: S
+          - AttributeName: authorId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: visibility-sortKey-index
+            KeySchema:
+              - AttributeName: visibility
+                KeyType: HASH
+              - AttributeName: sortKey
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: authorId-createdAt-index
+            KeySchema:
+              - AttributeName: authorId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
+    FeedTimelineTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: FeedTimeline
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: feedScope
+            AttributeType: S
+          - AttributeName: sortKey
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: feedScope-sortKey-index
+            KeySchema:
+              - AttributeName: feedScope
+                KeyType: HASH
+              - AttributeName: sortKey
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
+    FeedPublicationLikesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: FeedPublicationLikes
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: publicationId
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: publicationId
+            KeyType: HASH
+          - AttributeName: userId
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: userId-createdAt-index
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
+    FeedStoryViewsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: FeedStoryViews
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: publicationId
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: publicationId
+            KeyType: HASH
+          - AttributeName: userId
+            KeyType: RANGE
+
+    FeedPublicationRepostsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: FeedPublicationReposts
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: publicationId
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: publicationId
+            KeyType: HASH
+          - AttributeName: userId
+            KeyType: RANGE
+
+    FeedCommentsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: FeedComments
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: publicationId
+            AttributeType: S
+          - AttributeName: sortKey
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: publicationId-sortKey-index
+            KeySchema:
+              - AttributeName: publicationId
+                KeyType: HASH
+              - AttributeName: sortKey
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
+    FeedCommentLikesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: FeedCommentLikes
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: commentId
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: commentId
+            KeyType: HASH
+          - AttributeName: userId
+            KeyType: RANGE
+
+    FeedSharesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: FeedShares
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+
+    FeedMediaTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: FeedMedia
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+
+    FeedIdempotencyTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: FeedIdempotency
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        TimeToLiveSpecification:
+          AttributeName: expiresAt
+          Enabled: true
+  Outputs:
+    FeedMediaBucketName:
+      Value: ${self:custom.feedMediaBucketName}
+

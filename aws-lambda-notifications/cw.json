@@ -1,0 +1,13 @@
+{
+    "events": [
+        {
+            "logStreamName": "2026/02/24/[$LATEST]d9c9c39eabcb4d5584450d4aeb159fcd",
+            "timestamp": 1771976043078,
+            "message": "INIT_START Runtime Version: nodejs:20.v95\tRuntime Version ARN: arn:aws:lambda:us-east-1::runtime:2d788b26ac416854c5eb831c9f46cb2e0a0ddcee84b1a9b114acbdfdb644c8c1\n",
+            "ingestionTime": 1771976049495,
+            "eventId": "39516386234583001136290267210943338084614253835115495424"
+        },
+        {
+            "logStreamName": "2026/02/24/[$LATEST]d9c9c39eabcb4d5584450d4aeb159fcd",
+            "timestamp": 1771976044185,
+            "message": 

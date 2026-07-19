@@ -1,0 +1,110 @@
+{
+  "tableName": "Chats",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/Chats",
+  "tableId": "b6edc75b-f427-4407-92ee-08bc6ada40c4",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 311,
+  "tableSizeBytes": 84449,
+  "creationDateTime": "2025-07-04T23:44:51.982000-05:00",
+  "deletionProtectionEnabled": true,
+  "keySchema": [
+    {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "updatedAt",
+      "KeyType": "RANGE"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "event",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "roomId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "updatedAt",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "roomId-index",
+      "keySchema": [
+        {
+          "AttributeName": "roomId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "updatedAt",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 311,
+      "indexSizeBytes": 84449
+    },
+    {
+      "indexName": "event-index",
+      "keySchema": [
+        {
+          "AttributeName": "event",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 304,
+      "indexSizeBytes": 82867
+    },
+    {
+      "indexName": "event-updatedAt-index",
+      "keySchema": [
+        {
+          "AttributeName": "event",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "updatedAt",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 304,
+      "indexSizeBytes": 82867
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

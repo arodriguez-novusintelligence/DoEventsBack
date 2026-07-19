@@ -1,0 +1,164 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{subject}}</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 24px 12px;
+        background: #eef1f8;
+        color: #1a2140;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+      .shell {
+        max-width: 620px;
+        margin: 0 auto;
+      }
+      .card {
+        background: #ffffff;
+        border: 1px solid #dce3f6;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 26px rgba(25, 33, 64, 0.08);
+      }
+      .bar {
+        background: linear-gradient(90deg, #3d5af1, #6487ff);
+        padding: 16px 20px;
+        color: #ffffff;
+        font-size: 12px;
+        letter-spacing: 0.9px;
+        font-weight: 700;
+      }
+      .inner {
+        padding: 24px;
+      }
+      .title {
+        margin: 8px 0 4px;
+        font-size: 28px;
+        line-height: 1.15;
+        text-align: center;
+        color: #1b2347;
+      }
+      .subtitle {
+        margin: 0 0 18px;
+        text-align: center;
+        color: #5f6b97;
+        font-size: 14px;
+      }
+      .stars {
+        text-align: center;
+        font-size: 28px;
+        margin: 4px 0 14px;
+      }
+      .hello {
+        margin: 0 0 12px;
+        font-size: 15px;
+      }
+      .event-wrap {
+        border: 1px solid #dfe5f8;
+        border-radius: 12px;
+        overflow: hidden;
+        margin: 16px 0 18px;
+      }
+      .event-image-holder {
+        background: #f5f7ff;
+        min-height: 140px;
+        text-align: center;
+      }
+      .event-image {
+        width: 100%;
+        max-height: 220px;
+        object-fit: cover;
+        display: block;
+      }
+      .event-info {
+        padding: 14px 16px;
+      }
+      .event-name {
+        margin: 0;
+        font-size: 18px;
+        color: #1b2347;
+        font-weight: 700;
+      }
+      .copy {
+        margin: 0;
+        color: #414d77;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      .cta-wrap {
+        margin-top: 18px;
+        text-align: center;
+      }
+      .cta {
+        display: inline-block;
+        background: #3d5af1;
+        color: #ffffff !important;
+        text-decoration: none;
+        font-weight: 700;
+        padding: 12px 22px;
+        border-radius: 10px;
+        font-size: 15px;
+      }
+      .alt-link {
+        margin-top: 12px;
+        color: #6672a1;
+        font-size: 12px;
+        word-break: break-all;
+      }
+      .footer {
+        text-align: center;
+        margin-top: 16px;
+        color: #8590ba;
+        font-size: 12px;
+      }
+      @media only screen and (max-width: 620px) {
+        .inner {
+          padding: 20px 16px;
+        }
+        .title {
+          font-size: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="card">
+        <div class="bar">CALIFICACION DE EVENTO</div>
+        <div class="inner">
+          <div class="stars">★★★★★</div>
+          <h1 class="title">Tu opinion nos importa</h1>
+          <p class="subtitle">Ayuda a mejorar la experiencia de la comunidad DoEvents</p>
+
+          {{#if userName}}
+            <p class="hello">Hola <strong>{{userName}}</strong>,</p>
+          {{else}}
+            <p class="hello">Hola,</p>
+          {{/if}}
+
+          <p class="copy">El evento finalizo y queremos conocer como fue tu experiencia. Tu calificacion ayuda a otros asistentes y tambien a los organizadores.</p>
+
+          <div class="event-wrap">
+            <div class="event-image-holder">
+              {{#if eventImage}}
+                <img class="event-image" src="{{eventImage}}" alt="{{eventName}}" />
+              {{/if}}
+            </div>
+            <div class="event-info">
+              <p class="event-name">{{eventName}}</p>
+            </div>
+          </div>
+
+          <div class="cta-wrap">
+            <a class="cta" href="{{link}}">Calificar evento</a>
+            <div class="alt-link">Si el boton no abre, copia este enlace: {{link}}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">Mensaje automatico de DoEvents. No responder este correo.</div>
+    </div>
+  </body>
+</html>

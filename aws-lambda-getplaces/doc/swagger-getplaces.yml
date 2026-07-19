@@ -1,0 +1,121 @@
+openapi: 3.0.1
+info:
+  title: Get Places API
+  description: API para consultar países, estados y ciudades desde DynamoDB.
+  version: "1.0.0"
+
+paths:
+  /getCountries:
+    get:
+      summary: Obtener países
+      description: Devuelve la lista de países disponibles.
+      tags:
+        - Places
+      responses:
+        '200':
+          description: Lista de países obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountriesResponse'
+        '500':
+          description: Error interno del servidor
+
+  /getStatesByCountryId/{id_country}:
+    get:
+      summary: Obtener estados por país
+      description: Devuelve los estados asociados al país especificado.
+      tags:
+        - Places
+      parameters:
+        - name: id_country
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de estados obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatesResponse'
+        '404':
+          description: País no encontrado
+        '500':
+          description: Error interno del servidor
+
+  /getCitiesByStateId/{id_state}:
+    get:
+      summary: Obtener ciudades por estado
+      description: Devuelve las ciudades asociadas al estado especificado.
+      tags:
+        - Places
+      parameters:
+        - name: id_state
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de ciudades obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CitiesResponse'
+        '404':
+          description: Estado no encontrado
+        '500':
+          description: Error interno del servidor
+
+components:
+  schemas:
+    CountriesResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              nombre:
+                type: string
+
+    StatesResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              nombre:
+                type: string
+              id_country:
+                type: string
+
+    CitiesResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              nombre:
+                type: string
+              id_state:
+                type: string

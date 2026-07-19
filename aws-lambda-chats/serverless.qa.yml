@@ -1,0 +1,275 @@
+org: events
+service: chat-room-events
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: us-east-2
+  stage: qa
+
+  environment:
+    STAGE: qa
+    CHATS_TABLE: Chats-qa
+    MESSAGES_TABLE: ChatMessage-qa
+    EVENTOS_TABLE: Eventos-qa
+    IMAGENES_TABLE: imagenes-qa
+    CLIENT_TABLE: Client-qa
+    USER_CHANNELS_TABLE: UserChannels-qa
+    CHAT_IDEMPOTENCY_TABLE: ChatMessageIdempotency-qa
+    CHAT_MEDIA_BUCKET: doeventschatroombucket
+    CHAT_MEDIA_BUCKET_REGION: us-east-1
+    DYNAMODB_REGION: us-east-2
+    ENABLE_CHAT_IDEMPOTENCY: "true"
+    CHAT_IDEMPOTENCY_TTL_SECONDS: "604800"
+    WS_API_ENDPOINT: wss://zjg66jel41.execute-api.us-east-2.amazonaws.com/qa
+    PROFILE_MEDIA_BUCKET: doevents-profile-media-qa
+    API_PUBLIC_BASE_URL: https://api-qa.doeventsapp.com
+    WEB_APP_BASE_URL: https://qa.doeventsapp.com
+    NOTIFICATIONS_FUNCTION: notifications-qa-triggerNotification
+    CORS_ALLOWED_ORIGINS: https://qa.doeventsapp.com,http://localhost:5173,https://localhost,capacitor://localhost
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:*
+        - lambda:InvokeFunction
+      Resource:
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Chats-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Chats-qa/index/*
+        - arn:aws:dynamodb:us-east-2:519010577666:table/ChatMessage-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/ChatMessage-qa/index/*
+        - arn:aws:dynamodb:us-east-2:519010577666:table/ChatMessageIdempotency-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/ChatMessageIdempotency-qa/index/*
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Client-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Client-qa/index/*
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Eventos-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Eventos-qa/index/*
+        - arn:aws:dynamodb:us-east-2:519010577666:table/UserChannels-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/UserChannels-qa/index/*
+        - arn:aws:dynamodb:us-east-2:519010577666:table/imagenes-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/imagenes-qa/index/*
+        - arn:aws:s3:::doeventprofileimagesbucket
+        - arn:aws:s3:::doevents-profile-media-qa
+        - arn:aws:s3:::doevents-profile-media-qa/*
+        - arn:aws:s3:::doeventschatroombucket/*
+        - arn:aws:s3:::doeventschatroombucket
+        - arn:aws:lambda:us-east-2:519010577666:function:notifications-qa-triggerNotification
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - execute-api:ManageConnections
+            - lambda:InvokeFunction
+          Resource:
+            - arn:aws:execute-api:us-east-2:519010577666:zjg66jel41/qa/@connections/*
+            - arn:aws:lambda:us-east-2:519010577666:function:notifications-qa-triggerNotification
+
+package:
+  excludeDevDependencies: true
+  patterns:
+    - "!.git/**"
+    - "!.serverless/**"
+    - "!**/*.md"
+    - "!.env"
+    - "!.env.*"
+
+functions:
+  getChatRoomByEventId:
+    handler: src/apis/getChatRoomByEventId.handler
+    events:
+      - http:
+          path: chat-room-by-event/{eventId}
+          method: get
+
+  getChatMessagesByRoomId:
+    handler: src/apis/getChatMessagesByRoomId.handler
+    events:
+      - http:
+          path: chat-messages-by-room/{roomId}
+          method: get
+
+  getChatsRoomsByUserId:
+    handler: src/apis/getChatsRoomsByUserId.handler
+    events:
+      - http:
+          path: chats-rooms-by-user/{userId}
+          method: get
+
+  getOrCreateDirectChatRoom:
+    handler: src/apis/getOrCreateDirectChatRoom.handler
+    events:
+      - http:
+          path: get-or-create-direct-chat-room
+          method: post
+
+  sendInvitationChatRoom:
+    handler: src/apis/sendInvitationChatRoom.handler
+    events:
+      - http:
+          path: send-invitation-chat-room
+          method: put
+      - http:
+          path: send-invitation-chat-room
+          method: options
+
+  kickedOutUserByChatRoom:
+    handler: src/apis/kickedOutUserByChatRoom.handler
+    events:
+      - http:
+          path: kicked-out-user-by-chat-room
+          method: put
+      - http:
+          path: kicked-out-user-by-chat-room
+          method: options
+
+  promoteUserToAdminChatRoom:
+    handler: src/apis/promoteUserToAdminChatRoom.handler
+    events:
+      - http:
+          path: promote-user-to-admin-chat-room
+          method: put
+
+  demoteUserFromAdminChatRoom:
+    handler: src/apis/demoteUserFromAdminChatRoom.handler
+    events:
+      - http:
+          path: demote-user-from-admin-chat-room
+          method: put
+
+  exitChatRoom:
+    handler: src/apis/exitChatRoom.handler
+    events:
+      - http:
+          path: exit-chat-room
+          method: put
+
+  blacklistChatRoom:
+    handler: src/apis/blacklistChatRoom.handler
+    events:
+      - http:
+          path: blacklist-chat-room
+          method: put
+      - http:
+          path: blacklist-chat-room
+          method: options
+
+  unblacklistChatRoom:
+    handler: src/apis/unblacklistChatRoom.handler
+    events:
+      - http:
+          path: unblacklist-chat-room
+          method: put
+
+  acceptInvitationChatRoom:
+    handler: src/apis/acceptInvitationChatRoom.handler
+    events:
+      - http:
+          path: accept-invitation-chat-room
+          method: put
+
+  declineInvitationChatRoom:
+    handler: src/apis/declineInvitationChatRoom.handler
+    events:
+      - http:
+          path: decline-invitation-chat-room
+          method: put
+
+  deleteChatRoomById:
+    handler: src/apis/deleteChatRoomById.handler
+    events:
+      - http:
+          path: delete-chat-room-by-id
+          method: put
+
+  initChatMediaUpload:
+    handler: src/apis/initChatMediaUpload.handler
+    events:
+      - http:
+          path: chat-media-upload/init
+          method: post
+      - http:
+          path: chat-media-upload/init
+          method: options
+
+  completeChatMediaUpload:
+    handler: src/apis/completeChatMediaUpload.handler
+    events:
+      - http:
+          path: chat-media-upload/complete
+          method: post
+      - http:
+          path: chat-media-upload/complete
+          method: options
+
+  archiveChatRoom:
+    handler: src/apis/archiveChatRoom.handler
+    events:
+      - http:
+          path: archive-chat-room
+          method: put
+      - http:
+          path: archive-chat-room
+          method: options
+
+  unarchiveChatRoom:
+    handler: src/apis/unarchiveChatRoom.handler
+    events:
+      - http:
+          path: unarchive-chat-room
+          method: put
+      - http:
+          path: unarchive-chat-room
+          method: options
+
+  createPrivateGroupChat:
+    handler: src/apis/createPrivateGroupChat.handler
+    events:
+      - http:
+          path: create-private-group-chat
+          method: post
+      - http:
+          path: create-private-group-chat
+          method: options
+
+  reportChatMessage:
+    handler: src/apis/reportChatMessage.handler
+    events:
+      - http:
+          path: report-chat-message
+          method: post
+      - http:
+          path: report-chat-message
+          method: options
+
+  wsConnect:
+    handler: src/gateways/wsConnect.handler
+    events:
+      - websocket:
+          route: $connect
+
+  wsDisconnect:
+    handler: src/gateways/wsDisconnect.handler
+    events:
+      - websocket:
+          route: $disconnect
+
+  joinRoom:
+    handler: src/gateways/joinRoom.handler
+    events:
+      - websocket:
+          route: joinRoom
+
+  sendChatMessage:
+    handler: src/gateways/sendChatMessage.handler
+    events:
+      - websocket:
+          route: sendChatMessage
+
+  editChatMessage:
+    handler: src/gateways/editChatMessage.handler
+    events:
+      - websocket:
+          route: editChatMessage

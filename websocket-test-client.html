@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DoEvents WebSocket Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .section {
+        margin-bottom: 30px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      button {
+        padding: 10px 15px;
+        margin: 5px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: white;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 8px;
+        margin: 5px 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      #log {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        padding: 15px;
+        height: 300px;
+        overflow-y: auto;
+        font-family: monospace;
+        font-size: 12px;
+        white-space: pre-wrap;
+      }
+      .status {
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+        font-weight: bold;
+      }
+      .status.connected {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .status.disconnected {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      .endpoint-section {
+        background-color: #e9ecef;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🚀 DoEvents WebSocket Test Client</h1>
+
+      <div class="endpoint-section">
+        <h3>📡 Endpoints Disponibles</h3>
+        <p>
+          <strong>Gateway WebSocket:</strong>
+          wss://ajojxxqr14.execute-api.us-east-1.amazonaws.com/dev
+        </p>
+        <p>
+          <strong>Chat Service WebSocket:</strong>
+          wss://g3216zaw17.execute-api.us-east-1.amazonaws.com/dev
+        </p>
+        <p>
+          <strong>Chat REST API:</strong>
+          https://s74yw0vme7.execute-api.us-east-1.amazonaws.com/dev
+        </p>
+      </div>
+
+      <div class="section">
+        <h3>🔌 WebSocket Connection</h3>
+        <div>
+          <label>Endpoint:</label>
+          <select id="endpointSelect">
+            <option
+              value="wss://ajojxxqr14.execute-api.us-east-1.amazonaws.com/dev"
+            >
+              Gateway WebSocket
+            </option>
+            <option
+              value="wss://g3216zaw17.execute-api.us-east-1.amazonaws.com/dev"
+            >
+              Chat Service WebSocket
+            </option>
+          </select>
+        </div>
+        <div id="connectionStatus" class="status disconnected">
+          ❌ Desconectado
+        </div>
+        <button id="connectBtn" onclick="connectWebSocket()">Conectar</button>
+        <button id="disconnectBtn" onclick="disconnectWebSocket()" disabled>
+          Desconectar
+        </button>
+      </div>
+
+      <div class="section">
+        <h3>💬 Pruebas de Chat</h3>
+        <div>
+          <input
+            type="text"
+            id="roomId"
+            placeholder="Room ID (ej: room123)"
+            value="room123"
+          />
+          <button onclick="testJoinRoom()">Unirse a Sala</button>
+        </div>
+        <div>
+          <input
+            type="text"
+            id="messageInput"
+            placeholder="Mensaje de prueba"
+            value="Hola desde el test client"
+          />
+          <button onclick="testSendMessage()">Enviar Mensaje</button>
+        </div>
+        <div>
+          <button onclick="testConnectionStatus()">
+            Verificar Estado de Conexión
+          </button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>🔔 Pruebas de Notificaciones</h3>
+        <div>
+          <input
+            type="text"
+            id="notificationMessage"
+            placeholder="Mensaje de notificación"
+            value="Test notification"
+          />
+          <button onclick="testInAppNotification()">Notificación In-App</button>
+          <button onclick="testEmailNotification()">Notificación Email</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>🌐 Pruebas de API REST</h3>
+        <div>
+          <input
+            type="text"
+            id="eventId"
+            placeholder="Event ID"
+            value="event123"
+          />
+          <button onclick="testGetChatRoom()">Obtener Chat Room</button>
+        </div>
+        <div>
+          <input
+            type="text"
+            id="userId"
+            placeholder="User ID"
+            value="user123"
+          />
+          <button onclick="testGetUserRooms()">
+            Obtener Salas del Usuario
+          </button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>📋 Logs</h3>
+        <button onclick="clearLog()">Limpiar Log</button>
+        <div id="log"></div>
+      </div>
+    </div>
+
+    <script>
+      let ws = null;
+      let isConnected = false;
+
+      function log(message) {
+        const logDiv = document.getElementById("log");
+        const timestamp = new Date().toLocaleTimeString();
+        logDiv.textContent += `[${timestamp}] ${message}\n`;
+        logDiv.scrollTop = logDiv.scrollHeight;
+      }
+
+      function updateConnectionStatus(connected) {
+        isConnected = connected;
+        const statusDiv = document.getElementById("connectionStatus");
+        const connectBtn = document.getElementById("connectBtn");
+        const disconnectBtn = document.getElementById("disconnectBtn");
+
+        if (connected) {
+          statusDiv.textContent = "✅ Conectado";
+          statusDiv.className = "status connected";
+          connectBtn.disabled = true;
+          disconnectBtn.disabled = false;
+        } else {
+          statusDiv.textContent = "❌ Desconectado";
+          statusDiv.className = "status disconnected";
+          connectBtn.disabled = false;
+          disconnectBtn.disabled = true;
+        }
+      }
+
+      function connectWebSocket() {
+        const endpoint = document.getElementById("endpointSelect").value;
+
+        log(`🔌 Intentando conectar a: ${endpoint}`);
+
+        try {
+          ws = new WebSocket(endpoint);
+
+          ws.onopen = function (event) {
+            log("✅ WebSocket conectado exitosamente");
+            updateConnectionStatus(true);
+          };
+
+          ws.onmessage = function (event) {
+            log(`📥 Mensaje recibido: ${event.data}`);
+          };
+
+          ws.onerror = function (error) {
+            log(`❌ Error de WebSocket: ${error}`);
+            console.error("WebSocket error:", error);
+          };
+
+          ws.onclose = function (event) {
+            log(
+              `🔌 WebSocket cerrado - Código: ${event.code}, Razón: ${event.reason}`
+            );
+            updateConnectionStatus(false);
+          };
+        } catch (error) {
+          log(`❌ Error al crear WebSocket: ${error.message}`);
+          updateConnectionStatus(false);
+        }
+      }
+
+      function disconnectWebSocket() {
+        if (ws) {
+          ws.close();
+          updateConnectionStatus(false);
+          log("🔌 WebSocket desconectado manualmente");
+        }
+      }
+
+      function sendWebSocketMessage(route, data) {
+        if (!isConnected || !ws) {
+          log("❌ No hay conexión WebSocket activa");
+          return;
+        }
+
+        const message = JSON.stringify({
+          action: route,
+          ...data,
+        });
+
+        log(`📤 Enviando: ${message}`);
+        ws.send(message);
+      }
+
+      function testJoinRoom() {
+        const roomId = document.getElementById("roomId").value;
+        sendWebSocketMessage("joinRoom", {
+          roomId: roomId,
+          userId: "testUser123",
+        });
+      }
+
+      function testSendMessage() {
+        const message = document.getElementById("messageInput").value;
+        const roomId = document.getElementById("roomId").value;
+        sendWebSocketMessage("sendChatMessage", {
+          roomId: roomId,
+          message: message,
+          userId: "testUser123",
+        });
+      }
+
+      function testConnectionStatus() {
+        sendWebSocketMessage("statusConnection", { userId: "testUser123" });
+      }
+
+      function testInAppNotification() {
+        const message = document.getElementById("notificationMessage").value;
+        sendWebSocketMessage("inAppNotification", {
+          message: message,
+          userId: "testUser123",
+        });
+      }
+
+      function testEmailNotification() {
+        const message = document.getElementById("notificationMessage").value;
+        sendWebSocketMessage("sendEmailNotification", {
+          message: message,
+          email: "test@doevents.com",
+        });
+      }
+
+      async function testGetChatRoom() {
+        const eventId = document.getElementById("eventId").value;
+        const url = `https://s74yw0vme7.execute-api.us-east-1.amazonaws.com/dev/chat-room-by-event/${eventId}`;
+
+        log(`🌐 GET ${url}`);
+
+        try {
+          const response = await fetch(url);
+          const data = await response.json();
+          log(`📥 REST Response: ${JSON.stringify(data, null, 2)}`);
+        } catch (error) {
+          log(`❌ REST Error: ${error.message}`);
+        }
+      }
+
+      async function testGetUserRooms() {
+        const userId = document.getElementById("userId").value;
+        const url = `https://s74yw0vme7.execute-api.us-east-1.amazonaws.com/dev/chats-rooms-by-user/${userId}`;
+
+        log(`🌐 GET ${url}`);
+
+        try {
+          const response = await fetch(url);
+          const data = await response.json();
+          log(`📥 REST Response: ${JSON.stringify(data, null, 2)}`);
+        } catch (error) {
+          log(`❌ REST Error: ${error.message}`);
+        }
+      }
+
+      function clearLog() {
+        document.getElementById("log").textContent = "";
+      }
+
+      // Inicialización
+      log("🚀 Cliente de prueba DoEvents iniciado");
+      log('ℹ️  Haz clic en "Conectar" para establecer conexión WebSocket');
+    </script>
+  </body>
+</html>

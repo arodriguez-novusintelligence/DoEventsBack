@@ -1,0 +1,95 @@
+{
+  "tableName": "Seats",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/Seats",
+  "tableId": "7308d96a-a99b-454f-a9ea-34661f8cd820",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 5,
+  "tableSizeBytes": 710,
+  "creationDateTime": "2025-05-14T19:29:41.786000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "event_id",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "seat_id",
+      "KeyType": "RANGE"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "event_id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "seat_id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "section",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "status",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "event_id-section-index",
+      "keySchema": [
+        {
+          "AttributeName": "event_id",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "section",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 4,
+      "indexSizeBytes": 605
+    },
+    {
+      "indexName": "event_id-status-index",
+      "keySchema": [
+        {
+          "AttributeName": "event_id",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "status",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 5,
+      "indexSizeBytes": 710
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

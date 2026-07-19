@@ -1,0 +1,338 @@
+openapi: 3.0.1
+info:
+  title: Tickets API
+  description: API para crear, consultar y actualizar tickets de eventos, incluyendo distribución y gestión de imágenes.
+  version: "1.0.0"
+
+paths:
+  /ticket:
+    post:
+      summary: Crear ticket para evento
+      description: Crea un ticket con múltiples boletas, carga imágenes a S3 y genera instancias únicas en la tabla TicketsDistribution.
+      tags:
+        - Ticket
+      requestBody:
+        description: Datos del evento y boletas con imágenes en base64
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTicketRequest'
+      responses:
+        '201':
+          description: Ticket creado y distribuido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTicketResponse'
+        '400':
+          description: Datos faltantes o formato incorrecto
+        '404':
+          description: Evento no existente
+        '409':
+          description: El evento ya tiene tickets creados
+        '500':
+          description: Error interno del servidor
+
+    put:
+      summary: Actualizar ticket existente
+      description: Actualiza los datos de un ticket, incluyendo boletas, fechas, horas e imágenes. Sincroniza automáticamente la distribución de tickets.
+      tags:
+        - Ticket
+      requestBody:
+        description: Datos actualizados del ticket y sus boletas
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTicketRequest'
+      responses:
+        '200':
+          description: Ticket actualizado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Datos faltantes o inválidos
+        '404':
+          description: Ticket no encontrado
+        '500':
+          description: Error interno del servidor
+
+  /ticket/{eventId}:
+    get:
+      summary: Obtener tickets por ID de evento
+      description: Devuelve los tickets asociados a un evento, incluyendo las boletas con URLs firmadas, imágenes en base64 y la categoría de reembolso del evento.
+      tags:
+        - Ticket
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del evento
+      responses:
+        '200':
+          description: Tickets obtenidos exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTicketByEventResponse'
+        '400':
+          description: El ID del evento es obligatorio
+        '404':
+          description: Evento no encontrado
+        '500':
+          description: Error interno del servidor
+
+components:
+  schemas:
+    CreateTicketRequest:
+      type: object
+      properties:
+        eventId:
+          type: string
+        fechaIniVent:
+          type: string
+          example: "10/05/2025"
+        fechaFinVent:
+          type: string
+          example: "15/05/2025"
+        horaIniVent:
+          type: string
+          example: "08:00"
+        horaFinVent:
+          type: string
+          example: "18:00"
+        boletas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Boleta'
+      required:
+        - eventId
+        - fechaIniVent
+        - fechaFinVent
+        - horaIniVent
+        - horaFinVent
+        - boletas
+
+    Boleta:
+      type: object
+      properties:
+        id:
+          type: string
+        categoria:
+          type: string
+        cantidadTickets:
+          type: integer
+        moneda:
+          type: string
+        costo:
+          type: number
+        Valor:
+          type: number
+        descripcion:
+          type: string
+        imagenB64:
+          type: string
+          description: Imagen codificada en base64
+        entrance:
+          type: string
+      required:
+        - id
+        - categoria
+        - cantidadTickets
+        - moneda
+        - costo
+        - Valor
+        - descripcion
+        - entrance
+
+    CreateTicketResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+            eventId:
+              type: string
+            boleta:
+              type: array
+              items:
+                $ref: '#/components/schemas/BoletaDistribuida'
+            fechaIniVent:
+              type: string
+            fechaFinVent:
+              type: string
+            horaIniVent:
+              type: string
+            horaFinVent:
+              type: string
+            createDate:
+              type: string
+
+    BoletaDistribuida:
+      type: object
+      properties:
+        id:
+          type: string
+        categoria:
+          type: string
+        cantidadTickets:
+          type: integer
+        avaliableCapacity:
+          type: integer
+        reservedTickets:
+          type: integer
+        soldTickets:
+          type: integer
+        moneda:
+          type: string
+        costo:
+          type: number
+        valor:
+          type: number
+        descripcion:
+          type: string
+        imgboleta:
+          type: string
+        entrance:
+          type: string
+
+    UpdateTicketRequest:
+      type: object
+      properties:
+        ticketId:
+          type: string
+        eventId:
+          type: string
+        fechaIniVent:
+          type: string
+          example: "10/05/2025"
+        fechaFinVent:
+          type: string
+          example: "15/05/2025"
+        horaIniVent:
+          type: string
+          example: "08:00"
+        horaFinVent:
+          type: string
+          example: "18:00"
+        boletas:
+          type: array
+          items:
+            $ref: '#/components/schemas/BoletaActualizada'
+      required:
+        - ticketId
+
+    BoletaActualizada:
+      type: object
+      properties:
+        id:
+          type: string
+        categoria:
+          type: string
+        cantidadTickets:
+          type: integer
+        moneda:
+          type: string
+        costo:
+          type: number
+        valor:
+          type: number
+        descripcion:
+          type: string
+        imagenB64:
+          type: string
+          description: Imagen codificada en base64 (vacía para eliminar)
+        entrance:
+          type: string
+        avaliableCapacity:
+          type: integer
+
+    GetTicketByEventResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            datosBoleta:
+              type: array
+              items:
+                $ref: '#/components/schemas/TicketConBoletasExtendido'
+            reembolso:
+              type: string
+              description: Categoría de reembolso del evento
+
+    TicketConBoletasExtendido:
+      type: object
+      properties:
+        id:
+          type: string
+        eventId:
+          type: string
+        fechaIniVent:
+          type: string
+          example: "10/05/2025"
+        fechaFinVent:
+          type: string
+          example: "15/05/2025"
+        horaIniVent:
+          type: string
+        horaFinVent:
+          type: string
+        createDate:
+          type: string
+        boleta:
+          type: array
+          items:
+            $ref: '#/components/schemas/BoletaConImagenExtendida'
+
+    BoletaConImagenExtendida:
+      type: object
+      properties:
+        id:
+          type: string
+        categoria:
+          type: string
+        cantidadTickets:
+          type: integer
+        avaliableCapacity:
+          type: integer
+        reservedTickets:
+          type: integer
+        soldTickets:
+          type: integer
+        moneda:
+          type: string
+        costo:
+          type: number
+        valor:
+          type: number
+        descripcion:
+          type: string
+        imgboleta:
+          type: string
+          description: URL firmada de la imagen
+        imgB64:
+          type: string
+          description: Imagen en base64
+        entrance:
+          type: string

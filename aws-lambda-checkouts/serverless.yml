@@ -1,0 +1,52 @@
+org: events
+service: wompi-checkouts
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  iam:
+    role:
+      statements:
+        # Permisos para consultar la tabla Tickets (Query por eventId vía GSI eventIdIndex)
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:GetItem
+            - dynamodb:BatchGetItem
+          Resource:
+            - arn:aws:dynamodb:${aws:region}:*:table/Tickets
+            - arn:aws:dynamodb:${aws:region}:*:table/Tickets/index/eventIdIndex
+  environment:
+    # Asegúrate de configurar esta variable de entorno en Lambda al desplegar,
+    # y también en tu archivo .env para el desarrollo local.
+    WOMPI_PRIVATE_KEY: ${env:WOMPI_PRIVATE_KEY}
+    TICKETS_TABLE: Tickets
+    WOMPI_PUBLIC_KEY: ${env:WOMPI_PUBLIC_KEY}
+    WOMPI_REDIRECT_BASE_URL: ${env:WOMPI_REDIRECT_BASE_URL}
+    WOMPI_API_BASE_URL: ${env:WOMPI_API_BASE_URL}
+
+# plugins:
+#   - serverless-offline # Para probar tu webhook localmente
+
+# custom:                                                                                                                                                                                                                                                                                                                                                                         
+  # serverless-offline:
+  #   httpPort: 3555 # Puerto en el que escuchará serverless-offline
+  #   host: 0.0.0.0 # Host para serverless-offline
+
+functions:
+  createPaymentLink:
+    handler: src/handler.createPaymentLink
+    events:
+      - http:
+          path: create-payment-link # Endpoint para tu app React Native
+          method: post # Tu app enviará un POST con los detalles del pedido
+          # cors: false # Habilitar CORS para que tu app React Native pueda llamarlo
+
+  getTransactionWompi:
+    handler: src/handler.getTransactionWompi # Archivo handler.js, función wompiWebhook
+    events:
+      - http:
+          path: transaction-wompi/{id_tx} # Endpoint para Wompi
+          method: get # Wompi envía POST a los webhooks
+          # cors: false # No es necesario para un webhook

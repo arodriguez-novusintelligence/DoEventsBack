@@ -1,0 +1,121 @@
+org: events
+service: ticket-scans
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  environment:
+    TICKET_SCANS_TABLE_NAME: ${env:TICKET_SCANS_TABLE_NAME, 'TicketScans'}
+    EVENTS_TABLE: ${env:EVENTS_TABLE, 'Eventos'}
+    VENUES_TABLE: ${env:VENUES_TABLE, 'Venues'}
+    USERS_TABLE: ${env:USERS_TABLE, 'Client'}
+    TICKETS_TABLE: ${env:TICKETS_TABLE, 'Tickets'}
+    TICKETS_DIST_TABLE: ${env:TICKETS_DIST_TABLE, 'TicketsDistribution'}
+    STAFF_ACCESS_TABLE_NAME: ${env:STAFF_ACCESS_TABLE_NAME, 'StaffAccess'}
+    ORDERS_TABLE_NAME: ${env:ORDERS_TABLE_NAME, 'Orders'}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+            - dynamodb:Query
+            - dynamodb:BatchGetItem
+          Resource:
+            - Fn::GetAtt: [TicketScansTable, Arn]
+            - Fn::Sub: ["${TableArn}/index/*", { TableArn: { Fn::GetAtt: [TicketScansTable, Arn] } }]
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:Query
+          Resource:
+            - arn:aws:dynamodb:${aws:region}:*:table/Eventos
+            - arn:aws:dynamodb:${aws:region}:*:table/Tickets
+            - arn:aws:dynamodb:${aws:region}:*:table/Tickets/index/*
+            - arn:aws:dynamodb:${aws:region}:*:table/TicketsDistribution
+            - arn:aws:dynamodb:${aws:region}:*:table/TicketsDistribution/index/*
+        # Lectura de StaffAccess para validar staff asignado a puerta (opcional)
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+          Resource:
+            - arn:aws:dynamodb:${aws:region}:*:table/StaffAccess
+        # Lectura de Orders para validar por orderId (evento, propietario, pago)
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+          Resource:
+            - arn:aws:dynamodb:${aws:region}:*:table/Orders
+        # Lectura de Venues y Client para enriquecer respuesta (evento, venue, titular del ticket)
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+          Resource:
+            - arn:aws:dynamodb:${aws:region}:*:table/Venues
+            - arn:aws:dynamodb:${aws:region}:*:table/Client
+
+package:
+  patterns:
+    - '!node_modules/**'
+    - 'dist/**'
+    - 'node_modules/**'
+
+functions:
+  registerScan:
+    handler: dist/handler.registerScan
+    events:
+      - http:
+          path: ticket-scans
+          method: post
+          cors: true
+
+resources:
+  Resources:
+    TicketScansTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: TicketScans
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: eventId
+            AttributeType: S
+          - AttributeName: statusResult
+            AttributeType: S
+          - AttributeName: scanAt
+            AttributeType: S
+          - AttributeName: ticketId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: EventStatusIndex
+            KeySchema:
+              - AttributeName: eventId
+                KeyType: HASH
+              - AttributeName: statusResult
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: EventScanAtIndex
+            KeySchema:
+              - AttributeName: eventId
+                KeyType: HASH
+              - AttributeName: scanAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: TicketIdStatusIndex
+            KeySchema:
+              - AttributeName: ticketId
+                KeyType: HASH
+              - AttributeName: statusResult
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
+# Compilar antes de desplegar: npm run build && serverless deploy

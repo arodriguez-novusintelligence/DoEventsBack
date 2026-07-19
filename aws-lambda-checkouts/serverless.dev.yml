@@ -1,0 +1,55 @@
+org: events
+service: wompi-checkouts
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: sa-east-1
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:GetItem
+            - dynamodb:BatchGetItem
+          Resource:
+            - arn:aws:dynamodb:sa-east-1:*:table/Tickets-dev
+            - arn:aws:dynamodb:sa-east-1:*:table/Tickets-dev/index/eventIdIndex
+            - arn:aws:dynamodb:sa-east-1:*:table/Orders-dev
+  environment:
+    WOMPI_PRIVATE_KEY: ${env:WOMPI_PRIVATE_KEY}
+    WOMPI_PUBLIC_KEY: ${env:WOMPI_PUBLIC_KEY}
+    WOMPI_REDIRECT_BASE_URL: 'https://dev.doeventsapp.com/payment-finally'
+    WOMPI_API_BASE_URL: ${env:WOMPI_API_BASE_URL, 'https://sandbox.wompi.co/v1'}
+    WOMPI_WEBHOOK_URL: ${env:WOMPI_WEBHOOK_URL}
+    WOMPI_EVENTS_SECRET: ${env:WOMPI_EVENTS_SECRET, ''}
+    TICKETS_TABLE: Tickets-dev
+    ORDERS_TABLE: Orders-dev
+    ORDERS_PAYMENT_CALLBACK_URL: https://api-dev.doeventsapp.com/orders/payments/callback
+    STAGE: dev
+
+functions:
+  createPaymentLink:
+    handler: src/handler.createPaymentLink
+    events:
+      - http:
+          path: create-payment-link
+          method: post
+          cors: true
+
+  getTransactionWompi:
+    handler: src/handler.getTransactionWompi
+    events:
+      - http:
+          path: transaction-wompi/{id_tx}
+          method: get
+          cors: true
+
+  wompiWebhook:
+    handler: src/handler.wompiWebhook
+    events:
+      - http:
+          path: wompi-webhook
+          method: post
+          cors: true

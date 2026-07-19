@@ -1,0 +1,48 @@
+{
+  "tableName": "FeedPublicationReposts",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/FeedPublicationReposts",
+  "tableId": "c88980a9-1b5f-4eb1-b270-c3dc205cb7ab",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 15,
+  "tableSizeBytes": 1369,
+  "creationDateTime": "2026-03-09T14:15:47.311000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "publicationId",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "userId",
+      "KeyType": "RANGE"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "publicationId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "userId",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

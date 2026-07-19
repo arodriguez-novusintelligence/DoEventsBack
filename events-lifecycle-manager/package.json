@@ -1,0 +1,17 @@
+{
+  "name": "events-lifecycle-manager",
+  "version": "1.0.0",
+  "description": "Lambda para gestionar el ciclo de vida de eventos: estados y notificaciones",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Sin pruebas definidas\" && exit 0",
+    "test-local": "node test/local-test.js"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1612.0",
+    "dayjs": "^1.11.10",
+    "tz-lookup": "^6.1.25"
+  },
+  "author": "DoEvents",
+  "license": "MIT"
+}

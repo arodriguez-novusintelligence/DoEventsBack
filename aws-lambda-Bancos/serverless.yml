@@ -1,0 +1,47 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: events
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: aws-lambda-Bancos
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    BANCOS_TABLE: Bancos
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Bancos
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Bancos/index/id_country-index
+functions:
+  swaggerDocs:
+    handler: src/swaggerDocs.swaggerDocs
+    events:
+      - http:
+          path: doc
+          method: get
+      - http:
+          path: doc/swagger-Banks.yml
+          method: get
+  crearBanco:
+    handler: src/crearBanco.crearBanco
+    events:
+      - httpApi:
+          path: /CrearBanco
+          method: post
+  getBanco:
+    handler: src/getBanco.getBanco
+    events:
+      - httpApi:
+          path: /getBanco/{id_country}
+          method: get
+  updateBanco:
+    handler: src/updateBanco.updateBanco
+    events:
+      - httpApi:
+          path: /updateBanco
+          method: put

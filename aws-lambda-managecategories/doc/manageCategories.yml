@@ -1,0 +1,163 @@
+openapi: 3.0.1
+info:
+  title: Categorías de Eventos API
+  description: API interna para crear, consultar, actualizar y obtener imágenes de categorías de eventos.
+  version: "1.0.0"
+
+paths:
+  /category:
+    post:
+      summary: Crear categoría de evento
+      description: Crea una categoría con nombre en español e inglés y una imagen codificada en base64.
+      tags:
+        - CategoríaEvento
+      requestBody:
+        description: Datos de la categoría e imagen en base64
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryRequest'
+      responses:
+        '200':
+          description: Categoría creada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  imagenURL:
+                    type: string
+        '400':
+          description: Todos los campos son requeridos
+        '500':
+          description: Error al crear la categoría
+
+  /category:
+    get:
+      summary: Obtener todas las categorías
+      description: Consulta todas las categorías registradas en la base de datos.
+      tags:
+        - CategoríaEvento
+      responses:
+        '200':
+          description: Categorías obtenidas exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCategoryResponse'
+        '404':
+          description: Categoría no encontrada
+        '500':
+          description: Error al consultar las categorías
+
+  /category/{id}/image:
+    get:
+      summary: Obtener imagen de categoría
+      description: Devuelve la URL de la imagen asociada a una categoría específica.
+      tags:
+        - CategoríaEvento
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de la categoría
+      responses:
+        '200':
+          description: Imagen obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  imagen:
+                    type: string
+        '404':
+          description: Categoría no encontrada
+        '500':
+          description: Error al obtener la imagen
+
+  /category:
+    put:
+      summary: Actualizar nombre de categoría
+      description: Actualiza el nombre de una categoría existente.
+      tags:
+        - CategoríaEvento
+      requestBody:
+        description: Datos para actualizar el nombre de la categoría
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoryRequest'
+      responses:
+        '200':
+          description: Categoría actualizada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Error al actualizar la categoría
+
+components:
+  schemas:
+    CreateCategoryRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        Category_EN:
+          type: string
+        Category_ES:
+          type: string
+        imagen:
+          type: string
+          description: Imagen codificada en base64
+      required:
+        - id
+        - Category_EN
+        - Category_ES
+        - imagen
+
+    UpdateCategoryRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      required:
+        - id
+        - name
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        Category_EN:
+          type: string
+        Category_ES:
+          type: string
+        imagen:
+          type: string
+
+    GetCategoryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'

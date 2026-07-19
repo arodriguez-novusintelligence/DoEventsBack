@@ -1,0 +1,95 @@
+{
+  "tableName": "FeedPublications",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/FeedPublications",
+  "tableId": "bd56e8b0-4a4a-408f-8162-ce3ae43d3609",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 94,
+  "tableSizeBytes": 213945,
+  "creationDateTime": "2026-03-09T14:15:47.431000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "authorId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "createdAt",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "sortKey",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "visibility",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "authorId-createdAt-index",
+      "keySchema": [
+        {
+          "AttributeName": "authorId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "createdAt",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 94,
+      "indexSizeBytes": 213945
+    },
+    {
+      "indexName": "visibility-sortKey-index",
+      "keySchema": [
+        {
+          "AttributeName": "visibility",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "sortKey",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 90,
+      "indexSizeBytes": 212551
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

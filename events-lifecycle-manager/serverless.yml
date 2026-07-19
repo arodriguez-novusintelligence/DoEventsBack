@@ -1,0 +1,119 @@
+org: events
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: hello
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: aws-lambda-eventsLifecycleManager
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: us-east-1
+  memorySize: 256
+  timeout: 30
+  environment:
+    EVENTS_TABLE: Eventos
+    VENUES_TABLE: Venues
+    TICKETS_TABLE: Tickets
+    ORDERS_TABLE: Orders
+    NOTIFICATIONS_TABLE: Notifications
+    FOLLOWERS_TABLE: Followers
+    FAVORITE_EVENTS_TABLE: userFavoriteEvents
+    STAGE: ${self:provider.stage}
+    NOTIFICATIONS_TRIGGER_FUNCTION: notifications-${self:provider.stage}-triggerNotification
+    EVENT_SCHEDULE_TIMEZONE: America/Bogota
+    EVENT_LIFECYCLE_TRANSITION_FUNCTION: events-lifecycle-manager-transition
+    EVENT_SCHEDULER_ROLE_ARN:
+      Fn::GetAtt:
+        - EventLifecycleSchedulerRole
+        - Arn
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:*
+          Resource:
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Eventos
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Eventos/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venues
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Venues/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Orders
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Orders/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Notifications
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Notifications/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Tickets
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Tickets/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Followers
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Followers/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/userFavoriteEvents
+            - arn:aws:dynamodb:${self:provider.region}:*:table/userFavoriteEvents/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Chats
+            - arn:aws:dynamodb:${self:provider.region}:*:table/Chats/index/*
+        - Effect: Allow
+          Action:
+            - lambda:InvokeFunction
+          Resource:
+            - arn:aws:lambda:${self:provider.region}:*:function:notifications-${self:provider.stage}-triggerNotification
+            - arn:aws:lambda:${self:provider.region}:*:function:events-lifecycle-manager-transition
+        - Effect: Allow
+          Action:
+            - ses:SendEmail
+            - ses:SendRawEmail
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - scheduler:CreateSchedule
+            - scheduler:UpdateSchedule
+            - scheduler:DeleteSchedule
+            - scheduler:GetSchedule
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - iam:PassRole
+          Resource:
+            - Fn::GetAtt:
+                - EventLifecycleSchedulerRole
+                - Arn
+
+functions:
+  checkAndProcessEvents:
+    handler: src/handler.handler
+    name: events-lifecycle-manager
+    events:
+      - schedule: rate(12 hours)  
+
+  upsertEventLifecycleSchedules:
+    handler: src/scheduler.upsertEventLifecycleSchedules
+    name: events-lifecycle-manager-scheduler-upsert
+
+  processEventLifecycleTransition:
+    handler: src/scheduler.processEventLifecycleTransition
+    name: events-lifecycle-manager-transition
+
+package:
+  individually: true
+
+resources:
+  Resources:
+    EventLifecycleSchedulerRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: event-lifecycle-scheduler-role-${self:provider.stage}
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: scheduler.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: invoke-lifecycle-transition
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - lambda:InvokeFunction
+                  Resource:
+                    - arn:aws:lambda:${self:provider.region}:*:function:events-lifecycle-manager-transition

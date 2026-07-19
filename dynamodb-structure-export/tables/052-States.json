@@ -1,0 +1,64 @@
+{
+  "tableName": "States",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/States",
+  "tableId": "1bf2238e-b52b-439c-9261-340b8a54bdf4",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 1999,
+  "tableSizeBytes": 61746,
+  "creationDateTime": "2025-03-04T20:54:14.946000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "id_country",
+      "KeyType": "RANGE"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "id",
+      "AttributeType": "N"
+    },
+    {
+      "AttributeName": "id_country",
+      "AttributeType": "N"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "id_country-index",
+      "keySchema": [
+        {
+          "AttributeName": "id_country",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 1999,
+      "indexSizeBytes": 61746
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

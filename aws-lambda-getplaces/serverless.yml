@@ -1,0 +1,55 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: events
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: aws-lambda-getplaces
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    CITIES_TABLE: Cities
+    STATES_TABLE: States
+    COUNTRIES_TABLE: Countries
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+
+      Resource:
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Countries
+        - arn:aws:dynamodb:us-east-1:519010577666:table/States
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Cities
+        - arn:aws:dynamodb:us-east-1:519010577666:table/States/index/id_country-index
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Cities/index/id_state-index
+
+functions:
+  swaggerDocs:
+    handler: src/swaggerDocs.swaggerDocs
+    events:
+      - http:
+          path: doc
+          method: get
+      - http:
+          path: doc/swagger-getplaces.yml
+          method: get
+  getCountries:
+    handler: src/getCountries.getCountries
+    events:
+      - httpApi:
+          path: /getCountries
+          method: get
+  getStates:
+    handler: src/getStates.getStatesByCountryId
+    events:
+      - httpApi:
+          path: /getStatesByCountryId/{id_country}
+          method: get
+  getCities:
+    handler: src/getCities.getCitiesByStateId
+    events:
+      - httpApi:
+          path: /getCitiesByStateId/{id_state}
+          method: get

@@ -1,0 +1,52 @@
+org: events
+service: aws-lambda-manageOrderTickets
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: us-east-1
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    ORDERS_TABLE: Orders
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:*
+      Resource:
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Orders
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Orders/index*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/TicketsDistribution*
+
+        - arn:aws:s3:::doeventimageeventbucket
+functions:
+  getOrderByEventId:
+    handler: src/getOrderByEventId.getOrderByEventId
+    events:
+      - httpApi:
+          path: /getOrderByEventId/{eventId}
+          method: get
+
+  getOrdersByEventAndUser:
+    handler: src/getOrdersByEventAndUser.getOrdersByEventAndUser
+    events:
+      - httpApi:
+          path: /getOrdersByEventAndUser/{eventId}/{userId}
+          method: get
+
+  getTicketsByOrderID:
+    handler: src/getTicketsByOrderID.getTicketsByOrderID
+    events:
+      - httpApi:
+          path: /getTicketsByOrderID/{orderId}
+          method: get
+
+  getTicketsByEventAndOrder:
+    handler: src/getTicketsByEventAndOrder.getTicketsByEventAndOrder
+    events:
+      - httpApi:
+          path: /getTicketsByEventAndOrder/{eventId}/{orderId}
+          method: get
+
+plugins:
+  - serverless-offline

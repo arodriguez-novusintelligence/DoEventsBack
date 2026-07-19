@@ -1,0 +1,82 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        padding: 28px;
+        border-radius: 10px;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .badge {
+        display: inline-block;
+        background: #e8f6ec;
+        color: #1f7a3f;
+        border-radius: 20px;
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .event {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 16px 0;
+      }
+      .button {
+        display: inline-block;
+        background-color: #007bff;
+        color: #fff !important;
+        text-decoration: none;
+        border-radius: 6px;
+        padding: 12px 18px;
+        margin-top: 14px;
+      }
+      .footer {
+        margin-top: 26px;
+        font-size: 12px;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <span class="badge">EVENTO FINALIZADO</span>
+      </div>
+
+      <p>Hola {{userName}},</p>
+      <p>El evento <strong>{{eventName}}</strong> ya terminó.</p>
+
+      <div class="event">
+        <p><strong>Fecha de finalización:</strong> {{eventEndDate}}</p>
+        {{#if eventEndTime}}
+          <p><strong>Hora de finalización:</strong> {{eventEndTime}}</p>
+        {{/if}}
+      </div>
+
+      <p>Puedes volver al evento para revisar detalles y contenido relacionado.</p>
+
+      <a class="button" href="{{link}}">Ver evento</a>
+
+      <div class="footer">
+        Este es un mensaje automático de DoEvents.
+      </div>
+    </div>
+  </body>
+</html>

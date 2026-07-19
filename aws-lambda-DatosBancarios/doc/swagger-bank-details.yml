@@ -1,0 +1,146 @@
+openapi: 3.0.1
+info:
+  title: Datos Bancarios API
+  description: API para registrar, consultar y actualizar datos bancarios de personas naturales y jurídicas.
+  version: "1.0.0"
+
+paths:
+  /datos-bancarios:
+    post:
+      summary: Crear datos bancarios
+      description: Registra datos bancarios y documentos adjuntos para una persona natural o jurídica.
+      tags:
+        - DatosBancarios
+      requestBody:
+        description: Información bancaria y tributaria del usuario
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrUpdateBankDataRequest'
+      responses:
+        '201':
+          description: Datos bancarios creados exitosamente
+        '400':
+          description: Solicitud mal formada o datos faltantes
+        '500':
+          description: Error interno del servidor
+
+    put:
+      summary: Actualizar datos bancarios
+      description: Actualiza información bancaria existente, incluyendo archivos en S3.
+      tags:
+        - DatosBancarios
+      requestBody:
+        description: Datos actualizados del usuario
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrUpdateBankDataRequest'
+      responses:
+        '200':
+          description: Datos bancarios actualizados correctamente
+        '400':
+          description: Error de validación en los campos de entrada
+        '404':
+          description: Dato bancario no encontrado
+        '500':
+          description: Error interno del servidor
+
+  /datos-bancarios/user/{userID}:
+    get:
+      summary: Obtener ID de datos bancarios por userID
+      description: Verifica si un usuario tiene datos bancarios registrados y retorna su identificador.
+      tags:
+        - DatosBancarios
+      parameters:
+        - name: userID
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Usuario con datos bancarios registrados
+        '404':
+          description: Dato bancario no encontrado
+        '500':
+          description: Error interno del servidor
+
+  /datos-bancarios/{id}:
+    get:
+      summary: Obtener datos bancarios por ID
+      description: Consulta detallada de datos bancarios incluyendo documentos base64 e imágenes firmadas.
+      tags:
+        - DatosBancarios
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Datos bancarios obtenidos exitosamente
+        '404':
+          description: Dato bancario no encontrado
+        '500':
+          description: Error interno del servidor
+
+components:
+  schemas:
+    CreateOrUpdateBankDataRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        userID:
+          type: string
+        banco:
+          type: string
+        certificadoBancario:
+          type: string
+        ciudad:
+          type: string
+        codigoSwift:
+          type: string
+        departamento:
+          type: string
+        direccionFacturacion:
+          type: string
+        documento:
+          type: string
+        imgdocumento:
+          type: string
+        numeroCuenta:
+          type: string
+        paisCuenta:
+          type: string
+        telefono:
+          type: string
+        tipoCuenta:
+          type: string
+        tipoDocumento:
+          type: string
+        tipoPersona:
+          type: string
+          enum: [N, J]
+        titular:
+          type: string
+        nombreRazonSocial:
+          type: string
+        regimenSistemaTributario:
+          type: string
+        certificadoCamaraComercio:
+          type: string
+        certificadoRut:
+          type: string
+        superaTopes:
+          type: boolean
+        responsableIva:
+          type: boolean
+        condicionesPago:
+          type: boolean
+        email:
+          type: string

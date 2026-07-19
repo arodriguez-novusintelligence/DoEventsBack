@@ -1,0 +1,24 @@
+{
+  "name": "notifications",
+  "version": "1.0.0",
+  "description": "Notification system for DoEvents",
+  "scripts": {
+    "diag:whatsapp-invite": "node diagnose-whatsapp-invitation.js",
+    "test:qa": "node test-qa-notifications.js",
+    "test:qa:api": "node test-qa-notifications.js --api"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1645.0",
+    "firebase-admin": "^13.4.0",
+    "handlebars": "^4.7.8",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.3",
+    "serverless": "^4.21.0",
+    "serverless-offline": "^14.4.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

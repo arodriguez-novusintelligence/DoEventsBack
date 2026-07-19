@@ -1,0 +1,48 @@
+{
+  "tableName": "FeedCommentLikes",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/FeedCommentLikes",
+  "tableId": "d58aaed3-4150-4158-add1-e73879bb9ca7",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 13,
+  "tableSizeBytes": 1118,
+  "creationDateTime": "2026-03-09T14:15:47.802000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "commentId",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "userId",
+      "KeyType": "RANGE"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "commentId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "userId",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

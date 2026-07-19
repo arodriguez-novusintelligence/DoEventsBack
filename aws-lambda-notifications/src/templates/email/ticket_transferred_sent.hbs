@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}}</title>
+    <style>
+      body { margin: 0; padding: 0; background: #eef0f6; font-family: Arial, Helvetica, sans-serif; color: #131a31; }
+      .shell { width: 100%; padding: 16px 0; }
+      .container { width: 100%; max-width: 620px; margin: 0 auto; background: #f7f8fc; border: 1px solid #e5e8f3; border-radius: 14px; overflow: hidden; }
+      .inner { padding: 12px 12px 18px; }
+      .top-svg { width: 100%; height: auto; display: block; }
+      .hero { width: 100%; border-collapse: collapse; }
+      .hero td { padding: 0; }
+      .hero-left { background: linear-gradient(90deg, #283472 0%, #2f438f 100%); color: #ffffff; padding: 18px 20px; font-size: 28px; font-weight: 700; line-height: 1.1; border-top-left-radius: 14px; border-bottom-left-radius: 14px; }
+      .hero-mid { width: 94px; background: #dfe4f5; border-top-left-radius: 999px; border-bottom-left-radius: 999px; }
+      .hero-right { width: 78px; background: #dfe4f5; text-align: center; border-top-right-radius: 14px; border-bottom-right-radius: 14px; }
+      .hero-icon { display: inline-block; margin-top: 12px; width: 34px; height: 34px; line-height: 34px; border: 1px solid #6f7db3; border-radius: 9px; color: #4a5ea4; font-size: 17px; font-weight: 700; }
+      .headline { margin: 18px 4px 10px; font-size: 34px; line-height: 1.2; font-weight: 700; }
+      .brand-logo-wrap { text-align: center; margin: 6px 0 10px; }
+      .brand-logo-top { width: 252px; height: 73.5px; }
+      .brand-logo-footer { width: 168px; height: 49px; }
+      .logo-ink { fill: #010e15; }
+      .logo-line { stroke: #010e15; }
+      .description { margin: 0 4px 12px; color: #3f4660; font-size: 16px; line-height: 1.5; }
+      .event-card { border: 1px solid #dce2f4; border-radius: 10px; background: #ffffff; overflow: hidden; }
+      .event-image { width: 100%; height: 220px; object-fit: cover; display: block; }
+      .event-body { padding: 10px 12px 12px; }
+      .event-name { margin: 0 0 10px; color: #4c5fd8; font-size: 36px; font-weight: 700; line-height: 1.15; }
+      .meta { width: 100%; border-collapse: collapse; }
+      .meta td { width: 50%; font-size: 14px; color: #30364d; padding-bottom: 8px; vertical-align: top; }
+      .meta-label { color: #54607d; font-size: 13px; }
+      .transfer-box { margin-top: 14px; background: #eceff8; border-radius: 10px; padding: 10px 12px; }
+      .transfer-title { margin: 0; font-size: 15px; font-weight: 700; color: #33418e; }
+      .transfer-copy { margin: 6px 0 0; color: #4b5577; font-size: 14px; }
+      .participants-title { margin: 16px 0 8px; font-size: 20px; font-weight: 700; }
+      .participants { width: 100%; border-collapse: separate; border-spacing: 8px 0; }
+      .participants td { border: 1px solid #90a0ea; border-radius: 10px; background: #ffffff; text-align: center; padding: 10px 6px; width: 50%; }
+      .avatar { width: 54px; height: 54px; border-radius: 50%; object-fit: cover; display: inline-block; background: #d7dbe8; }
+      .person-name { margin: 6px 0 2px; font-size: 17px; font-weight: 700; }
+      .person-role { margin: 0; color: #6d7388; font-size: 13px; }
+      .cta { margin-top: 14px; text-align: center; }
+      .cta a { display: inline-block; background: #596ef4; color: #ffffff !important; text-decoration: none; border-radius: 999px; padding: 10px 20px; font-size: 14px; font-weight: 700; }
+      .fallback-link { margin-top: 8px; font-size: 12px; color: #6f7895; word-break: break-all; text-align: center; }
+      .footer { margin-top: 16px; background: #e5e7ef; text-align: center; padding: 14px 10px 16px; }
+      .footer-brand { margin: 0; line-height: 1; }
+      .footer-txt { margin: 8px 0 0; font-size: 12px; color: #59607a; }
+      .footer-link { color: #4f63d8 !important; text-decoration: none; }
+      @media only screen and (max-width: 620px) {
+        .headline { font-size: 28px; }
+        .event-name { font-size: 30px; }
+        .participants, .participants tbody, .participants tr, .participants td,
+        .meta, .meta tbody, .meta tr, .meta td { display: block; width: 100%; }
+        .participants td { margin-bottom: 8px; }
+      }
+      @media (prefers-color-scheme: dark) {
+        .logo-ink { fill: #ffffff !important; }
+        .logo-line { stroke: #ffffff !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="container">
+        <div class="inner">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin-bottom:12px;">
+            <tr>
+              <td background="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-bg.png" bgcolor="#2f366f" style="background-image:url('https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-bg.png');background-size:100% 100%;background-repeat:no-repeat;background-color:#2f366f;padding:0;border-radius:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tr><td style="padding:18px 20px 18px 24px;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:700;color:#ffffff;">Transferencia exitosa</td><td width="68" style="text-align:center;vertical-align:middle;padding:8px 12px 8px 8px;"><img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-icon.png" width="36" height="36" alt="" style="display:block;margin:0 auto;" /></td></tr></table></td>
+            </tr>
+          </table>
+
+          <p class="headline">Transferiste boletas para {{eventName}}</p>
+
+          <div class="brand-logo-wrap" role="img" aria-label="Do.Events">
+            <img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-logo-doevents.png" width="120" height="35" alt="Do.Events" style="display:inline-block;vertical-align:middle;" />
+          </div>
+
+          <p class="description">Transferiste {{ticketCount}} boleta(s) a {{#if receiverName}}{{receiverName}}{{else}}otro usuario{{/if}}. La transferencia fue completada correctamente.</p>
+
+          <div class="event-card">
+            {{#if eventImage}}
+              <img class="event-image" src="{{eventImage}}" alt="{{eventName}}" />
+            {{/if}}
+            <div class="event-body">
+              <p class="event-name">{{eventName}}</p>
+              <table class="meta" role="presentation">
+                <tr>
+                  <td class="meta-label">Fecha</td>
+                  <td class="meta-label">Hora</td>
+                </tr>
+                <tr>
+                  <td>{{#if eventDateDisplay}}{{eventDateDisplay}}{{else}}{{#if eventDate}}{{eventDate}}{{else}}Por confirmar{{/if}}{{/if}}</td>
+                  <td>{{#if eventTime}}{{eventTime}}{{else}}{{#if eventStartTime}}{{eventStartTime}}{{#if eventEndTime}} a {{eventEndTime}}{{/if}}{{else}}Horario por confirmar{{/if}}{{/if}}</td>
+                </tr>
+                <tr>
+                  <td class="meta-label">Lugar</td>
+                  <td class="meta-label">Orden origen</td>
+                </tr>
+                <tr>
+                  <td>{{#if eventLocation}}{{eventLocation}}{{else}}Por confirmar{{/if}}</td>
+                  <td>{{#if orderID}}{{orderID}}{{else}}Por asignar{{/if}}</td>
+                </tr>
+              </table>
+
+              <div class="transfer-box">
+                <p class="transfer-title">Transferencia completada</p>
+                <p class="transfer-copy">La boleta ya no esta en tu cuenta. El receptor ya puede verla en su perfil.</p>
+              </div>
+            </div>
+          </div>
+
+          <p class="participants-title">Participantes de la transferencia</p>
+          <table class="participants" role="presentation">
+            <tr>
+              <td>
+                {{#if senderProfileImage}}
+                  <img class="avatar" src="{{senderProfileImage}}" alt="{{senderName}}" />
+                {{else}}
+                  <span class="avatar"></span>
+                {{/if}}
+                <p class="person-name">{{#if senderName}}{{senderName}}{{else}}Tu cuenta{{/if}}</p>
+                <p class="person-role">Quien transfirio</p>
+              </td>
+              <td>
+                {{#if receiverProfileImage}}
+                  <img class="avatar" src="{{receiverProfileImage}}" alt="{{receiverName}}" />
+                {{else}}
+                  <span class="avatar"></span>
+                {{/if}}
+                <p class="person-name">{{#if receiverName}}{{receiverName}}{{else}}Usuario receptor{{/if}}</p>
+                <p class="person-role">Quien recibio</p>
+              </td>
+            </tr>
+          </table>
+
+          <div class="cta">
+            <a href="{{viewTicketsLink}}">Ver mis boletas</a>
+          </div>
+          <div class="fallback-link">Si el boton no abre, usa este enlace: {{viewTicketsLink}}</div>
+        </div>
+
+        <div class="footer">
+          <div class="footer-brand" role="img" aria-label="Do.Events">
+            <img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-logo-doevents.png" width="96" height="28" alt="Do.Events" style="display:inline-block;vertical-align:middle;" />
+          </div>
+          <p class="footer-txt">Cualquier duda, puede comunicarse a la siguiente correo de soporte</p>
+          <p class="footer-txt"><a class="footer-link" href="mailto:management@doeventsapp.com">management@doeventsapp.com</a></p>
+          <p class="footer-txt"><a class="footer-link" href="https://www.doeventsapp.com">www.doeventsapp.com</a></p>
+          <p class="footer-txt">© {{year}} Do eventsapp. Todos los derechos reservados</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

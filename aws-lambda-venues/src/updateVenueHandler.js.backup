@@ -1,0 +1,1817 @@
+const AWS = require("aws-sdk");
+const dynamodb = new AWS.DynamoDB.DocumentClient();
+const { v4: uuidv4 } = require("uuid");
+
+/**
+ * Genera las boletas individuales en TicketsDistribution
+ * Crea un ticket instance por cada boleta disponible en cada categoría
+ * NOTA: TicketsDistribution usa clave compuesta (id, createDate)
+ */
+async function generateTicketsDistribution(
+  eventId,
+  venueId,
+  ticketId,
+  categories,
+  now
+) {
+  console.log(
+    `🎫 Generando TicketsDistribution para ${categories.length} categorías...`
+  );
+
+  const distributionItems = [];
+
+  for (const category of categories) {
+    const distributionId = category.distributionId || uuidv4();
+    const createDate = category.distributionCreateDate || now;
+    const cantidadTickets = category.cantidadTickets || 0;
+
+    if (cantidadTickets <= 0) {
+      console.log(
+        `⚠️ Categoría ${category.categoria} no tiene tickets, omitiendo...`
+      );
+      continue;
+    }
+
+    // Generar array de tickets individuales
+    const ticketsArray = [];
+    for (let i = 0; i < cantidadTickets; i++) {
+      ticketsArray.push({
+        ticketInstanceId: uuidv4(),
+        category: category.categoria || category.id,
+        categoryId: category.id,
+        location: {},
+        ticketStatus: "AVAILABLE",
+        qrCodeKey: uuidv4(),
+        ownerId: null,
+        entityType: "TICKET",
+        purchasePrice: category.valor || 0,
+        orderId: null,
+        distributionId: distributionId,
+        createDate: createDate,
+      });
+    }
+
+    distributionItems.push({
+      PutRequest: {
+        Item: {
+          id: distributionId, // PK
+          createDate: createDate, // SK (clave compuesta)
+          ticketId: ticketId,
+          eventId: eventId,
+          venueId: venueId,
+          boletaId: category.id,
+          categoryName: category.categoria,
+          tickets: ticketsArray,
+        },
+      },
+    });
+
+    console.log(
+      `✅ ${cantidadTickets} tickets creados para categoría ${category.categoria}`
+    );
+  }
+
+  // Guardar en TicketsDistribution por lotes (máximo 25 por batch)
+  if (distributionItems.length > 0) {
+    const chunkSize = 25;
+    const writePromises = [];
+
+    for (let i = 0; i < distributionItems.length; i += chunkSize) {
+      const chunk = distributionItems.slice(i, i + chunkSize);
+      const writePromise = dynamodb
+        .batchWrite({
+          RequestItems: {
+            TicketsDistribution: chunk,
+          },
+        })
+        .promise();
+      writePromises.push(writePromise);
+    }
+
+    await Promise.all(writePromises);
+    console.log(
+      `✅ ${distributionItems.length} distribuciones creadas en TicketsDistribution`
+    );
+  }
+
+  return distributionItems.length;
+}
+
+/**
+ * Sincroniza TicketsDistribution con las categorías actuales del venue
+ * Actualiza las distribuciones existentes y crea nuevas si es necesario
+ * NOTA: TicketsDistribution usa clave compuesta (id, createDate)
+ */
+async function syncTicketsDistribution(
+  eventId,
+  venueId,
+  ticketId,
+  categories,
+  now
+) {
+  console.log(
+    `🔄 Sincronizando TicketsDistribution para ${categories.length} categorías...`
+  );
+
+  // 1. Obtener distribuciones existentes por eventId
+  const existingDistributions = await dynamodb
+    .query({
+      TableName: "TicketsDistribution",
+      IndexName: "eventIdIndex",
+      KeyConditionExpression: "eventId = :eventId",
+      ExpressionAttributeValues: {
+        ":eventId": eventId,
+      },
+    })
+    .promise();
+
+  const existingMap = {};
+  for (const dist of existingDistributions.Items || []) {
+    existingMap[dist.boletaId] = dist;
+  }
+
+  console.log(
+    `📊 Encontradas ${existingDistributions.Items.length} distribuciones existentes`
+  );
+
+  const distributionsToCreate = [];
+  const distributionsToUpdate = [];
+
+  for (const category of categories) {
+    const distributionId = category.distributionId || uuidv4();
+    const createDate = category.distributionCreateDate || now;
+    const cantidadTickets = category.cantidadTickets || 0;
+    const existingDist = existingMap[category.id];
+
+    if (cantidadTickets <= 0) {
+      console.log(
+        `⚠️ Categoría ${category.categoria} no tiene tickets, omitiendo...`
+      );
+      continue;
+    }
+
+    if (!existingDist) {
+      // Nueva categoría - crear distribución
+      console.log(`➕ Creando nueva distribución para ${category.categoria}`);
+      const ticketsArray = [];
+      for (let i = 0; i < cantidadTickets; i++) {
+        ticketsArray.push({
+          ticketInstanceId: uuidv4(),
+          category: category.categoria || category.id,
+          categoryId: category.id,
+          location: {},
+          ticketStatus: "AVAILABLE",
+          qrCodeKey: uuidv4(),
+          ownerId: null,
+          entityType: "TICKET",
+          purchasePrice: category.valor || 0,
+          orderId: null,
+          distributionId: distributionId,
+          createDate: createDate,
+        });
+      }
+
+      distributionsToCreate.push({
+        PutRequest: {
+          Item: {
+            id: distributionId, // PK
+            createDate: createDate, // SK
+            ticketId: ticketId,
+            eventId: eventId,
+            venueId: venueId,
+            boletaId: category.id,
+            categoryName: category.categoria,
+            tickets: ticketsArray,
+          },
+        },
+      });
+    } else {
+      // Categoría existente - verificar si cambió cantidad
+      const existingTickets = existingDist.tickets || [];
+      const currentAvailable = existingTickets.filter(
+        (t) => t.ticketStatus === "AVAILABLE"
+      ).length;
+      const reserved = existingTickets.filter(
+        (t) => t.ticketStatus === "RESERVED"
+      ).length;
+      const sold = existingTickets.filter(
+        (t) => t.ticketStatus === "SOLD" || t.ticketStatus === "USED"
+      ).length;
+
+      console.log(
+        `📊 Categoría ${category.categoria}: Total=${existingTickets.length}, Disponibles=${currentAvailable}, Reservados=${reserved}, Vendidos=${sold}`
+      );
+
+      if (cantidadTickets !== existingTickets.length) {
+        console.log(
+          `🔄 Ajustando cantidad de ${existingTickets.length} a ${cantidadTickets}`
+        );
+
+        let updatedTickets = [...existingTickets];
+
+        if (cantidadTickets > existingTickets.length) {
+          // Agregar nuevos tickets
+          const toAdd = cantidadTickets - existingTickets.length;
+          console.log(`➕ Agregando ${toAdd} tickets nuevos`);
+          for (let i = 0; i < toAdd; i++) {
+            updatedTickets.push({
+              ticketInstanceId: uuidv4(),
+              category: category.categoria || category.id,
+              categoryId: category.id,
+              location: {},
+              ticketStatus: "AVAILABLE",
+              qrCodeKey: uuidv4(),
+              ownerId: null,
+              entityType: "TICKET",
+              purchasePrice: category.valor || 0,
+              orderId: null,
+              distributionId: existingDist.id,
+              createDate: existingDist.createDate,
+            });
+          }
+        } else {
+          // Reducir tickets (solo si hay suficientes disponibles)
+          const toRemove = existingTickets.length - cantidadTickets;
+          if (toRemove > currentAvailable) {
+            console.log(
+              `⚠️ No se puede reducir: se requieren ${toRemove} disponibles pero solo hay ${currentAvailable}`
+            );
+            continue;
+          }
+
+          console.log(`➖ Eliminando ${toRemove} tickets disponibles`);
+          let removed = 0;
+          updatedTickets = updatedTickets.filter((t) => {
+            if (t.ticketStatus === "AVAILABLE" && removed < toRemove) {
+              removed++;
+              return false;
+            }
+            return true;
+          });
+        }
+
+        // Actualizar distribución usando clave compuesta
+        distributionsToUpdate.push({
+          id: existingDist.id, // PK
+          createDate: existingDist.createDate, // SK
+          tickets: updatedTickets,
+        });
+      }
+    }
+  }
+
+  // Ejecutar creaciones
+  if (distributionsToCreate.length > 0) {
+    const chunkSize = 25;
+    for (let i = 0; i < distributionsToCreate.length; i += chunkSize) {
+      const chunk = distributionsToCreate.slice(i, i + chunkSize);
+      await dynamodb
+        .batchWrite({
+          RequestItems: {
+            TicketsDistribution: chunk,
+          },
+        })
+        .promise();
+    }
+    console.log(
+      `✅ ${distributionsToCreate.length} nuevas distribuciones creadas`
+    );
+  }
+
+  // Ejecutar actualizaciones con clave compuesta
+  for (const update of distributionsToUpdate) {
+    await dynamodb
+      .update({
+        TableName: "TicketsDistribution",
+        Key: {
+          id: update.id, // PK
+          createDate: update.createDate, // SK
+        },
+        UpdateExpression: "SET tickets = :tickets",
+        ExpressionAttributeValues: {
+          ":tickets": update.tickets,
+        },
+      })
+      .promise();
+  }
+
+  if (distributionsToUpdate.length > 0) {
+    console.log(
+      `✅ ${distributionsToUpdate.length} distribuciones actualizadas`
+    );
+  }
+
+  return {
+    created: distributionsToCreate.length,
+    updated: distributionsToUpdate.length,
+  };
+}
+
+/**
+ * Handler mejorado para actualizar venues con comparación inteligente
+ * Soporta:
+ * - Comparación de datos existentes vs nuevos
+ * - Eliminación en batch de categorías, pisos y sillas
+ * - Actualización masiva de elementos
+ * - Sincronización automática con tabla Tickets
+ * - Preservación de datos de ventas (soldTickets, reservedTickets)
+ * - Sincronización bidireccional Venue_Category ↔ Tickets
+ */
+exports.handler = async (event) => {
+  try {
+    console.log("Event:", JSON.stringify(event));
+    const { venueId } = event.pathParameters;
+    const body = JSON.parse(event.body);
+    const userId =
+      event.requestContext?.authorizer?.claims?.sub ||
+      body.updatedBy ||
+      body.ownerUserId;
+
+    console.log("userId extracted:", userId);
+
+    if (!venueId) {
+      return {
+        statusCode: 400,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ error: "venueId is required" }),
+      };
+    }
+
+    // Verificar que el venue exists y obtener datos actuales
+    const existing = await dynamodb
+      .get({
+        TableName: "Venues",
+        Key: { venue_id: venueId },
+      })
+      .promise();
+
+    if (!existing.Item) {
+      return {
+        statusCode: 404,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ error: "Venue not found" }),
+      };
+    }
+
+    const now = new Date().toISOString();
+    const hasSeating =
+      body.hasSeating !== undefined
+        ? body.hasSeating
+        : existing.Item.hasSeating;
+    const eventId = body.eventId || existing.Item.eventId;
+
+    // PARTE 1: ACTUALIZAR CAMPOS BÁSICOS DEL VENUE
+    console.log("📝 Actualizando campos básicos del venue...");
+    await updateBasicVenueFields(venueId, body, existing.Item, userId, now);
+
+    // PARTE 2: PROCESAR FLOORS (pisos) con auto-eliminación
+    const floorsResult = await processFloorsWithSync(
+      venueId,
+      body.floors,
+      hasSeating,
+      userId,
+      now,
+      eventId
+    );
+
+    // PARTE 3: PROCESAR CATEGORÍAS INDEPENDIENTES
+    let ticketUpdateResult = null;
+    if (body.categories && Array.isArray(body.categories)) {
+      ticketUpdateResult = await processIndependentCategories(
+        venueId,
+        eventId,
+        body.categories,
+        hasSeating,
+        userId,
+        now,
+        body
+      );
+    }
+
+    // PARTE 4: PROCESAR ELIMINACIONES EN BATCH
+    const deletionResults = await processBatchDeletions(
+      venueId,
+      body.deletions || {},
+      eventId
+    );
+
+    // PARTE 5: SINCRONIZACIÓN AUTOMÁTICA CON TABLA TICKETS
+    // Recolectar todas las categorías finales del venue y sincronizar con Tickets
+    let finalTicketSync = null;
+    if (eventId) {
+      console.log(
+        "🔄 Iniciando sincronización automática con tabla Tickets..."
+      );
+      finalTicketSync = await syncAllCategoriesToTickets(
+        venueId,
+        eventId,
+        hasSeating,
+        userId,
+        now,
+        body
+      );
+    }
+
+    return {
+      statusCode: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true,
+      },
+      body: JSON.stringify({
+        message: "Venue updated successfully",
+        venueId,
+        hasSeating,
+        eventId,
+        floorsResult,
+        ticketUpdate: ticketUpdateResult,
+        deletions: deletionResults,
+        ticketSync: finalTicketSync,
+      }),
+    };
+  } catch (error) {
+    console.error("Error in updateVenueHandler:", error);
+    return {
+      statusCode: 500,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        error: "Internal server error",
+        message: error.message,
+        stack: error.stack,
+      }),
+    };
+  }
+};
+
+/**
+ * Actualiza solo los campos básicos del venue que han cambiado
+ */
+async function updateBasicVenueFields(
+  venueId,
+  newData,
+  existingData,
+  userId,
+  now
+) {
+  const updateExpressions = [];
+  const expressionAttributeNames = {};
+  const expressionAttributeValues = {};
+
+  const allowedFields = [
+    "name",
+    "type",
+    "capacity",
+    "country",
+    "city",
+    "address",
+    "address2",
+    "postalCode",
+    "timezone",
+    "geo",
+    "amenities",
+    "images",
+    "tags",
+    "gates",
+    "isTemplate",
+    "isCertified",
+    "visibility",
+    "status",
+    "floorplanVersion",
+    "hasSeating",
+    "eventId",
+    "isEventVenue",
+    "baseVenueId",
+    "latitude",
+    "longitude",
+    "description",
+  ];
+
+  // Procesar gates antes de comparar (asegurar que cada gate tenga gateId)
+  if (newData.gates && Array.isArray(newData.gates)) {
+    newData.gates = newData.gates.map((gate) => ({
+      ...gate,
+      gateId: gate.gateId || uuidv4(),
+    }));
+  }
+
+  // Comparar y agregar solo campos que han cambiado
+  allowedFields.forEach((field) => {
+    if (
+      newData[field] !== undefined &&
+      JSON.stringify(newData[field]) !== JSON.stringify(existingData[field])
+    ) {
+      updateExpressions.push(`#${field} = :${field}`);
+      expressionAttributeNames[`#${field}`] = field;
+      expressionAttributeValues[`:${field}`] = newData[field];
+      console.log(`✏️ Campo modificado: ${field}`);
+    }
+  });
+
+  if (updateExpressions.length > 0) {
+    updateExpressions.push("#updatedAt = :updatedAt");
+    expressionAttributeNames["#updatedAt"] = "updatedAt";
+    expressionAttributeValues[":updatedAt"] = now;
+
+    if (userId) {
+      updateExpressions.push("#updatedBy = :updatedBy");
+      expressionAttributeNames["#updatedBy"] = "updatedBy";
+      expressionAttributeValues[":updatedBy"] = userId;
+    }
+
+    console.log(
+      `✅ Actualizando ${updateExpressions.length - 1} campos del venue`
+    );
+
+    await dynamodb
+      .update({
+        TableName: "Venues",
+        Key: { venue_id: venueId },
+        UpdateExpression: `SET ${updateExpressions.join(", ")}`,
+        ExpressionAttributeNames: expressionAttributeNames,
+        ExpressionAttributeValues: expressionAttributeValues,
+      })
+      .promise();
+  } else {
+    console.log("⚠️ No hay campos básicos para actualizar");
+  }
+}
+
+/**
+ * Procesa floors con sincronización automática: elimina floors que ya no están en el array
+ */
+async function processFloorsWithSync(
+  venueId,
+  newFloors,
+  hasSeating,
+  userId,
+  now,
+  eventId
+) {
+  // Si no se envía el array floors, no hacer cambios (mantener existentes)
+  if (newFloors === undefined) {
+    console.log("⚠️ Array floors no enviado, manteniendo floors existentes");
+    return {
+      floorsProcessed: 0,
+      categoriesProcessed: 0,
+      seatsProcessed: 0,
+      floorsDeleted: 0,
+    };
+  }
+
+  // Si se envía array vacío, eliminar todos los floors
+  if (!Array.isArray(newFloors)) {
+    console.log("⚠️ floors debe ser un array");
+    return {
+      floorsProcessed: 0,
+      categoriesProcessed: 0,
+      seatsProcessed: 0,
+      floorsDeleted: 0,
+    };
+  }
+
+  console.log(`🏢 Procesando ${newFloors.length} floors con sincronización...`);
+
+  // 1. Obtener floors existentes del venue
+  const existingFloorsResult = await dynamodb
+    .query({
+      TableName: "Venue_Floor",
+      IndexName: "venueIdIndex",
+      KeyConditionExpression: "venueId = :venueId",
+      ExpressionAttributeValues: {
+        ":venueId": venueId,
+      },
+    })
+    .promise();
+
+  const existingFloorIds = (existingFloorsResult.Items || []).map(
+    (f) => f.floorId
+  );
+  const newFloorIds = newFloors.map((f) => f.floorId).filter((id) => id); // Solo IDs existentes
+
+  // 2. Detectar floors a eliminar (existen pero no están en el nuevo array)
+  const floorsToDelete = existingFloorIds.filter(
+    (id) => !newFloorIds.includes(id)
+  );
+
+  if (floorsToDelete.length > 0) {
+    console.log(
+      `🗑️ Auto-eliminando ${floorsToDelete.length} floors que ya no están en el array:`,
+      floorsToDelete
+    );
+    for (const floorId of floorsToDelete) {
+      await deleteFloor(floorId, venueId);
+    }
+  }
+
+  // 3. Procesar floors del array (crear/actualizar)
+  if (newFloors.length === 0) {
+    console.log("✅ Array floors vacío - todos los floors eliminados");
+    return {
+      floorsProcessed: 0,
+      categoriesProcessed: 0,
+      seatsProcessed: 0,
+      floorsDeleted: floorsToDelete.length,
+    };
+  }
+
+  console.log(`🏢 Procesando ${newFloors.length} floors...`);
+
+  const floorsResult = [];
+  let totalCategories = 0;
+  let totalSeats = 0;
+
+  for (const floorData of newFloors) {
+    const floorId = floorData.floorId || uuidv4();
+    const isNewFloor = !floorData.floorId;
+
+    // Crear o actualizar floor
+    const floor = {
+      floorId,
+      venueId,
+      name: floorData.name,
+      description: floorData.description || "",
+      image: floorData.image || "",
+      updatedAt: now,
+      updatedBy: userId,
+    };
+
+    if (isNewFloor) {
+      floor.createdAt = now;
+      floor.createdBy = userId;
+      console.log(`➕ Creando nuevo floor: ${floorData.name}`);
+    } else {
+      console.log(`✏️ Actualizando floor: ${floorData.name}`);
+    }
+
+    await dynamodb
+      .put({
+        TableName: "Venue_Floor",
+        Item: floor,
+      })
+      .promise();
+
+    // Procesar elementos del floor
+    if (floorData.elements && Array.isArray(floorData.elements)) {
+      await processFloorElements(
+        floorId,
+        venueId,
+        floorData.elements,
+        userId,
+        now
+      );
+    }
+
+    // Procesar categorías del floor
+    const categoriesResult = await processFloorCategories(
+      floorId,
+      venueId,
+      eventId,
+      floorData.categories || [],
+      hasSeating,
+      userId,
+      now
+    );
+
+    totalCategories += categoriesResult.categoriesProcessed;
+    totalSeats += categoriesResult.seatsProcessed;
+
+    floorsResult.push({
+      floorId,
+      name: floorData.name,
+      action: isNewFloor ? "created" : "updated",
+      ...categoriesResult,
+    });
+  }
+
+  return {
+    floorsProcessed: newFloors.length,
+    categoriesProcessed: totalCategories,
+    seatsProcessed: totalSeats,
+    floors: floorsResult,
+  };
+}
+
+/**
+ * Procesa elementos de un floor (elementos decorativos, etc) con sincronización
+ */
+async function processFloorElements(floorId, venueId, elements, userId, now) {
+  // Si elements es undefined, no hacer cambios
+  if (elements === undefined) {
+    console.log(
+      `⚠️ Array elements no enviado para floor ${floorId}, manteniendo existentes`
+    );
+    return;
+  }
+
+  if (!Array.isArray(elements)) {
+    console.log(`⚠️ elements debe ser un array para floor ${floorId}`);
+    return;
+  }
+
+  // 1. Obtener elementos existentes del floor
+  const existingElementsResult = await dynamodb
+    .query({
+      TableName: "Venue_Element",
+      IndexName: "floorIdIndex",
+      KeyConditionExpression: "floorId = :floorId",
+      ExpressionAttributeValues: {
+        ":floorId": floorId,
+      },
+    })
+    .promise();
+
+  const existingElementIds = (existingElementsResult.Items || []).map(
+    (e) => e.elementId
+  );
+  const newElementIds = elements.map((e) => e.elementId).filter((id) => id);
+
+  // 2. Detectar elementos a eliminar
+  const elementsToDelete = existingElementIds.filter(
+    (id) => !newElementIds.includes(id)
+  );
+
+  if (elementsToDelete.length > 0) {
+    console.log(
+      `🗑️ Auto-eliminando ${elementsToDelete.length} elementos del floor ${floorId}`
+    );
+    const batchSize = 25;
+    for (let i = 0; i < elementsToDelete.length; i += batchSize) {
+      const batch = elementsToDelete.slice(i, i + batchSize);
+      const deleteRequests = batch.map((elementId) => ({
+        DeleteRequest: {
+          Key: { elementId },
+        },
+      }));
+
+      await dynamodb
+        .batchWrite({
+          RequestItems: {
+            Venue_Element: deleteRequests,
+          },
+        })
+        .promise();
+    }
+  }
+
+  // 3. Si array vacío, solo eliminamos
+  if (elements.length === 0) {
+    console.log(
+      `✅ Array elements vacío - todos los elementos eliminados del floor ${floorId}`
+    );
+    return;
+  }
+
+  console.log(
+    `🎨 Procesando ${elements.length} elementos para floor ${floorId}`
+  );
+
+  const batchSize = 25;
+  for (let i = 0; i < elements.length; i += batchSize) {
+    const batch = elements.slice(i, i + batchSize);
+
+    const putRequests = batch.map((elementData) => {
+      const elementId = elementData.elementId || uuidv4();
+      const isNew = !elementData.elementId;
+
+      return {
+        PutRequest: {
+          Item: {
+            elementId,
+            floorId,
+            venueId,
+            name: elementData.name,
+            type: elementData.type || "other",
+            relX: elementData.relX || 0,
+            relY: elementData.relY || 0,
+            width: elementData.width || 0,
+            height: elementData.height || 0,
+            geometry: elementData.geometry || "RECTANGLE",
+            notes: elementData.notes || "",
+            updatedAt: now,
+            updatedBy: userId,
+            createdAt: isNew ? now : elementData.createdAt || now,
+            createdBy: isNew ? userId : elementData.createdBy || userId,
+          },
+        },
+      };
+    });
+
+    await dynamodb
+      .batchWrite({
+        RequestItems: {
+          Venue_Element: putRequests,
+        },
+      })
+      .promise();
+  }
+
+  console.log(`✅ ${elements.length} elementos procesados`);
+}
+
+/**
+ * Procesa categorías de un floor específico con sincronización
+ */
+async function processFloorCategories(
+  floorId,
+  venueId,
+  eventId,
+  categories,
+  hasSeating,
+  userId,
+  now
+) {
+  // Si categories es undefined, no hacer cambios
+  if (categories === undefined) {
+    console.log(
+      `⚠️ Array categories no enviado para floor ${floorId}, manteniendo existentes`
+    );
+    return { categoriesProcessed: 0, seatsProcessed: 0 };
+  }
+
+  if (!Array.isArray(categories)) {
+    console.log(`⚠️ categories debe ser un array para floor ${floorId}`);
+    return { categoriesProcessed: 0, seatsProcessed: 0 };
+  }
+
+  // 1. Obtener categorías existentes del floor
+  const existingCategoriesResult = await dynamodb
+    .query({
+      TableName: "Venue_Category",
+      IndexName: "floorIdIndex",
+      KeyConditionExpression: "floorId = :floorId",
+      ExpressionAttributeValues: {
+        ":floorId": floorId,
+      },
+    })
+    .promise();
+
+  const existingCategoryIds = (existingCategoriesResult.Items || []).map(
+    (c) => c.categoryId
+  );
+  const newCategoryIds = categories.map((c) => c.categoryId).filter((id) => id);
+
+  // 2. Detectar categorías a eliminar
+  const categoriesToDelete = existingCategoryIds.filter(
+    (id) => !newCategoryIds.includes(id)
+  );
+
+  if (categoriesToDelete.length > 0) {
+    console.log(
+      `🗑️ Auto-eliminando ${categoriesToDelete.length} categorías del floor ${floorId}`
+    );
+
+    // Eliminar seats de cada categoría primero
+    for (const categoryId of categoriesToDelete) {
+      await deleteCategorySeats(categoryId);
+    }
+
+    // Eliminar categorías en batch
+    const batchSize = 25;
+    for (let i = 0; i < categoriesToDelete.length; i += batchSize) {
+      const batch = categoriesToDelete.slice(i, i + batchSize);
+      const deleteRequests = batch.map((categoryId) => ({
+        DeleteRequest: {
+          Key: { categoryId },
+        },
+      }));
+
+      await dynamodb
+        .batchWrite({
+          RequestItems: {
+            Venue_Category: deleteRequests,
+          },
+        })
+        .promise();
+    }
+  }
+
+  // 3. Si array vacío, solo eliminamos
+  if (categories.length === 0) {
+    console.log(
+      `✅ Array categories vacío - todas las categorías eliminadas del floor ${floorId}`
+    );
+    return { categoriesProcessed: 0, seatsProcessed: 0 };
+  }
+
+  console.log(
+    `📦 Procesando ${categories.length} categorías para floor ${floorId}`
+  );
+
+  let totalSeats = 0;
+
+  for (const categoryData of categories) {
+    const categoryId = categoryData.categoryId || uuidv4();
+    const isNew = !categoryData.categoryId;
+
+    const category = {
+      categoryId,
+      floorId,
+      venueId,
+      eventId,
+      name: categoryData.name,
+      color: categoryData.color || "#000000",
+      level: categoryData.level || 0,
+      sortOrder: categoryData.sortOrder || 0,
+      gateId: categoryData.gateId || "",
+      gateName: categoryData.gateName || "",
+      relX: categoryData.relX || 0,
+      relY: categoryData.relY || 0,
+      width: categoryData.width || 0,
+      height: categoryData.height || 0,
+      geometry: categoryData.geometry || "RECTANGLE",
+      config: categoryData.config || "",
+      isAccessibleZone: categoryData.isAccessibleZone || false,
+      description: categoryData.description || "",
+      rows: categoryData.rows || 0,
+      seatsPerRow: categoryData.seatsPerRow || 0,
+      hasPrice: categoryData.hasPrice || false,
+      currency: categoryData.currency || "COP",
+      ticketPrice: categoryData.ticketPrice || 0,
+      floorNumber: categoryData.floorNumber || 1,
+      totalSeats: categoryData.totalSeats || 0,
+      disableSeatsEnabled: categoryData.disableSeatsEnabled || false,
+      updatedAt: now,
+      updatedBy: userId,
+    };
+
+    if (isNew) {
+      category.createDate = now;
+      category.createdBy = userId;
+      console.log(`➕ Creando categoría: ${categoryData.name}`);
+    } else {
+      console.log(`✏️ Actualizando categoría: ${categoryData.name}`);
+    }
+
+    // Solo guardar en Venue_Category si hasSeating es true
+    if (hasSeating) {
+      await dynamodb
+        .put({
+          TableName: "Venue_Category",
+          Item: category,
+        })
+        .promise();
+    }
+
+    // Procesar asientos de la categoría con sincronización
+    if (hasSeating) {
+      const seatsCount = await processSeatsWithSync(
+        categoryId,
+        floorId,
+        venueId,
+        categoryData.seats,
+        userId,
+        now
+      );
+      totalSeats += seatsCount;
+    }
+  }
+
+  return {
+    categoriesProcessed: categories.length,
+    seatsProcessed: totalSeats,
+  };
+}
+
+/**
+ * Procesa asientos en batch para una categoría con sincronización
+ */
+async function processSeatsWithSync(
+  categoryId,
+  floorId,
+  venueId,
+  seats,
+  userId,
+  now
+) {
+  // Si seats es undefined, no hacer cambios
+  if (seats === undefined) {
+    console.log(
+      `⚠️ Array seats no enviado para categoría ${categoryId}, manteniendo existentes`
+    );
+    return 0;
+  }
+
+  if (!Array.isArray(seats)) {
+    console.log(`⚠️ seats debe ser un array para categoría ${categoryId}`);
+    return 0;
+  }
+
+  // 1. Obtener seats existentes de la categoría
+  const existingSeatsResult = await dynamodb
+    .query({
+      TableName: "Venue_Seat",
+      IndexName: "categoryIdIndex",
+      KeyConditionExpression: "categoryId = :categoryId",
+      ExpressionAttributeValues: {
+        ":categoryId": categoryId,
+      },
+    })
+    .promise();
+
+  const existingSeatIds = (existingSeatsResult.Items || []).map(
+    (s) => s.seatId
+  );
+  const newSeatIds = seats.map((s) => s.seatId).filter((id) => id);
+
+  // 2. Detectar seats a eliminar
+  const seatsToDelete = existingSeatIds.filter(
+    (id) => !newSeatIds.includes(id)
+  );
+
+  if (seatsToDelete.length > 0) {
+    console.log(
+      `🗑️ Auto-eliminando ${seatsToDelete.length} asientos de la categoría ${categoryId}`
+    );
+    const batchSize = 25;
+    for (let i = 0; i < seatsToDelete.length; i += batchSize) {
+      const batch = seatsToDelete.slice(i, i + batchSize);
+      const deleteRequests = batch.map((seatId) => ({
+        DeleteRequest: {
+          Key: { seatId },
+        },
+      }));
+
+      await dynamodb
+        .batchWrite({
+          RequestItems: {
+            Venue_Seat: deleteRequests,
+          },
+        })
+        .promise();
+    }
+  }
+
+  // 3. Si array vacío, solo eliminamos
+  if (seats.length === 0) {
+    console.log(
+      `✅ Array seats vacío - todos los asientos eliminados de categoría ${categoryId}`
+    );
+    return 0;
+  }
+
+  console.log(
+    `💺 Procesando ${seats.length} asientos para categoría ${categoryId}`
+  );
+
+  const batchSize = 25;
+  let processedCount = 0;
+
+  for (let i = 0; i < seats.length; i += batchSize) {
+    const batch = seats.slice(i, i + batchSize);
+
+    const putRequests = batch.map((seatData) => {
+      const seatId = seatData.seatId || uuidv4();
+      const isNew = !seatData.seatId;
+
+      return {
+        PutRequest: {
+          Item: {
+            seatId,
+            sectionId: seatData.sectionId || "",
+            categoryId,
+            floorId,
+            venueId,
+            rowLabel: seatData.rowLabel || seatData.row || "",
+            colNumber: seatData.colNumber || seatData.number || 0,
+            seatCode:
+              seatData.seatCode ||
+              `${seatData.rowLabel || seatData.row}${
+                seatData.colNumber || seatData.number
+              }`,
+            seatType: seatData.seatType || "standard",
+            status: (seatData.status || "AVAILABLE").toUpperCase(),
+            isAccessible: seatData.isAccessible || false,
+            notes: seatData.notes || "",
+            updatedAt: now,
+            updatedBy: userId,
+            createdAt: isNew ? now : seatData.createdAt || now,
+            createdBy: isNew ? userId : seatData.createdBy || userId,
+          },
+        },
+      };
+    });
+
+    await dynamodb
+      .batchWrite({
+        RequestItems: {
+          Venue_Seat: putRequests,
+        },
+      })
+      .promise();
+
+    processedCount += batch.length;
+  }
+
+  console.log(`✅ ${processedCount} asientos procesados`);
+  return processedCount;
+}
+
+/**
+ * Procesa categorías independientes (no asociadas a floors)
+ */
+async function processIndependentCategories(
+  venueId,
+  eventId,
+  categories,
+  hasSeating,
+  userId,
+  now,
+  body
+) {
+  console.log(
+    `📦 Procesando ${categories.length} categorías independientes...`
+  );
+
+  const allTicketCategories = [];
+  let categoriesProcessed = 0;
+  let seatsProcessed = 0;
+
+  for (const cat of categories) {
+    const categoryId = cat.categoryId || cat.id || uuidv4();
+    const isNew = !cat.categoryId && !cat.id;
+
+    // Si hasSeating y tiene floorId, crear en Venue_Category
+    if (hasSeating && cat.floorId) {
+      console.log(
+        `💺 Vinculando categoría ${cat.name} con floor ${cat.floorId}`
+      );
+
+      const category = {
+        categoryId,
+        floorId: cat.floorId,
+        venueId,
+        eventId,
+        name: cat.name || cat.categoria,
+        color: cat.color || "#000000",
+        level: cat.level || 0,
+        sortOrder: cat.sortOrder || 0,
+        gateId: cat.gateId || "",
+        gateName: cat.gateName || "",
+        relX: cat.relX || 0,
+        relY: cat.relY || 0,
+        width: cat.width || 0,
+        height: cat.height || 0,
+        geometry: cat.geometry || "RECTANGLE",
+        config: cat.config || "",
+        isAccessibleZone: cat.isAccessibleZone || false,
+        description: cat.descripcion || cat.description || "",
+        rows: cat.rows || 0,
+        seatsPerRow: cat.seatsPerRow || 0,
+        hasPrice: cat.hasPrice || false,
+        currency: cat.currency || "COP",
+        ticketPrice: cat.ticketPrice || 0,
+        floorNumber: cat.floorNumber || 1,
+        totalSeats: cat.totalSeats || 0,
+        disableSeatsEnabled: cat.disableSeatsEnabled || false,
+        updatedAt: now,
+        updatedBy: userId,
+      };
+
+      if (isNew) {
+        category.createDate = now;
+        category.createdBy = userId;
+      }
+
+      await dynamodb
+        .put({
+          TableName: "Venue_Category",
+          Item: category,
+        })
+        .promise();
+
+      categoriesProcessed++;
+
+      // Procesar seats si existen
+      if (cat.seats && Array.isArray(cat.seats) && cat.seats.length > 0) {
+        const count = await processSeats(
+          categoryId,
+          cat.floorId,
+          venueId,
+          cat.seats,
+          userId,
+          now
+        );
+        seatsProcessed += count;
+      }
+    }
+
+    // Agregar a tickets (siempre)
+    allTicketCategories.push({
+      categoria: cat.name || cat.categoria,
+      id: categoryId,
+      cantidadTickets:
+        cat.cantidadTickets || cat.quantity || cat.totalSeats || 0,
+      avaliableCapacity:
+        cat.avaliableCapacity ||
+        cat.cantidadTickets ||
+        cat.quantity ||
+        cat.totalSeats ||
+        0,
+      reservedTickets: cat.reservedTickets || 0,
+      soldTickets: cat.soldTickets || 0,
+      moneda: cat.moneda || cat.currency || "COP",
+      costo: cat.costo || cat.cost || 0,
+      valor: cat.valor || cat.price || cat.ticketPrice || 0,
+      descripcion: cat.descripcion || cat.description || "",
+      imgboleta: cat.imgboleta || cat.image || "",
+      gateId: cat.gateId || "",
+      distributionId: cat.distributionId || uuidv4(),
+      distributionCreateDate: cat.distributionCreateDate || now,
+    });
+  }
+
+  // Actualizar tabla Tickets
+  let ticketResult = null;
+  if (eventId && allTicketCategories.length > 0) {
+    ticketResult = await updateTicketsTable(
+      eventId,
+      venueId,
+      allTicketCategories,
+      hasSeating,
+      now,
+      body
+    );
+  }
+
+  return {
+    ...ticketResult,
+    categoriesProcessed,
+    seatsProcessed,
+  };
+}
+
+/**
+ * Actualiza o crea el registro en la tabla Tickets
+ * Preserva datos importantes como reservedTickets y soldTickets
+ */
+async function updateTicketsTable(
+  eventId,
+  venueId,
+  categories,
+  hasSeating,
+  now,
+  body
+) {
+  console.log(
+    `🎫 Actualizando tabla Tickets con ${categories.length} categorías`
+  );
+
+  // Buscar si ya existe un registro de tickets para este evento
+  const existingTickets = await dynamodb
+    .query({
+      TableName: "Tickets",
+      IndexName: "eventIdIndex",
+      KeyConditionExpression: "eventId = :eventId",
+      ExpressionAttributeValues: {
+        ":eventId": eventId,
+      },
+    })
+    .promise();
+
+  let ticketId;
+  let action;
+
+  if (existingTickets.Items && existingTickets.Items.length > 0) {
+    // Actualizar registro existente
+    ticketId = existingTickets.Items[0].id;
+    const existingBoletas = existingTickets.Items[0].boletas || [];
+    console.log(`📝 Actualizando registro existente de tickets: ${ticketId}`);
+
+    // Crear mapa de categorías existentes por ID para preservar datos
+    const existingCategoriesMap = {};
+    for (const boleta of existingBoletas) {
+      if (boleta.id) {
+        existingCategoriesMap[boleta.id] = boleta;
+      }
+    }
+
+    // Combinar nuevas categorías con datos existentes
+    const mergedCategories = categories.map((newCat) => {
+      const existingCat = existingCategoriesMap[newCat.id];
+
+      if (existingCat) {
+        // Preservar datos de ventas y reservas
+        console.log(
+          `🔄 Preservando datos de ventas para categoría: ${newCat.categoria}`
+        );
+        return {
+          ...newCat,
+          reservedTickets: existingCat.reservedTickets || 0,
+          soldTickets: existingCat.soldTickets || 0,
+          avaliableCapacity: Math.max(
+            0,
+            (newCat.cantidadTickets || 0) -
+              (existingCat.reservedTickets || 0) -
+              (existingCat.soldTickets || 0)
+          ),
+          distributionId: existingCat.distributionId || newCat.distributionId,
+          distributionCreateDate:
+            existingCat.distributionCreateDate || newCat.distributionCreateDate,
+        };
+      }
+
+      // Nueva categoría, usar valores por defecto
+      return newCat;
+    });
+
+    await dynamodb
+      .update({
+        TableName: "Tickets",
+        Key: { id: ticketId },
+        UpdateExpression:
+          "SET boletas = :boletas, updatedAt = :updatedAt, hasSeating = :hasSeating, venueId = :venueId",
+        ExpressionAttributeValues: {
+          ":boletas": mergedCategories,
+          ":updatedAt": now,
+          ":hasSeating": hasSeating,
+          ":venueId": venueId,
+        },
+      })
+      .promise();
+
+    action = "updated";
+    console.log(`✅ Tickets actualizados correctamente con datos preservados`);
+  } else {
+    // Crear nuevo registro
+    ticketId = uuidv4().substring(0, 10);
+    console.log(`➕ Creando nuevo registro de tickets: ${ticketId}`);
+
+    const ticketRecord = {
+      id: ticketId,
+      eventId: eventId,
+      venueId: venueId,
+      boletas: categories,
+      fechaIniVent: body.fechaIniVent || now,
+      fechaFinVent: body.fechaFinVent || now,
+      horaIniVent: body.horaIniVent || "00:00",
+      horaFinVent: body.horaFinVent || "23:59",
+      createDate: now,
+      hasSeating: hasSeating,
+    };
+
+    await dynamodb
+      .put({
+        TableName: "Tickets",
+        Item: ticketRecord,
+      })
+      .promise();
+
+    action = "created";
+    console.log(`✅ Tickets creados correctamente`);
+  }
+
+  return {
+    ticketId,
+    action,
+    categoriesCount: categories.length,
+  };
+}
+
+/**
+ * Procesa eliminaciones en batch
+ * Formato esperado en body.deletions:
+ * {
+ *   floors: ["floorId1", "floorId2"],
+ *   categories: ["categoryId1", "categoryId2"],
+ *   seats: ["seatId1", "seatId2"],
+ *   elements: ["elementId1", "elementId2"]
+ * }
+ */
+async function processBatchDeletions(venueId, deletions, eventId) {
+  const results = {
+    floors: 0,
+    categories: 0,
+    seats: 0,
+    elements: 0,
+  };
+
+  if (!deletions || Object.keys(deletions).length === 0) {
+    console.log("⚠️ No hay eliminaciones para procesar");
+    return results;
+  }
+
+  console.log("🗑️ Procesando eliminaciones en batch...");
+
+  // Eliminar floors
+  if (
+    deletions.floors &&
+    Array.isArray(deletions.floors) &&
+    deletions.floors.length > 0
+  ) {
+    console.log(`🗑️ Eliminando ${deletions.floors.length} floors...`);
+    for (const floorId of deletions.floors) {
+      await deleteFloor(floorId, venueId);
+      results.floors++;
+    }
+  }
+
+  // Eliminar categorías
+  if (
+    deletions.categories &&
+    Array.isArray(deletions.categories) &&
+    deletions.categories.length > 0
+  ) {
+    console.log(`🗑️ Eliminando ${deletions.categories.length} categorías...`);
+
+    const batchSize = 25;
+    for (let i = 0; i < deletions.categories.length; i += batchSize) {
+      const batch = deletions.categories.slice(i, i + batchSize);
+
+      const deleteRequests = batch.map((categoryId) => ({
+        DeleteRequest: {
+          Key: { categoryId },
+        },
+      }));
+
+      await dynamodb
+        .batchWrite({
+          RequestItems: {
+            Venue_Category: deleteRequests,
+          },
+        })
+        .promise();
+
+      results.categories += batch.length;
+    }
+    console.log(`✅ ${deletions.categories.length} categorías eliminadas`);
+  }
+
+  // Eliminar seats
+  if (
+    deletions.seats &&
+    Array.isArray(deletions.seats) &&
+    deletions.seats.length > 0
+  ) {
+    console.log(`🗑️ Eliminando ${deletions.seats.length} asientos...`);
+
+    const batchSize = 25;
+    for (let i = 0; i < deletions.seats.length; i += batchSize) {
+      const batch = deletions.seats.slice(i, i + batchSize);
+
+      const deleteRequests = batch.map((seatId) => ({
+        DeleteRequest: {
+          Key: { seatId },
+        },
+      }));
+
+      await dynamodb
+        .batchWrite({
+          RequestItems: {
+            Venue_Seat: deleteRequests,
+          },
+        })
+        .promise();
+
+      results.seats += batch.length;
+    }
+    console.log(`✅ ${deletions.seats.length} asientos eliminados`);
+  }
+
+  // Eliminar elements
+  if (
+    deletions.elements &&
+    Array.isArray(deletions.elements) &&
+    deletions.elements.length > 0
+  ) {
+    console.log(`🗑️ Eliminando ${deletions.elements.length} elementos...`);
+
+    const batchSize = 25;
+    for (let i = 0; i < deletions.elements.length; i += batchSize) {
+      const batch = deletions.elements.slice(i, i + batchSize);
+
+      const deleteRequests = batch.map((elementId) => ({
+        DeleteRequest: {
+          Key: { elementId },
+        },
+      }));
+
+      await dynamodb
+        .batchWrite({
+          RequestItems: {
+            Venue_Element: deleteRequests,
+          },
+        })
+        .promise();
+
+      results.elements += batch.length;
+    }
+    console.log(`✅ ${deletions.elements.length} elementos eliminados`);
+  }
+
+  return results;
+}
+
+/**
+ * Elimina un floor y todos sus elementos relacionados (categorías, seats, elements)
+ */
+async function deleteFloor(floorId, venueId) {
+  console.log(`🗑️ Eliminando floor ${floorId} y sus elementos relacionados...`);
+
+  // Eliminar categorías del floor
+  const categories = await dynamodb
+    .query({
+      TableName: "Venue_Category",
+      IndexName: "floorIdIndex",
+      KeyConditionExpression: "floorId = :floorId",
+      ExpressionAttributeValues: {
+        ":floorId": floorId,
+      },
+    })
+    .promise();
+
+  if (categories.Items && categories.Items.length > 0) {
+    // Eliminar seats de cada categoría
+    for (const category of categories.Items) {
+      await deleteCategorySeats(category.categoryId);
+    }
+
+    // Eliminar categorías en batch
+    const batchSize = 25;
+    for (let i = 0; i < categories.Items.length; i += batchSize) {
+      const batch = categories.Items.slice(i, i + batchSize);
+      const deleteRequests = batch.map((cat) => ({
+        DeleteRequest: {
+          Key: { categoryId: cat.categoryId },
+        },
+      }));
+
+      await dynamodb
+        .batchWrite({
+          RequestItems: {
+            Venue_Category: deleteRequests,
+          },
+        })
+        .promise();
+    }
+  }
+
+  // Eliminar elementos del floor
+  const elements = await dynamodb
+    .query({
+      TableName: "Venue_Element",
+      IndexName: "floorIdIndex",
+      KeyConditionExpression: "floorId = :floorId",
+      ExpressionAttributeValues: {
+        ":floorId": floorId,
+      },
+    })
+    .promise();
+
+  if (elements.Items && elements.Items.length > 0) {
+    const batchSize = 25;
+    for (let i = 0; i < elements.Items.length; i += batchSize) {
+      const batch = elements.Items.slice(i, i + batchSize);
+      const deleteRequests = batch.map((elem) => ({
+        DeleteRequest: {
+          Key: { elementId: elem.elementId },
+        },
+      }));
+
+      await dynamodb
+        .batchWrite({
+          RequestItems: {
+            Venue_Element: deleteRequests,
+          },
+        })
+        .promise();
+    }
+  }
+
+  // Eliminar el floor
+  await dynamodb
+    .delete({
+      TableName: "Venue_Floor",
+      Key: { floorId },
+    })
+    .promise();
+
+  console.log(`✅ Floor ${floorId} eliminado completamente`);
+}
+
+/**
+ * Elimina todos los seats de una categoría
+ */
+async function deleteCategorySeats(categoryId) {
+  const seats = await dynamodb
+    .query({
+      TableName: "Venue_Seat",
+      IndexName: "categoryIdIndex",
+      KeyConditionExpression: "categoryId = :categoryId",
+      ExpressionAttributeValues: {
+        ":categoryId": categoryId,
+      },
+    })
+    .promise();
+
+  if (seats.Items && seats.Items.length > 0) {
+    const batchSize = 25;
+    for (let i = 0; i < seats.Items.length; i += batchSize) {
+      const batch = seats.Items.slice(i, i + batchSize);
+      const deleteRequests = batch.map((seat) => ({
+        DeleteRequest: {
+          Key: { seatId: seat.seatId },
+        },
+      }));
+
+      await dynamodb
+        .batchWrite({
+          RequestItems: {
+            Venue_Seat: deleteRequests,
+          },
+        })
+        .promise();
+    }
+  }
+}
+
+/**
+ * Sincroniza todas las categorías del venue con la tabla Tickets
+ * Recolecta categorías de todos los floors y actualiza Tickets automáticamente
+ * Preserva datos de ventas y reservas existentes
+ */
+async function syncAllCategoriesToTickets(
+  venueId,
+  eventId,
+  hasSeating,
+  userId,
+  now,
+  body
+) {
+  console.log("🔍 Obteniendo todas las categorías del venue...");
+
+  // 1. Obtener todas las categorías actuales de Venue_Category
+  const categoriesResult = await dynamodb
+    .query({
+      TableName: "Venue_Category",
+      IndexName: "venueIdIndex",
+      KeyConditionExpression: "venueId = :venueId",
+      ExpressionAttributeValues: {
+        ":venueId": venueId,
+      },
+    })
+    .promise();
+
+  const venueCategories = categoriesResult.Items || [];
+  console.log(
+    `📦 Encontradas ${venueCategories.length} categorías en Venue_Category`
+  );
+
+  // 2. Obtener categorías existentes en Tickets para preservar datos
+  const existingTickets = await dynamodb
+    .query({
+      TableName: "Tickets",
+      IndexName: "eventIdIndex",
+      KeyConditionExpression: "eventId = :eventId",
+      ExpressionAttributeValues: {
+        ":eventId": eventId,
+      },
+    })
+    .promise();
+
+  const existingBoletas =
+    existingTickets.Items && existingTickets.Items.length > 0
+      ? existingTickets.Items[0].boletas || []
+      : [];
+
+  // Crear mapa de categorías existentes por ID
+  const existingCategoriesMap = {};
+  for (const boleta of existingBoletas) {
+    if (boleta.id) {
+      existingCategoriesMap[boleta.id] = boleta;
+    }
+  }
+
+  // 3. Transformar categorías a formato de Tickets
+  const ticketCategories = [];
+
+  for (const cat of venueCategories) {
+    // Obtener conteo de seats si hasSeating
+    let totalSeats = cat.totalSeats || 0;
+    if (hasSeating && cat.categoryId) {
+      const seatsResult = await dynamodb
+        .query({
+          TableName: "Venue_Seat",
+          IndexName: "categoryIdIndex",
+          KeyConditionExpression: "categoryId = :categoryId",
+          Select: "COUNT",
+          ExpressionAttributeValues: {
+            ":categoryId": cat.categoryId,
+          },
+        })
+        .promise();
+      totalSeats = seatsResult.Count || 0;
+    }
+
+    // Verificar si existe en Tickets para preservar datos
+    const existingCat = existingCategoriesMap[cat.categoryId];
+
+    const reservedTickets = existingCat ? existingCat.reservedTickets || 0 : 0;
+    const soldTickets = existingCat ? existingCat.soldTickets || 0 : 0;
+    const avaliableCapacity = Math.max(
+      0,
+      totalSeats - reservedTickets - soldTickets
+    );
+
+    ticketCategories.push({
+      categoria: cat.name,
+      id: cat.categoryId,
+      cantidadTickets: totalSeats,
+      avaliableCapacity: avaliableCapacity,
+      reservedTickets: reservedTickets,
+      soldTickets: soldTickets,
+      moneda: cat.currency || "COP",
+      costo: existingCat ? existingCat.costo || 0 : 0,
+      valor: cat.ticketPrice || 0,
+      descripcion: cat.description || "",
+      imgboleta: existingCat ? existingCat.imgboleta || "" : "",
+      gateId: cat.gateId || "",
+      distributionId: existingCat
+        ? existingCat.distributionId || uuidv4()
+        : uuidv4(),
+      distributionCreateDate: existingCat
+        ? existingCat.distributionCreateDate || now
+        : now,
+    });
+
+    if (existingCat && (reservedTickets > 0 || soldTickets > 0)) {
+      console.log(
+        `🔄 Preservando datos para ${cat.name}: ${soldTickets} vendidos, ${reservedTickets} reservados`
+      );
+    }
+  }
+
+  console.log(
+    `🎫 Preparadas ${ticketCategories.length} categorías para Tickets`
+  );
+
+  // 4. Si no hay categorías en Venue_Category pero hay eventId, verificar Tickets existentes
+  if (ticketCategories.length === 0 && eventId) {
+    console.log(
+      "⚠️ No hay categorías en Venue_Category, verificando Tickets..."
+    );
+
+    if (existingBoletas.length > 0) {
+      console.log(
+        `📋 Manteniendo ${existingBoletas.length} categorías existentes en Tickets`
+      );
+      return {
+        action: "preserved",
+        categoriesCount: existingBoletas.length,
+        message:
+          "No hay categorías en Venue_Category, se mantienen las existentes en Tickets",
+      };
+    }
+  }
+
+  // 5. Actualizar tabla Tickets con sincronización completa
+  if (eventId && ticketCategories.length > 0) {
+    const result = await updateTicketsTable(
+      eventId,
+      venueId,
+      ticketCategories,
+      hasSeating,
+      now,
+      body
+    );
+
+    console.log("✅ Sincronización con Tickets completada");
+
+    // 🎫 SINCRONIZAR TICKETS DISTRIBUTION
+    // Actualizar o crear las boletas individuales en TicketsDistribution
+    let distributionSync = null;
+    if (result && result.ticketId) {
+      try {
+        distributionSync = await syncTicketsDistribution(
+          eventId,
+          venueId,
+          result.ticketId,
+          ticketCategories,
+          now
+        );
+        console.log(
+          `✅ TicketsDistribution sincronizado: ${distributionSync.created} creados, ${distributionSync.updated} actualizados`
+        );
+      } catch (distError) {
+        console.error("❌ Error sincronizando TicketsDistribution:", distError);
+        // No fallar toda la operación si falla la sincronización de distributions
+      }
+    }
+
+    return {
+      ...result,
+      distributionSync,
+      message:
+        "Categorías sincronizadas automáticamente con Tickets y TicketsDistribution",
+    };
+  }
+
+  console.log(
+    "⚠️ No se requiere actualización de Tickets (sin eventId o sin categorías)"
+  );
+  return {
+    action: "skipped",
+    categoriesCount: 0,
+    message: "No hay categorías o eventId para sincronizar",
+  };
+}

@@ -1,0 +1,92 @@
+org: events
+service: staff-access
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-2
+  stage: qa
+  environment:
+    STAFF_ACCESS_TABLE_NAME: StaffAccess-qa
+    USERS_TABLE: Client-qa
+    EVENTS_TABLE: Eventos-qa
+    VENUES_TABLE: Venues-qa
+    NOTIFICATIONS_FUNCTION: notifications-qa-triggerNotification
+    PROFILE_IMAGES_BUCKET: doeventprofileimagesbucket
+    PROFILE_IMAGES_BUCKET_REGION: us-east-1
+    CORS_ALLOWED_ORIGINS: https://qa.doeventsapp.com,http://localhost:5173,https://localhost,capacitor://localhost
+    DYNAMODB_REGION: us-east-2
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:GetItem
+            - dynamodb:BatchGetItem
+            - dynamodb:PutItem
+            - dynamodb:DeleteItem
+            - dynamodb:BatchWriteItem
+          Resource:
+            - arn:aws:dynamodb:us-east-2:519010577666:table/StaffAccess-qa
+            - arn:aws:dynamodb:us-east-2:519010577666:table/StaffAccess-qa/index/*
+        - Effect: Allow
+          Action:
+            - dynamodb:BatchGetItem
+            - dynamodb:GetItem
+            - dynamodb:Query
+          Resource:
+            - arn:aws:dynamodb:us-east-2:519010577666:table/Client-qa
+            - arn:aws:dynamodb:us-east-2:519010577666:table/Client-qa/index/*
+            - arn:aws:dynamodb:us-east-2:519010577666:table/Eventos-qa
+            - arn:aws:dynamodb:us-east-2:519010577666:table/Eventos-qa/index/*
+            - arn:aws:dynamodb:us-east-2:519010577666:table/Venues-qa
+            - arn:aws:dynamodb:us-east-2:519010577666:table/Venues-qa/index/*
+        - Effect: Allow
+          Action:
+            - lambda:InvokeFunction
+          Resource:
+            - arn:aws:lambda:us-east-2:519010577666:function:notifications-qa-triggerNotification
+        - Effect: Allow
+          Action:
+            - s3:GetObject
+          Resource:
+            - arn:aws:s3:::doeventprofileimagesbucket/*
+
+package:
+  patterns:
+    - '!node_modules/**'
+    - 'dist/**'
+
+functions:
+  saveAssignments:
+    handler: dist/handler.saveAssignments
+    events:
+      - http:
+          path: assignments
+          method: post
+          cors: true
+  getAdminView:
+    handler: dist/handler.getAdminView
+    events:
+      - http:
+          path: admin/events/{eventId}
+          method: get
+          cors: true
+  getEventsStaffSummary:
+    handler: dist/handler.getEventsStaffSummary
+    events:
+      - http:
+          path: admin/events-summary
+          method: get
+          cors: true
+  getStaffView:
+    handler: dist/handler.getStaffView
+    events:
+      - http:
+          path: staff/{userId}
+          method: get
+          cors: true
+
+# Tabla StaffAccess-qa ya existe en us-east-2

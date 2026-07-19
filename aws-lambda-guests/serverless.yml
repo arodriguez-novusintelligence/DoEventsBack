@@ -1,0 +1,513 @@
+service: aws-lambda-guests
+
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    FAVORITE_USERS_TABLE: FavoriteUsers
+    CLIENT_TABLE: Client
+    EVENT_GROUPS_TABLE: EventGroups
+    EVENT_GUESTS_TABLE: EventGuests
+    EVENT_INVITATIONS_TABLE: EventInvitations
+    EVENTS_TABLE: Eventos
+    EVENTS_ALT_TABLE: Events
+    FAVORITE_GROUPS_TABLE: FavoriteGroups
+    FOLLOWERS_TABLE: Followers
+    PROFILE_IMAGES_BUCKET: doeventprofileimagesbucket
+    NOTIFICATIONS_FUNCTION: notifications-${self:provider.stage}-triggerNotification
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:Query
+        - dynamodb:Scan
+      Resource:
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/FavoriteUsers
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/FavoriteGroups
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/EventGuests
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/EventGroups
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/EventInvitations
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/Client
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/Events
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/Eventos
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/Followers
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/imagenes
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/FavoriteUsers/index/*
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/FavoriteGroups/index/*
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/EventGuests/index/*
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/EventGroups/index/*
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/EventInvitations/index/*
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/Client/index/*
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/Events/index/*
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/Eventos/index/*
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/Followers/index/*
+        - arn:aws:dynamodb:${self:provider.region}:519010577666:table/imagenes/index/*
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource:
+        - arn:aws:lambda:${self:provider.region}:519010577666:function:notifications-${self:provider.stage}-triggerNotification
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+      Resource:
+        - arn:aws:s3:::doeventprofileimagesbucket/*
+        - arn:aws:s3:::doeventimageeventbucket/*
+
+functions:
+  getFavorites:
+    handler: src/getFavoritesHandler.handler
+    events:
+      - http:
+          path: /users/{userId}/favorites
+          method: get
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  getContacts:
+    handler: src/getContactsHandler.handler
+    events:
+      - http:
+          path: /users/{userId}/contacts
+          method: get
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  addFavorite:
+    handler: src/addFavoriteHandler.handler
+    events:
+      - http:
+          path: /users/{userId}/favorites
+          method: post
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  removeFavorite:
+    handler: src/removeFavoriteHandler.handler
+    events:
+      - http:
+          path: /users/{userId}/favorites/{favoriteId}
+          method: delete
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+      - http:
+          path: /users/{userId}/favorites
+          method: delete
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  getOthers:
+    handler: src/getOthersHandler.handler
+    events:
+      - http:
+          path: /users/{userId}/others
+          method: get
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  addUser:
+    handler: src/addUserHandler.handler
+    events:
+      - http:
+          path: /users/{userId}/users
+          method: post
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  toggleFavorite:
+    handler: src/toggleFavoriteHandler.handler
+    events:
+      - http:
+          path: /users/{userId}/users/{favoriteId}/favorite
+          method: put
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  updateFavoriteUser:
+    handler: src/updateFavoriteUserHandler.handler
+    events:
+      - http:
+          path: /users/{userId}/favorites/{favoriteId}
+          method: put
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  getFavoriteGroups:
+    handler: src/getFavoriteGroupsHandler.handler
+    events:
+      - http:
+          path: /users/{userId}/groups
+          method: get
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  addFavoriteGroup:
+    handler: src/addFavoriteGroupHandler.handler
+    events:
+      - http:
+          path: /users/{userId}/groups
+          method: post
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  updateFavoriteGroup:
+    handler: src/updateFavoriteGroupHandler.handler
+    events:
+      - http:
+          path: /users/{userId}/groups/{groupId}
+          method: put
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  batchUpdateFavoriteGroups:
+    handler: src/batchUpdateFavoriteGroupsHandler.handler
+    events:
+      - http:
+          path: /users/{userId}/groups/batch
+          method: put
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  removeFavoriteGroup:
+    handler: src/removeFavoriteGroupHandler.handler
+    events:
+      - http:
+          path: /users/{userId}/groups/{groupId}
+          method: delete
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  batchDeleteFavoriteGroups:
+    handler: src/batchDeleteFavoriteGroupsHandler.handler
+    events:
+      - http:
+          path: /users/{userId}/groups/batch
+          method: delete
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  getEventGuests:
+    handler: src/getEventGuestsHandler.handler
+    events:
+      - http:
+          path: /events/{eventId}/guests
+          method: get
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  addEventGuest:
+    handler: src/addEventGuestHandler.handler
+    events:
+      - http:
+          path: /events/{eventId}/guests
+          method: post
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  removeEventGuest:
+    handler: src/removeEventGuestHandler.handler
+    events:
+      - http:
+          path: /events/{eventId}/guests/{guestId}
+          method: delete
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  getEventGroups:
+    handler: src/getEventGroupsHandler.handler
+    events:
+      - http:
+          path: /events/{eventId}/groups
+          method: get
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  addEventGroup:
+    handler: src/addEventGroupHandler.handler
+    events:
+      - http:
+          path: /events/{eventId}/groups
+          method: post
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  updateEventGroup:
+    handler: src/updateEventGroupHandler.handler
+    events:
+      - http:
+          path: /events/{eventId}/groups/{groupId}
+          method: put
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  removeEventGroup:
+    handler: src/removeEventGroupHandler.handler
+    events:
+      - http:
+          path: /events/{eventId}/groups/{groupId}
+          method: delete
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  sendEventInvitations:
+    handler: src/sendEventInvitationsHandler.handler
+    events:
+      - http:
+          path: /events/{eventId}/invitations
+          method: post
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  getEventInvitations:
+    handler: src/getEventInvitationsHandler.handler
+    events:
+      - http:
+          path: /events/{eventId}/invitations
+          method: get
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+  updateInvitationStatus:
+    handler: src/updateInvitationStatusHandler.handler
+    events:
+      - http:
+          path: /events/{eventId}/invitations/{invitationId}
+          method: put
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Accept
+              - Access-Control-Allow-Origin
+            allowCredentials: false
+
+

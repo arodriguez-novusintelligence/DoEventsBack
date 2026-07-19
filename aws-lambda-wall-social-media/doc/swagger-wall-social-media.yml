@@ -1,0 +1,466 @@
+openapi: 3.0.1
+info:
+  title: Social Feed API
+  description: API para gestionar publicaciones, comentarios, likes, seguidores, bloqueos, reportes y reposts.
+  version: "1.0.0"
+
+paths:
+  /comments:
+    post:
+      summary: Crear comentario
+      description: Registra un comentario en una publicación.
+      tags: [Comentarios]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCommentRequest"
+      responses:
+        "200":
+          description: Comentario creado exitosamente
+        "400":
+          description: Parámetros faltantes
+        "500":
+          description: Error interno
+
+  /comments/{comment_id}:
+    get:
+      summary: Obtener comentario
+      description: Devuelve el contenido de un comentario según su ID.
+      tags: [Comentarios]
+      parameters:
+        - name: comment_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Comentario encontrado
+        "404":
+          description: Comentario no encontrado
+        "500":
+          description: Error interno
+
+  /likes:
+    post:
+      summary: Dar like
+      description: Registra un like a una publicación.
+      tags: [Likes]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLikeRequest"
+      responses:
+        "200":
+          description: Like registrado
+        "400":
+          description: Parámetros faltantes
+        "500":
+          description: Error interno
+
+  /likes/{like_id}:
+    get:
+      summary: Consultar like
+      description: Devuelve información de un like por su ID.
+      tags: [Likes]
+      parameters:
+        - name: like_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Like encontrado
+        "404":
+          description: Like no encontrado
+        "500":
+          description: Error interno
+
+  /follows:
+    post:
+      summary: Seguir usuario
+      description: Registra una relación de seguimiento entre usuarios.
+      tags: [Follows]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateFollowRequest"
+      responses:
+        "200":
+          description: Seguimiento registrado
+        "400":
+          description: Parámetros faltantes
+        "500":
+          description: Error interno
+
+  /follows/{follow_id}:
+    get:
+      summary: Obtener seguimiento
+      description: Devuelve información de seguimiento entre usuarios.
+      tags: [Follows]
+      parameters:
+        - name: follow_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Seguimiento encontrado
+        "404":
+          description: Seguimiento no encontrado
+        "500":
+          description: Error interno
+
+  /block:
+    post:
+      summary: Bloquear usuario
+      description: Bloquea o desbloquea a otro usuario.
+      tags: [Bloqueos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlockUserRequest"
+      responses:
+        "200":
+          description: Estado actualizado correctamente
+        "400":
+          description: Parámetros faltantes
+        "500":
+          description: Error interno
+
+  /posts:
+    post:
+      summary: Crear publicación
+      description: Registra una nueva publicación.
+      tags: [Posts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePostRequest"
+      responses:
+        "200":
+          description: Publicación creada
+        "400":
+          description: Parámetros faltantes
+        "500":
+          description: Error interno
+
+  /posts/{post_id}:
+    get:
+      summary: Obtener publicación
+      description: Devuelve una publicación específica por ID.
+      tags: [Posts]
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Publicación encontrada
+        "404":
+          description: Publicación no encontrada
+        "500":
+          description: Error interno
+
+  /reports:
+    post:
+      summary: Reportar publicación
+      description: Permite reportar contenido inapropiado.
+      tags: [Reportes]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReportRequest"
+      responses:
+        "200":
+          description: Reporte enviado
+        "400":
+          description: Parámetros faltantes
+        "500":
+          description: Error interno
+
+  /reports/{report_id}:
+    get:
+      summary: Obtener reporte
+      description: Devuelve un reporte por su ID.
+      tags: [Reportes]
+      parameters:
+        - name: report_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Reporte encontrado
+        "404":
+          description: Reporte no encontrado
+        "500":
+          description: Error interno
+
+  /reposts:
+    post:
+      summary: Repostear publicación
+      description: Permite compartir una publicación existente.
+      tags: [Reposts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRepostRequest"
+      responses:
+        "200":
+          description: Repost exitoso
+        "400":
+          description: Parámetros faltantes
+        "500":
+          description: Error interno
+
+  /reposts/{repost_id}:
+    get:
+      summary: Obtener repost
+      description: Devuelve información de un repost específico.
+      tags: [Reposts]
+      parameters:
+        - name: repost_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Repost encontrado
+        "404":
+          description: Repost no encontrado
+        "500":
+          description: Error interno
+
+  /client/follower/remove:
+    post:
+      summary: Eliminar seguidor
+      description: Permite a un usuario eliminar a uno de sus seguidores.
+      tags: [Seguidores]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RemoveFollowerRequest"
+      responses:
+        "200":
+          description: Seguidor eliminado exitosamente
+        "400":
+          description: Parámetros faltantes
+        "404":
+          description: Usuario o seguidor no encontrado
+        "500":
+          description: Error interno
+
+  /client/follower/block:
+    post:
+      summary: Bloquear seguidor
+      description: Permite a un usuario bloquear a uno de sus seguidores.
+      tags: [Seguidores]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlockFollowerRequest"
+      responses:
+        "200":
+          description: Seguidor bloqueado exitosamente
+        "400":
+          description: Parámetros faltantes o usuario ya bloqueado
+        "404":
+          description: Usuario o seguidor no encontrado
+        "500":
+          description: Error interno
+
+  /client/follow/respond:
+    post:
+      summary: Responder solicitud de seguimiento
+      description: Permite aceptar o rechazar una solicitud de seguimiento.
+      tags: [Seguidores]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RespondFollowRequest"
+      responses:
+        "200":
+          description: Solicitud procesada exitosamente
+        "400":
+          description: Parámetros faltantes o solicitud ya procesada
+        "404":
+          description: Solicitud de seguimiento no encontrada
+        "500":
+          description: Error interno
+
+  /client/follower/unblock:
+    post:
+      summary: Desbloquear seguidor
+      description: Permite a un usuario desbloquear a uno de sus seguidores bloqueados.
+      tags: [Seguidores]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UnblockFollowerRequest"
+      responses:
+        "200":
+          description: Seguidor desbloqueado exitosamente
+        "400":
+          description: Parámetros faltantes o usuario no bloqueado
+        "404":
+          description: Usuario, seguidor o relación no encontrada
+        "500":
+          description: Error interno
+
+components:
+  schemas:
+    CreateCommentRequest:
+      type: object
+      properties:
+        comment_id:
+          type: string
+        post_id:
+          type: string
+        client_id:
+          type: string
+        content:
+          type: string
+
+    CreateLikeRequest:
+      type: object
+      properties:
+        like_id:
+          type: string
+        post_id:
+          type: string
+        client_id:
+          type: string
+
+    CreateFollowRequest:
+      type: object
+      properties:
+        follow_id:
+          type: string
+        client_id:
+          type: string
+        follow_client_id:
+          type: string
+
+    BlockUserRequest:
+      type: object
+      properties:
+        id_usuario_bloqueado:
+          type: string
+        id_cliente:
+          type: string
+        estado:
+          type: string
+
+    CreatePostRequest:
+      type: object
+      properties:
+        post_id:
+          type: string
+        client_id:
+          type: string
+        content:
+          type: string
+
+    CreateReportRequest:
+      type: object
+      properties:
+        report_id:
+          type: string
+        post_id:
+          type: string
+        client_id:
+          type: string
+        reason:
+          type: string
+
+    CreateRepostRequest:
+      type: object
+      properties:
+        repost_id:
+          type: string
+        post_id:
+          type: string
+        client_id:
+          type: string
+
+    RemoveFollowerRequest:
+      type: object
+      required:
+        - userId
+        - followerId
+      properties:
+        userId:
+          type: string
+          description: ID del usuario que elimina al seguidor
+        followerId:
+          type: string
+          description: ID del seguidor a eliminar
+
+    BlockFollowerRequest:
+      type: object
+      required:
+        - userId
+        - followerId
+      properties:
+        userId:
+          type: string
+          description: ID del usuario que bloquea al seguidor
+        followerId:
+          type: string
+          description: ID del seguidor a bloquear
+
+    RespondFollowRequest:
+      type: object
+      required:
+        - follow_id
+        - action
+      properties:
+        follow_id:
+          type: string
+          description: ID de la solicitud de seguimiento
+        action:
+          type: string
+          enum: [accept, reject]
+          description: Acción a realizar (aceptar o rechazar)
+
+    UnblockFollowerRequest:
+      type: object
+      required:
+        - userId
+        - followerId
+      properties:
+        userId:
+          type: string
+          description: ID del usuario que desbloquea al seguidor
+        followerId:
+          type: string
+          description: ID del seguidor a desbloquear

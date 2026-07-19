@@ -1,0 +1,91 @@
+﻿
+serverless : (node:18160) Warning: NodeDeprecationWarning: The AWS SDK for JavaScript (v3) will
+En línea: 1 Carácter: 1
++ serverless invoke -f processPaymentCallback --data '{\"body\":\"{\\\" ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:18160) Wa...cript (v3) will:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+no longer support Node.js v18.19.1 in January 2026.
+
+To continue receiving updates to AWS services, bug fixes, and security
+updates please upgrade to a supported Node.js LTS version.
+
+More information can be found at: https://a.co/c895JFp
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true
+    },
+    "body": "{\n  \"processPaymentCallback\": {\n    \"message\": \"Orden actualizada, boletas liberadas debido a pago fallido\",\n    \"order_id\": \"aae2176f-8dd6-4b29-8e2e-621ff49e6c85\",\n    \"status\": \"REJECTED\",\n    \"tickets_released\": 0\n  }\n}"
+}
+
+----------------------
+
+ae2176f-8dd6-4b29-8e2e-621ff49e6c85"
+2026-01-29 21:39:45.183 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Ticket con orderId: "test_4Ps9Ct" (tipo: string), comparando con "aae2176f-8dd6-4b29-8e2e-621ff49e6c85"
+2026-01-29 21:39:45.183 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Ticket con orderId: "test_TAnWY1" (tipo: string), comparando con "aae2176f-8dd6-4b29-8e2e-621ff49e6c85"
+2026-01-29 21:39:45.183 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Ticket con orderId: "test_TAnWY1" (tipo: string), comparando con "aae2176f-8dd6-4b29-8e2e-621ff49e6c85"
+2026-01-29 21:39:45.183 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Ticket con orderId: "test_ZyOq0a" (tipo: string), comparando con "aae2176f-8dd6-4b29-8e2e-621ff49e6c85"
+2026-01-29 21:39:45.183 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Ticket con orderId: "test_9Ld4Gl" (tipo: string), comparando con "aae2176f-8dd6-4b29-8e2e-621ff49e6c85"
+2026-01-29 21:39:45.183 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Ticket con orderId: "test_LZ7rxk" (tipo: string), comparando con "aae2176f-8dd6-4b29-8e2e-621ff49e6c85"
+2026-01-29 21:39:45.183 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Ticket con orderId: "test_LZ7rxk" (tipo: string), comparando con "aae2176f-8dd6-4b29-8e2e-621ff49e6c85"
+2026-01-29 21:39:45.183 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Ticket con orderId: "test_LZ7rxk" (tipo: string), comparando con "aae2176f-8dd6-4b29-8e2e-621ff49e6c85"
+2026-01-29 21:39:45.183 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Ticket con orderId: "test_LZ7rxk" (tipo: string), comparando con "aae2176f-8dd6-4b29-8e2e-621ff49e6c85"
+2026-01-29 21:39:45.183 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Ticket con orderId: "test_LZ7rxk" (tipo: string), comparando con "aae2176f-8dd6-4b29-8e2e-621ff49e6c85"
+2026-01-29 21:39:45.184 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 1500 tickets...
+2026-01-29 21:39:45.184 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 1600 tickets...
+2026-01-29 21:39:45.184 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 1700 tickets...
+2026-01-29 21:39:45.184 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 1800 tickets...
+2026-01-29 21:39:45.184 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 1900 tickets...
+2026-01-29 21:39:45.184 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 2000 tickets...
+2026-01-29 21:39:45.184 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 2100 tickets...
+2026-01-29 21:39:45.184 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 2200 tickets...
+2026-01-29 21:39:45.184 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 2300 tickets...
+2026-01-29 21:39:45.184 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 2400 tickets...
+2026-01-29 21:39:45.184 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 2500 tickets...
+2026-01-29 21:39:45.184 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 2600 tickets...
+2026-01-29 21:39:45.184 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 2700 tickets...
+2026-01-29 21:39:45.185 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 2800 tickets...
+2026-01-29 21:39:45.185 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 2900 tickets...
+2026-01-29 21:39:45.185 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 3000 tickets...
+2026-01-29 21:39:45.185 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 3100 tickets...
+2026-01-29 21:39:45.185 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 3200 tickets...
+2026-01-29 21:39:45.185 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	[DEBUG] Revisados 3300 tickets...
+2026-01-29 21:39:45.185 - 58e8cebf-3efe-40d0-a4fb-660ca608f214 - 
+INFO	Ô£à Pago fallido: 0 boletas liberadas para orden aae2176f-8dd6-4b29-8e2e-621ff49e6c85
+
+REPORT - 58e8cebf-3efe-40d0-a4fb-660ca608f214
+Duration: 468.92 ms	Billed Duration: 469 ms	Memory Size: 1024 MB	Max Memory Used: 142 MB	

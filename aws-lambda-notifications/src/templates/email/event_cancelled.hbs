@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evento cancelado</title>
+    <style>
+      body { margin:0;padding:0;background:#eef0f6;font-family:Arial,Helvetica,sans-serif;color:#131a31; }
+      .shell { width:100%;padding:16px 0; }
+      .container { width:100%;max-width:620px;margin:0 auto;background:#f7f8fc;border:1px solid #e5e8f3;border-radius:14px;overflow:hidden; }
+      .inner { padding:12px 12px 18px; }
+      .headline { margin:18px 4px 6px;font-size:26px;line-height:1.2;font-weight:700;color:#c0392b; }
+      .brand-logo-wrap { text-align:center;margin:6px 0 12px; }
+      .description { margin:0 4px 14px;color:#3f4660;font-size:15px;line-height:1.5; }
+      .alert-box { background:#fff0f0;border-left:4px solid #e74c3c;border-radius:6px;padding:10px 14px;margin-bottom:14px; }
+      .alert-box p { margin:0 0 4px;font-size:14px;color:#721c24;line-height:1.5; }
+      .alert-box p:last-child { margin:0; }
+      .event-card { background:#f0f2fb;border:1px solid #dde1f3;border-radius:10px;overflow:hidden;margin-bottom:14px; }
+      .event-img { width:100%;height:160px;object-fit:cover;display:block; }
+      .event-card-body { padding:12px 14px; }
+      .event-card-body h3 { margin:0 0 8px;font-size:16px;font-weight:700;color:#222c55; }
+      .event-card-body p { margin:0 0 4px;font-size:13px;color:#4a516e; }
+      .info-box { background:#f4f5fb;border-left:4px solid #8892d4;border-radius:6px;padding:10px 14px;margin-bottom:14px; }
+      .info-box p { margin:0 0 4px;font-size:13px;color:#33418e;line-height:1.5; }
+      .info-box p:last-child { margin:0; }
+      .refund-box { background:#e9f7ef;border-left:4px solid #27ae60;border-radius:6px;padding:10px 14px;margin-bottom:14px; }
+      .refund-box p { margin:0 0 4px;font-size:13px;color:#1a5c34;line-height:1.5; }
+      .refund-box p:last-child { margin:0; }
+      .steps-title { margin:14px 0 8px;font-size:14px;font-weight:700;color:#1f2749; }
+      .steps { margin:0 0 14px;padding-left:18px;color:#2e3455; }
+      .steps li { margin-bottom:8px;font-size:13px;line-height:1.55; }
+      .cta { margin-top:14px;text-align:center; }
+      .cta a { display:inline-block;background:#596ef4;color:#ffffff !important;text-decoration:none;border-radius:999px;padding:10px 24px;font-size:14px;font-weight:700; }
+      .footer { margin-top:16px;background:#e5e7ef;text-align:center;padding:14px 10px 16px; }
+      .footer-txt { margin:8px 0 0;font-size:12px;color:#59607a; }
+      .footer-link { color:#4f63d8 !important;text-decoration:none; }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="container">
+        <div class="inner">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin-bottom:12px;">
+            <tr>
+              <td background="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-bg.png" bgcolor="#2f366f" style="background-image:url('https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-bg.png');background-size:100% 100%;background-repeat:no-repeat;background-color:#2f366f;padding:0;border-radius:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tr><td style="padding:18px 20px 18px 24px;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:700;color:#ffffff;">Evento cancelado</td><td width="68" style="text-align:center;vertical-align:middle;padding:8px 12px 8px 8px;"><img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-icon.png" width="36" height="36" alt="" style="display:block;margin:0 auto;" /></td></tr></table></td>
+            </tr>
+          </table>
+
+          <p class="headline">{{eventName}}</p>
+
+          <div class="brand-logo-wrap" role="img" aria-label="Do.Events">
+            <img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-logo-doevents.png" width="120" height="35" alt="Do.Events" style="display:inline-block;vertical-align:middle;" />
+          </div>
+
+          <p class="description">Hola <strong>{{userName}}</strong>, lamentamos informarte que el evento al que adquiriste entradas ha sido cancelado.</p>
+
+          <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>Evento cancelado</strong></p>
+            {{#if reason}}<p>Motivo: {{reason}}</p>{{/if}}
+          </div>
+
+          {{#if eventImage}}
+          <div class="event-card">
+            <img class="event-img" src="{{eventImage}}" alt="{{eventName}}" />
+            <div class="event-card-body">
+              <h3>{{eventName}}</h3>
+              <p>&#x1F4C5; {{originalStartDate}} &mdash; {{originalEndDate}}</p>
+              {{#if venue}}<p>&#x1F4CD; {{venue}}</p>{{/if}}
+            </div>
+          </div>
+          {{else}}
+          <div class="info-box">
+            <p><strong>{{eventName}}</strong></p>
+            <p>&#x1F4C5; {{originalStartDate}} &mdash; {{originalEndDate}}</p>
+            {{#if venue}}<p>&#x1F4CD; {{venue}}</p>{{/if}}
+          </div>
+          {{/if}}
+
+          <div class="refund-box">
+            <p><strong>Entendemos los inconvenientes que esto puede causar y, siguiendo nuestro compromiso con la seguridad y satisfaccion de nuestros usuarios, procederemos con la gestion de los reembolsos bajo los siguientes lineamientos:</strong></p>
+          </div>
+
+          <p class="steps-title">Detalles de su Transaccion</p>
+          <div class="info-box">
+            <p><strong>Fecha de compra:</strong> {{purchaseDate}}</p>
+            <p><strong>OrderID:</strong> {{orderId}}</p>
+            <p><strong>Costo pagado por el boleto:</strong> {{ticketPaidAmount}}</p>
+            <p><strong>Opcion seleccionada en el proceso de compra:</strong> {{purchaseOptionSelected}}</p>
+          </div>
+
+          <p class="steps-title">Gestion de su Reembolso</p>
+          <div class="info-box">
+            <p>Dependiendo de la modalidad que seleccionaste al momento de adquirir tu boleta, el proceso de devolucion/reembolso sera el siguiente:</p>
+          </div>
+
+          <p class="steps-title">1. Si seleccionaste "No conozco al creador del evento":</p>
+          <ul class="steps">
+            <li>Al elegir esta opcion para garantizar una compra transparente, autorizaste la transferencia del pago de tu boleta unicamente despues de finalizado el evento.</li>
+            <li>Do.Events tiene el control de estos fondos y gestionara automaticamente el reembolso a tu medio de pago original en un plazo aproximado de 10 dias habiles.</li>
+          </ul>
+
+          <p class="steps-title">2. Si seleccionaste "Conozco al creador del evento" (Pago Directo):</p>
+          <ul class="steps">
+            <li>Al seleccionar esta opcion, confirmaste que confias en el creador del evento y autorizaste la transferencia del pago de manera inmediata para los preparativos del mismo.</li>
+            <li>Tal como se informo en las advertencias de seguridad durante la compra, en esta modalidad la plataforma no garantiza la devolucion del dinero, ya que los fondos fueron entregados directamente al organizador.</li>
+            <li>En consecuencia, debes contactar directamente al organizador para coordinar la devolucion personalizada de tus fondos.</li>
+          </ul>
+
+          <div class="refund-box">
+            <p>Agradecemos tu comprension ante esta situacion inesperada. Estamos trabajando para brindarte el mejor servicio posible a pesar de este contratiempo.</p>
+          </div>
+
+          <div class="cta">
+            <a href="https://doeventsapp.com/Wall/Inicio">Ver otros eventos</a>
+          </div>
+
+        </div>
+
+        <div class="footer">
+          <div class="footer-brand" role="img" aria-label="Do.Events">
+            <img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-logo-doevents.png" width="96" height="28" alt="Do.Events" style="display:inline-block;vertical-align:middle;" />
+          </div>
+          <p class="footer-txt">Cualquier duda: <a class="footer-link" href="mailto:management@doeventsapp.com">management@doeventsapp.com</a></p>
+          <p class="footer-txt"><a class="footer-link" href="https://www.doeventsapp.com">www.doeventsapp.com</a></p>
+          <p class="footer-txt">&copy; {{year}} Do eventsapp. Todos los derechos reservados</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

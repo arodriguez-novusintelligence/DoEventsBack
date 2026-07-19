@@ -1,0 +1,486 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: events
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: aws-lambda-manageevent
+frameworkVersion: "4"
+
+params:
+  default:
+    awsRegion: us-east-1
+    tableSuffix: ""
+    stageName: dev
+    notificationsLambda: notifications-dev-triggerNotification
+    lifecycleScheduler: events-lifecycle-manager-scheduler-upsert
+    cloneVenueFunction: aws-lambda-venues-dev-cloneVenueForEvent
+    apiPublicBaseUrl: https://api.doeventsapp.com
+  qa:
+    awsRegion: us-east-2
+    tableSuffix: "-qa"
+    stageName: qa
+    notificationsLambda: notifications-qa-triggerNotification
+    lifecycleScheduler: events-lifecycle-manager-scheduler-upsert-qa
+    cloneVenueFunction: aws-lambda-venues-qa-cloneVenueForEvent
+    apiPublicBaseUrl: https://api-qa.doeventsapp.com
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: ${param:awsRegion}
+
+  # CloudWatch Logs configuration
+  logs:
+    httpApi:
+      format: '{ "requestTime":"$context.requestTime", "requestId":"$context.requestId", "httpMethod":"$context.httpMethod","routeKey":"$context.routeKey", "status":"$context.status", "responseLength":"$context.responseLength" }'
+
+  # Function-level logging configuration
+  logRetentionInDays: 14
+
+  # CloudWatch settings
+  tracing:
+    lambda: true # Enable X-Ray tracing
+    apiGateway: true
+
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    ORDERS_TABLE: Orders${param:tableSuffix}
+    EVENTS_TABLE: Eventos${param:tableSuffix}
+    IMAGE_TABLE: imagenes${param:tableSuffix}
+    IMAGE_BUCKET: doeventimageeventbucket
+    STAGE: ${param:stageName}
+    DYNAMODB_REGION: ${param:awsRegion}
+    API_PUBLIC_BASE_URL: ${param:apiPublicBaseUrl}
+    NOTIFICATIONS_LAMBDA: ${param:notificationsLambda}
+    NOTIFICATIONS_API: ${param:apiPublicBaseUrl}/notifications/trigger-notification
+    NOTIFY_AFFECTED_USERS_LAMBDA: ${param:notificationsLambda}
+    EVENT_LIFECYCLE_SCHEDULER_UPSERT_LAMBDA: ${param:lifecycleScheduler}
+    TICKETS_DIST_TABLE: TicketsDistribution${param:tableSuffix}
+    CLIENT_TABLE: Client${param:tableSuffix}
+    TICKETS_CANCELATION_TABLE: ticketsCancelation${param:tableSuffix}
+    RESCHEDULE_TABLE: RescheduleEvents${param:tableSuffix}
+    TICKETS_TABLE: Tickets${param:tableSuffix}
+    PREFERENCES_TABLE: Preferences${param:tableSuffix}
+    EVENT_TYPE_TABLE: TipoEvento${param:tableSuffix}
+    PLACE_TYPE_TABLE: TipoLugar${param:tableSuffix}
+    EVENT_CALIFICATION_TABLE: EventCalification${param:tableSuffix}
+    FAV_TABLE: userFavoriteEvents${param:tableSuffix}
+    CHATS_TABLE: Chats${param:tableSuffix}
+    USER_STATS_TABLE: UserStats${param:tableSuffix}
+    PROMO_CODES_TABLE: EventPromoCodes${param:tableSuffix}
+    CLONE_VENUE_FUNCTION: ${param:cloneVenueFunction}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - "*"
+      allowedHeaders:
+        - Content-Type
+        - X-Amz-Date
+        - Authorization
+        - X-Api-Key
+        - X-Amz-Security-Token
+        - X-Amz-User-Agent
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      allowCredentials: false
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:*
+        - lambda:InvokeFunction
+        - logs:CreateLogGroup
+        - logs:CreateLogStream
+        - logs:PutLogEvents
+        - logs:DescribeLogStreams
+        - logs:DescribeLogGroups
+        - xray:PutTraceSegments
+        - xray:PutTelemetryRecords
+      Resource:
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Eventos
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Eventos/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Client
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Chats
+        - arn:aws:dynamodb:us-east-1:519010577666:table/TipoLugar
+        - arn:aws:dynamodb:us-east-1:519010577666:table/TipoEvento
+        - arn:aws:dynamodb:us-east-1:519010577666:table/userFavoriteEvents
+        - arn:aws:dynamodb:us-east-1:519010577666:table/EventosCategorias
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Preferences
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Preferences/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Orders
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Orders/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Tickets
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Tickets/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/TicketsDistribution
+        - arn:aws:dynamodb:us-east-1:519010577666:table/TicketsDistribution/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/imagenes
+        - arn:aws:dynamodb:us-east-1:519010577666:table/imagenes/index/*
+        - arn:aws:lambda:us-east-1:519010577666:function:aws-lambda-imagenes-dev-getImageByEventId
+        - arn:aws:lambda:us-east-1:519010577666:function:notifications-dev-notifyEventAffectedUsers
+        - arn:aws:lambda:us-east-1:519010577666:function:notifications-dev-triggerNotification
+        - arn:aws:lambda:us-east-1:519010577666:function:aws-lambda-venues-dev-cloneVenueForEvent
+        - arn:aws:dynamodb:us-east-1:519010577666:table/EventCalification
+        - arn:aws:dynamodb:us-east-1:519010577666:table/EventCalification/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Client/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Reschedule
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Reschedule/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/EventInvitations
+        - arn:aws:dynamodb:us-east-1:519010577666:table/EventInvitations/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/TicketScans
+        - arn:aws:dynamodb:us-east-1:519010577666:table/TicketScans/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Venue_Gate
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Venue_Gate/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/ticketsCancelation
+        - arn:aws:dynamodb:us-east-1:519010577666:table/ticketsCancelation/index/*
+        - arn:aws:s3:::doeventprofileimagesbucket
+        - arn:aws:s3:::doeventimageeventbucket/*
+        - arn:aws:s3:::lambdaboletasbucket/*
+        - arn:aws:logs:us-east-1:519010577666:log-group:/aws/lambda/*
+        - "*"
+
+functions:
+  createEvent:
+    handler: src/createEvent.createEvent
+    events:
+      - httpApi:
+          path: /createEvent
+          method: post
+  getEvents:
+    handler: src/getEvents.getEventById
+    timeout: 30
+    events:
+      - httpApi:
+          path: /getEvents/{id}
+          method: get
+  getEventEntrances:
+    handler: src/getEventEntrances.getEventById
+    events:
+      - httpApi:
+          path: /getEventsEntrance/{id}
+          method: get
+  getUserEvents:
+    handler: src/getUserEvent.getEventByUser
+    events:
+      - httpApi:
+          path: /getUserEvents/{userId}
+          method: get
+  getUserEventsStats:
+    handler: src/getUserEventStats.getEventByUser
+    events:
+      - httpApi:
+          path: /getUserEventsStats/{userId}
+          method: get
+  updateEvent:
+    handler: src/updateEvent.updateEvent
+    events:
+      - httpApi:
+          path: /updateEvent/{id}
+          method: put
+  assignEventCoAdmin:
+    handler: src/assignEventCoAdmin.assignEventCoAdmin
+    events:
+      - httpApi:
+          path: /events/{eventId}/co-admins
+          method: post
+  updateEventData:
+    handler: src/addEventData.addEventData
+    events:
+      - httpApi:
+          path: /addEventData
+          method: post
+  publishEvent:
+    handler: src/publishEvent.publishEvent
+    events:
+      - httpApi:
+          path: /publishEvent
+          method: post
+  eventLike:
+    handler: src/eventLikes.eventLikes
+    events:
+      - httpApi:
+          path: /eventLike
+          method: post
+  getFavoriteUserEvents:
+    handler: src/getFavoriteUserEvent.getFavoriteUserEvent
+    events:
+      - httpApi:
+          path: /getFavoriteUserEvents/{userId}
+          method: get
+  eventFilter:
+    handler: src/getEventsByFilter.getEventsByFilter
+    events:
+      - httpApi:
+          path: /getEventsByFilter
+          method: post
+  deleteEvent:
+    handler: src/deleteEvent.handler
+    events:
+      - httpApi:
+          path: /deleteEvent/{id}
+          method: delete
+  duplicateEvent:
+    handler: src/duplicateEvent.handler
+    events:
+      - httpApi:
+          path: /duplicateEvent/{id}
+          method: post
+  addEventCalification:
+    handler: src/addEventCalification.handler
+    events:
+      - httpApi:
+          path: /events/{eventId}/calification
+          method: post
+  getEventCalificationByUser:
+    handler: src/getEventCalificationByUser.handler
+    events:
+      - httpApi:
+          path: /events/{eventId}/calification/user/{userId}
+          method: get
+  getEventCalifications:
+    handler: src/getEventCalifications.handler
+    events:
+      - httpApi:
+          path: /events/{eventId}/califications
+          method: get
+  rescheduleEvent:
+    handler: src/rescheduleEvent.handler
+    timeout: 60
+    description: Reprogramar evento y enviar notificaciones a usuarios afectados
+    events:
+      - httpApi:
+          path: /rescheduleEvent
+          method: post
+  cancelEvent:
+    handler: src/cancelEvent.handler
+    timeout: 60
+    description: Cancelar evento y enviar notificaciones a usuarios afectados
+    events:
+      - httpApi:
+          path: /cancelEvent
+          method: post
+  getOrderList:
+    handler: src/getOrderList.handler
+    timeout: 30
+    description: Obtener lista de ordenes de un usuario
+    events:
+      - httpApi:
+          path: /ordersList/{userId}
+          method: get
+  canRequestRefund:
+    handler: src/canRequestRefund.canRequestRefund
+    timeout: 30
+    description: Validar si un usuario puede solicitar reembolso para un evento
+    events:
+      - httpApi:
+          path: /canRequestRefund/{eventId}
+          method: post
+  processRefund:
+    handler: src/processRefund.processRefund
+    timeout: 60
+    description: Procesar reembolso de boletas (total o parcial) de una orden
+    events:
+      - httpApi:
+          path: /processRefund
+          method: post
+  getEventBySlug:
+    handler: src/getEventBySlug.handler
+    timeout: 10
+    description: Obtener un evento usando su slug (URL-friendly identifier)
+    events:
+      - httpApi:
+          path: /events/slug/{slug}
+          method: get
+  getEventsByVenue:
+    handler: src/getEventsByVenue.handler
+    timeout: 15
+    description: Obtener todos los eventos asociados a un venue específico
+    events:
+      - httpApi:
+          path: /events/venue/{venueId}
+          method: get
+  transferTickets:
+    handler: src/transferTickets.handler
+    timeout: 60
+    description: Transferir boletas de un usuario a otro (parcial o total)
+    events:
+      - httpApi:
+          path: /tickets/transfer
+          method: post
+  searchEvents:
+    handler: src/searchEvents.searchEvents
+    timeout: 30
+    description: Buscar eventos por palabras clave, ciudad, nombre, descripción o usuario (con @)
+    events:
+      - httpApi:
+          path: /searchEvents
+          method: get
+
+  getEventStatistics:
+    handler: src/getEventStatistics.handler
+    timeout: 30
+    description: Obtener estadisticas detalladas de ventas por evento
+    events:
+      - httpApi:
+          path: /events/{eventId}/statistics
+          method: get
+
+  getEventBuyers:
+    handler: src/getEventBuyers.handler
+    timeout: 30
+    description: Obtener compradores y ordenes de un evento
+    events:
+      - httpApi:
+          path: /events/{eventId}/buyers
+          method: get
+
+  exportEventBuyers:
+    handler: src/exportEventBuyers.handler
+    timeout: 30
+    description: Exportar compradores de un evento en CSV
+    events:
+      - httpApi:
+          path: /events/{eventId}/buyers/export
+          method: get
+
+  getEventInvitationStats:
+    handler: src/getEventInvitationStats.handler
+    timeout: 30
+    description: Obtener estadisticas de invitaciones por canal de un evento
+    events:
+      - httpApi:
+          path: /events/{eventId}/invitations/statistics
+          method: get
+
+  exportEventInvitationStats:
+    handler: src/exportEventInvitationStats.handler
+    timeout: 30
+    description: Exportar estadisticas de invitaciones por canal en CSV
+    events:
+      - httpApi:
+          path: /events/{eventId}/invitations/statistics/export
+          method: get
+
+  getEventAccessStats:
+    handler: src/getEventAccessStats.handler
+    timeout: 30
+    description: Obtener estadisticas de acceso y escaneos por evento
+    events:
+      - httpApi:
+          path: /events/{eventId}/access-stats
+          method: get
+
+  exportEventAccessStats:
+    handler: src/exportEventAccessStats.handler
+    timeout: 30
+    description: Exportar estadisticas de acceso (escaneados y no escaneados) en CSV
+    events:
+      - httpApi:
+          path: /events/{eventId}/access-stats/export
+          method: get
+
+  getEventRefundsStatistics:
+    handler: src/getEventRefundsStatistics.handler
+    timeout: 30
+    description: Estadisticas globales de reembolsos por evento (cancelacion, reprogramacion, solicitud de usuario)
+    events:
+      - httpApi:
+          path: /events/refunds/statistics
+          method: get
+
+  getEventPromoCodes:
+    handler: src/eventPromoCodes.handler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /events/{eventId}/promo-codes
+          method: get
+
+  createEventPromoCodeBatch:
+    handler: src/eventPromoCodes.handler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /events/{eventId}/promo-codes/batches
+          method: post
+
+  updateEventPromoCodeBatch:
+    handler: src/eventPromoCodes.handler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /events/{eventId}/promo-codes/batches/{batchId}
+          method: put
+
+  syncEventPromoCodes:
+    handler: src/eventPromoCodes.handler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /events/{eventId}/promo-codes/sync
+          method: post
+
+  shareEventPromoCode:
+    handler: src/eventPromoCodes.handler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /events/{eventId}/promo-codes/share
+          method: post
+
+  cancelEventPromoCode:
+    handler: src/eventPromoCodes.handler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /events/{eventId}/promo-codes/cancel
+          method: post
+
+  validateEventPromoCode:
+    handler: src/eventPromoCodes.handler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /events/{eventId}/promo-codes/validate
+          method: post
+
+# ✅ CONFIGURACIÓN OPTIMIZADA DE EMPAQUETADO
+package:
+  patterns:
+    # Incluir solo lo necesario
+    - src/**
+    - package.json
+    # Incluir aws-sdk v2 para Node.js 20
+    - "node_modules/aws-sdk/**"
+    - "node_modules/uuid/**"
+    # Excluir archivos innecesarios
+    - "!.git/**"
+    - "!.gitignore"
+    - "!README.md"
+    - "!doc/**"
+    - "!undefined/**"
+    - "!.serverless/**"
+    - "!*.md"
+    - "!*.log"
+    - "!test*"
+    - "!coverage/**"
+    - "!.nyc_output/**"
+    - "!.eslintrc*"
+    - "!.prettierrc*"
+    - "!jest.config.*"
+    - "!**/*.test.js"
+    - "!**/*.spec.js"
+    - "!diagnostic.js"
+    - "!find-*.js"
+    - "!check-*.js"
+    - "!describe-*.js"
+    - "!inspect-*.js"
+    - "!list-*.js"
+    - "!monitor-*.js"
+    - "!real-time-*.js"
+    # Excluir node_modules grandes que no necesitamos pero mantener aws-sdk
+    - "!node_modules/@aws-sdk/**"
+    - "!node_modules/node/**"
+  excludeDevDependencies: true
+  individually: true

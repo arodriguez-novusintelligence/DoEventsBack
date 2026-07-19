@@ -1,0 +1,161 @@
+openapi: 3.0.1
+info:
+  title: Orders & Tickets API
+  description: API interna para consultar órdenes y tickets asociados a eventos y usuarios.
+  version: "1.0.0"
+
+paths:
+  /orders/{eventId}:
+    get:
+      summary: Obtener órdenes por ID de evento
+      description: Consulta las órdenes registradas para un evento específico.
+      tags:
+        - Orders
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del evento
+      responses:
+        '200':
+          description: Órdenes obtenidas exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '400':
+          description: El id del evento es obligatorio
+        '404':
+          description: Órdenes no encontradas
+        '500':
+          description: Error al consultar las órdenes
+
+  /orders/{eventId}/user/{userId}:
+    get:
+      summary: Obtener órdenes por evento y usuario
+      description: Consulta las órdenes asociadas a un evento y un usuario específico.
+      tags:
+        - Orders
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Órdenes filtradas obtenidas exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '400':
+          description: El id del evento y del usuario son obligatorios
+        '404':
+          description: Órdenes no encontradas para el evento y usuario indicados
+        '500':
+          description: Error al consultar las órdenes
+
+  /tickets/{eventId}/order/{orderId}:
+    get:
+      summary: Obtener tickets por evento y orden
+      description: Devuelve los tickets asociados a una orden específica dentro de un evento.
+      tags:
+        - Tickets
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tickets obtenidos exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ticket'
+        '404':
+          description: No se encontraron tickets para el evento y orden especificados
+        '500':
+          description: Error al consultar los tickets
+
+  /tickets/order/{orderId}:
+    get:
+      summary: Obtener tickets por ID de orden
+      description: Consulta los tickets asociados a una orden específica.
+      tags:
+        - Tickets
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tickets obtenidos exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ticket'
+        '400':
+          description: El id de la orden es obligatorio
+        '404':
+          description: Tickets no encontrados para esta orden
+        '500':
+          description: Error al consultar los tickets
+
+components:
+  schemas:
+    Order:
+      type: object
+      properties:
+        order_id:
+          type: string
+        event_id:
+          type: string
+        user_id:
+          type: string
+        created_at:
+          type: string
+        total:
+          type: number
+        status:
+          type: string
+
+    Ticket:
+      type: object
+      properties:
+        ticket_id:
+          type: string
+        eventId:
+          type: string
+        orderId:
+          type: string
+        seat:
+          type: string
+        zone:
+          type: string
+        created_at:
+          type: string

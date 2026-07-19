@@ -1,0 +1,13 @@
+﻿{
+    "Items": [],
+    "Count": 0,
+    "ScannedCount": 1,
+    "LastEvaluatedKey": {
+        "id": {
+            "S": "53399387-3b3c-4a16-a341-8617f6c2fe51"
+        },
+        "createDate": {
+            "S": "2025-07-19T00:00:00.095Z"
+        }
+    }
+}

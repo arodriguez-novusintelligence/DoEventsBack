@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{subject}}</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #eef0f6;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #131a31;
+      }
+      .shell {
+        width: 100%;
+        padding: 16px 0;
+      }
+      .container {
+        width: 100%;
+        max-width: 620px;
+        margin: 0 auto;
+        background: #f7f8fc;
+        border: 1px solid #e5e8f3;
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .inner {
+        padding: 12px 12px 18px;
+      }
+      .top-svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .top {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .top td {
+        padding: 0;
+      }
+      .top-left {
+        background: linear-gradient(90deg, #212f7f 0%, #2e3f97 100%);
+        color: #ffffff;
+        font-size: 27px;
+        font-weight: 700;
+        line-height: 56px;
+        text-align: center;
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
+      }
+      .top-mid {
+        background: #dfe2ee;
+        width: 88px;
+        border-top-left-radius: 999px;
+        border-bottom-left-radius: 999px;
+      }
+      .top-right {
+        background: #dfe2ee;
+        text-align: center;
+        width: 72px;
+        border-top-right-radius: 12px;
+        border-bottom-right-radius: 12px;
+      }
+      .doc-icon {
+        display: inline-block;
+        margin-top: 12px;
+        width: 28px;
+        height: 28px;
+        line-height: 28px;
+        border: 1px solid #7f89ba;
+        border-radius: 7px;
+        color: #4f5ea2;
+        font-size: 15px;
+      }
+      .headline {
+        margin: 18px 4px 10px;
+        font-size: 34px;
+        line-height: 1.2;
+        font-weight: 700;
+      }
+      .brand-logo-wrap {
+        text-align: center;
+        margin: 6px 0 10px;
+      }
+      .brand-logo-top {
+        width: 252px;
+        height: 73.5px;
+      }
+      .brand-logo-footer {
+        width: 168px;
+        height: 49px;
+      }
+      .logo-ink {
+        fill: #010e15;
+      }
+      .logo-line {
+        stroke: #010e15;
+      }
+      .description {
+        margin: 0 4px 12px;
+        color: #3f4660;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      .event-card {
+        border: 1px solid #dce2f4;
+        border-radius: 10px;
+        background: #ffffff;
+        overflow: hidden;
+      }
+      .event-image {
+        width: 100%;
+        height: 170px;
+        object-fit: cover;
+        display: block;
+      }
+      .event-body {
+        padding: 10px 12px 12px;
+      }
+      .event-name {
+        margin: 0 0 8px;
+        color: #4c5fd8;
+        font-size: 34px;
+        font-weight: 700;
+        line-height: 1.15;
+      }
+      .rating-line {
+        margin: 0;
+        font-size: 15px;
+        color: #2f3650;
+      }
+      .rating-stars {
+        color: #1f2e85;
+        font-size: 22px;
+        letter-spacing: 2px;
+        margin-right: 6px;
+      }
+      .comment-box {
+        margin-top: 12px;
+        background: #eceff8;
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+      .comment-label {
+        margin: 0;
+        font-size: 13px;
+        color: #4e5772;
+      }
+      .comment-text {
+        margin: 6px 0 0;
+        font-size: 15px;
+        color: #1f2438;
+        font-style: italic;
+      }
+      .reviewer {
+        margin-top: 8px;
+        font-size: 13px;
+        color: #5b647f;
+      }
+      .cta {
+        margin-top: 14px;
+        text-align: center;
+      }
+      .cta a {
+        display: inline-block;
+        background: #596ef4;
+        color: #ffffff !important;
+        text-decoration: none;
+        border-radius: 999px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .fallback-link {
+        margin-top: 8px;
+        font-size: 12px;
+        color: #6f7895;
+        word-break: break-all;
+        text-align: center;
+      }
+      .footer {
+        margin-top: 16px;
+        background: #e5e7ef;
+        text-align: center;
+        padding: 14px 10px 16px;
+      }
+      .footer-brand {
+        margin: 0;
+        line-height: 1;
+      }
+      .footer-txt {
+        margin: 8px 0 0;
+        font-size: 12px;
+        color: #59607a;
+      }
+      .footer-link {
+        color: #4f63d8 !important;
+        text-decoration: none;
+      }
+      @media only screen and (max-width: 620px) {
+        .headline {
+          font-size: 28px;
+        }
+        .event-name {
+          font-size: 28px;
+        }
+      }
+      @media (prefers-color-scheme: dark) {
+        .logo-ink {
+          fill: #ffffff !important;
+        }
+        .logo-line {
+          stroke: #ffffff !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="container">
+        <div class="inner">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin-bottom:12px;">
+            <tr>
+              <td background="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-bg.png" bgcolor="#2f366f" style="background-image:url('https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-bg.png');background-size:100% 100%;background-repeat:no-repeat;background-color:#2f366f;padding:0;border-radius:12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tr><td style="padding:18px 20px 18px 24px;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:700;color:#ffffff;">Nueva calificacion</td><td width="68" style="text-align:center;vertical-align:middle;padding:8px 12px 8px 8px;"><img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-header-icon.png" width="36" height="36" alt="" style="display:block;margin:0 auto;" /></td></tr></table></td>
+            </tr>
+          </table>
+
+          <p class="headline">¡Tu evento {{eventName}} recibio una nueva opinion!</p>
+
+          <div class="brand-logo-wrap" role="img" aria-label="Do.Events">
+            <img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-logo-doevents.png" width="120" height="35" alt="Do.Events" style="display:inline-block;vertical-align:middle;" />
+          </div>
+
+          <p class="description">Este es el resumen de la calificacion para que puedas seguir mejorando la experiencia de tus asistentes.</p>
+
+          <div class="event-card">
+            {{#if eventImage}}
+              <img class="event-image" src="{{eventImage}}" alt="{{eventName}}" />
+            {{/if}}
+            <div class="event-body">
+              <p class="event-name">{{eventName}}</p>
+              <p class="rating-line"><span class="rating-stars">{{stars}}</span>{{rating}} de 5 estrellas</p>
+
+              {{#if comment}}
+                <div class="comment-box">
+                  <p class="comment-label">Comentario del asistente</p>
+                  <p class="comment-text">"{{comment}}"</p>
+                </div>
+              {{/if}}
+
+              <p class="reviewer">Por: {{reviewerName}}</p>
+            </div>
+          </div>
+
+          <div class="cta">
+            <a href="{{link}}">Ver calificaciones del evento</a>
+          </div>
+          <div class="fallback-link">Si el boton no abre, usa este enlace: {{link}}</div>
+        </div>
+
+        <div class="footer">
+          <div class="footer-brand" role="img" aria-label="Do.Events">
+            <img src="https://doeventimageeventbucket.s3.amazonaws.com/brand/email-logo-doevents.png" width="96" height="28" alt="Do.Events" style="display:inline-block;vertical-align:middle;" />
+          </div>
+          <p class="footer-txt">Cualquier duda, puede comunicarse a la siguiente correo de soporte</p>
+          <p class="footer-txt"><a class="footer-link" href="mailto:management@doeventsapp.com">management@doeventsapp.com</a></p>
+          <p class="footer-txt"><a class="footer-link" href="https://www.doeventsapp.com">www.doeventsapp.com</a></p>
+          <p class="footer-txt">© {{year}} Do eventsapp. Todos los derechos reservados</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

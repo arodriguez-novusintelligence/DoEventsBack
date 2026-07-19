@@ -1,0 +1,87 @@
+{
+  "tableName": "Venues",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/Venues",
+  "tableId": "adb1e894-d56f-4cd9-9d28-c9fe69577503",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 291,
+  "tableSizeBytes": 215709,
+  "creationDateTime": "2025-05-14T19:29:41.785000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "venue_id",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "city",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "name",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "ownerUserId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "venue_id",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "city-name-index",
+      "keySchema": [
+        {
+          "AttributeName": "city",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "name",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 291,
+      "indexSizeBytes": 215709
+    },
+    {
+      "indexName": "ownerUserIdIndex",
+      "keySchema": [
+        {
+          "AttributeName": "ownerUserId",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 291,
+      "indexSizeBytes": 215709
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

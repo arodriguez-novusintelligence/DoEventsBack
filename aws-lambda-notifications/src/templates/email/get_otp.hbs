@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{{#if title}}{{title}}{{else}}Codigo de verificacion{{/if}}</title>
+	</head>
+	<body style="margin:0;padding:0;background:#eff2fa;font-family:Arial,Helvetica,sans-serif;color:#1a2340;">
+		<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#eff2fa;padding:20px 12px;">
+			<tr>
+				<td align="center">
+					<table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width:560px;max-width:100%;background:#ffffff;border:1px solid #dfe5f5;border-radius:14px;overflow:hidden;">
+						<tr>
+							<td style="padding:18px 22px;background:linear-gradient(90deg,#24388f,#3953bf);color:#ffffff;">
+								<div style="font-size:13px;opacity:.9;">DoEvents • Seguridad</div>
+								<div style="font-size:22px;font-weight:700;line-height:1.2;margin-top:6px;">Codigo de verificacion</div>
+							</td>
+						</tr>
+						<tr>
+							<td style="padding:20px 22px;text-align:center;">
+								<p style="margin:0 0 10px;font-size:15px;line-height:1.6;text-align:left;">Usa este codigo para completar tu verificacion:</p>
+								<div style="display:inline-block;background:#f3f6ff;border:1px dashed #8394df;border-radius:10px;padding:12px 22px;font-size:30px;font-weight:700;letter-spacing:5px;color:#3146b3;">{{#if otp}}{{otp}}{{else}}{{code}}{{/if}}</div>
+								<p style="margin:12px 0 0;font-size:13px;color:#5f6b8a;text-align:left;">Este codigo expira en {{#if expiryMinutes}}{{expiryMinutes}}{{else}}10{{/if}} minutos.</p>
+								<p style="margin:8px 0 0;font-size:12px;color:#7d879f;text-align:left;">Si no solicitaste este codigo, ignora este correo.</p>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

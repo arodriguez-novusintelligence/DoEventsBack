@@ -1,0 +1,105 @@
+openapi: 3.0.1
+info:
+  title: Event Type API
+  description: API para crear, consultar y obtener imágenes de tipos de eventos.
+  version: "1.0.0"
+
+paths:
+  /EventTypes:
+    get:
+      summary: Obtener tipos de eventos
+      description: Devuelve una lista de tipos de eventos registrados en la base de datos.
+      tags:
+        - EventType
+      responses:
+        '200':
+          description: Lista de tipos de eventos obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventTypeListResponse'
+        '500':
+          description: Error interno del servidor
+
+  /createEventType:
+    post:
+      summary: Crear tipo de evento
+      description: Registra un nuevo tipo de evento con su imagen asociada.
+      tags:
+        - EventType
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEventTypeRequest'
+      responses:
+        '201':
+          description: Tipo de evento creado exitosamente
+        '400':
+          description: Datos faltantes o inválidos
+        '500':
+          description: Error interno del servidor
+
+  /EventTypes/all:
+    get:
+      summary: Obtener imágenes de tipos de eventos
+      description: Devuelve todas las imágenes asociadas a los tipos de eventos.
+      tags:
+        - EventType
+      responses:
+        '200':
+          description: Imágenes obtenidas exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventTypeImagesResponse'
+        '500':
+          description: Error interno del servidor
+
+components:
+  schemas:
+    CreateEventTypeRequest:
+      type: object
+      properties:
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        imagenBase64:
+          type: string
+      required:
+        - nombre
+        - imagenBase64
+
+    EventTypeListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              nombre:
+                type: string
+              descripcion:
+                type: string
+
+    EventTypeImagesResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        images:
+          type: array
+          items:
+            type: object
+            properties:
+              eventTypeId:
+                type: string
+              imageUrl:
+                type: string

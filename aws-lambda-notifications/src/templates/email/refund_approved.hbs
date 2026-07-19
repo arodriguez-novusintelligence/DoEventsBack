@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reembolso Aprobado - {{eventName}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: #ffffff;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .success-icon {
+            text-align: center;
+            font-size: 60px;
+            margin: 20px 0;
+        }
+        .info-box {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .ticket-detail {
+            border-bottom: 1px solid #e9ecef;
+            padding: 10px 0;
+        }
+        .ticket-detail:last-child {
+            border-bottom: none;
+        }
+        .amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #28a745;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✅ Reembolso Aprobado</h1>
+        </div>
+        
+        <div class="content">
+            <div class="success-icon">✅</div>
+            
+            <p>¡Buenas noticias!</p>
+            
+            <p>Tu reembolso para el evento <strong>{{eventName}}</strong> ha sido <strong>aprobado</strong>.</p>
+            
+            <div class="amount">
+                {{refundAmount}} {{currency}}
+            </div>
+            
+            <div class="info-box">
+                <h3 style="margin-top: 0;">💳 Información del Reembolso</h3>
+                <p><strong>Monto aprobado:</strong> {{refundAmount}} {{currency}}</p>
+                <p><strong>Boletas reembolsadas:</strong> {{ticketCount}}</p>
+                <p><strong>ID de Orden:</strong> {{orderId}}</p>
+                <p><strong>Fecha de aprobación:</strong> {{approvalDate}}</p>
+                <p><strong>Tiempo estimado:</strong> {{processingDays}} días hábiles</p>
+            </div>
+            
+            {{#if ticketDetails}}
+            <h3>🎫 Boletas Reembolsadas</h3>
+            {{#each ticketDetails}}
+            <div class="ticket-detail">
+                <strong>{{category}}</strong> - {{seat}}<br>
+                <span style="color: #6c757d;">{{price}} {{../currency}}</span>
+            </div>
+            {{/each}}
+            {{/if}}
+            
+            <div style="background-color: #cfe2ff; border: 1px solid #0d6efd; padding: 15px; border-radius: 4px; margin-top: 20px;">
+                <strong>ℹ️ ¿Qué sigue?</strong>
+                <ul style="margin: 10px 0;">
+                    <li>El reembolso será procesado en los próximos {{processingDays}} días hábiles</li>
+                    <li>El monto se reflejará en tu método de pago original</li>
+                    <li>Dependiendo de tu banco, puede tardar algunos días adicionales</li>
+                    <li>Las boletas han sido canceladas y ya no son válidas</li>
+                </ul>
+            </div>
+            
+            <p style="margin-top: 30px;">Si tienes alguna pregunta sobre tu reembolso, contáctanos.</p>
+            
+            <p>¡Esperamos verte pronto en otro evento!</p>
+        </div>
+        
+        <div class="footer">
+            <p>Este es un correo automático, por favor no respondas a este mensaje.</p>
+            <p>&copy; 2026 DoEvents. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>

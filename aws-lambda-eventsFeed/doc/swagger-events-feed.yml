@@ -1,0 +1,65 @@
+openapi: 3.0.1
+info:
+  title: Events Feed API
+  description: API para consultar eventos personalizados según preferencias y dispositivos.
+  version: "1.0.0"
+
+paths:
+  /eventsFeed:
+    post:
+      summary: Obtener eventos personalizados
+      description: Devuelve una lista de eventos filtrados por usuario, dispositivo y preferencias.
+      tags:
+        - Eventos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventsFeedRequest'
+      responses:
+        '200':
+          description: Lista de eventos obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventsFeedResponse'
+        '500':
+          description: Error interno del servidor
+
+components:
+  schemas:
+    EventsFeedRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+        deviceId:
+          type: string
+        location:
+          type: string
+        preferences:
+          type: array
+          items:
+            type: string
+
+    EventsFeedResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        events:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              title:
+                type: string
+              date:
+                type: string
+              location:
+                type: string
+              imageUrl:
+                type: string

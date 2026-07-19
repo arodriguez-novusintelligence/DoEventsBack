@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}}</title>
+    <style>
+      body { margin: 0; padding: 0; background: #eef0f6; font-family: Arial, Helvetica, sans-serif; color: #131a31; }
+      .container { max-width: 620px; margin: 0 auto; background: #f7f8fc; border: 1px solid #e5e8f3; border-radius: 14px; overflow: hidden; padding: 20px; }
+      .headline { font-size: 28px; font-weight: 700; margin: 0 0 12px; }
+      .description { color: #3f4660; font-size: 16px; line-height: 1.5; margin: 0 0 16px; }
+      .event-card { border: 1px solid #dce2f4; border-radius: 10px; background: #ffffff; overflow: hidden; margin-bottom: 16px; }
+      .event-image { width: 100%; height: 200px; object-fit: cover; display: block; }
+      .event-body { padding: 12px; }
+      .event-name { margin: 0; color: #4c5fd8; font-size: 24px; font-weight: 700; }
+      .code-box { margin: 16px 0; background: #eceff8; border-radius: 10px; padding: 14px; text-align: center; }
+      .code-label { margin: 0 0 6px; font-size: 13px; color: #54607d; text-transform: uppercase; letter-spacing: 0.04em; }
+      .code-value { margin: 0; font-family: monospace; font-size: 28px; font-weight: 700; color: #283472; }
+      .discount { margin-top: 8px; font-size: 14px; color: #4b5577; }
+      .cta { text-align: center; margin-top: 18px; }
+      .cta a { display: inline-block; background: #596ef4; color: #ffffff !important; text-decoration: none; border-radius: 999px; padding: 10px 20px; font-size: 14px; font-weight: 700; }
+      .message { margin-top: 14px; padding: 12px; border-radius: 10px; background: #ffffff; border: 1px solid #e5e8f3; font-size: 14px; color: #4b5577; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <p class="headline">Tienes un código promocional para {{eventName}}</p>
+      <p class="description">
+        Hola {{recipientName}}, {{organizerName}} te ha compartido un código promocional para que adquieras tus entradas con descuento.
+      </p>
+
+      {{#if eventImage}}
+      <div class="event-card">
+        <img class="event-image" src="{{eventImage}}" alt="{{eventName}}" />
+        <div class="event-body">
+          <p class="event-name">{{eventName}}</p>
+        </div>
+      </div>
+      {{/if}}
+
+      <div class="code-box">
+        <p class="code-label">Tu código promocional</p>
+        <p class="code-value">{{promoCode}}</p>
+        {{#if discountLabel}}
+        <p class="discount">Descuento: {{discountLabel}}</p>
+        {{/if}}
+      </div>
+
+      {{#if message}}
+      <div class="message">{{message}}</div>
+      {{/if}}
+
+      <div class="cta">
+        <a href="{{link}}">Ver evento y redimir código</a>
+      </div>
+    </div>
+  </body>
+</html>

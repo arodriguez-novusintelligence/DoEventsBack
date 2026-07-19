@@ -1,0 +1,87 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: events
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: aws-lambda-login
+frameworkVersion: "4"
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  environment:
+    JWT_SECRET: arn:aws:ssm:us-east-1:519010577666:parameter/doevent/login/JWT_SECRET
+    CLIENT_TABLE: Client
+    FAVORITE_USERS_TABLE: FavoriteUsers
+    USER_PREFERENCES_TABLE: UserPreferences
+    BACKOFFICE_TABLE: doevents-backoffice-qa-users
+    BACKOFFICE_REGION: us-east-2
+    # Opcional: APPLE_SERVICES_ID = Services ID de Apple (audience del id_token). Añadir aquí o en AWS.
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:PutObject
+      Resource:
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Client
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Client/index/EmailIndex
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Client/index/PlatformUserIdIndex
+        - arn:aws:dynamodb:us-east-1:519010577666:table/UserPreferences
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FavoriteUsers
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FavoriteUsers/index/GSI-email
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FavoriteUsers/index/GSI-phone
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FavoriteUsers/index/GSI-username
+        - arn:aws:dynamodb:us-east-1:519010577666:table/FavoriteUsers/index/GSI-followers
+        - arn:aws:dynamodb:us-east-2:519010577666:table/doevents-backoffice-qa-users
+        - arn:aws:dynamodb:us-east-2:519010577666:table/doevents-backoffice-qa-users/index/*
+functions:
+  login:
+    handler: src/login.handler
+    events:
+      - httpApi:
+          path: /login
+          method: post
+  googleAuth:
+    handler: src/login.googleAuth
+    events:
+      - httpApi:
+          path: /googleOAuth
+          method: post
+  facebookAuth:
+    handler: src/login.facebookAuth
+    events:
+      - httpApi:
+          path: /facebookOAuth
+          method: post
+  appleAuth:
+    handler: src/login.appleAuth
+    events:
+      - httpApi:
+          path: /appleOAuth
+          method: post
+  appleCallback:
+    handler: src/login.appleCallback
+    events:
+      - httpApi:
+          path: /apple-callback
+          method: post
+      - httpApi:
+          path: /apple-callback
+          method: get
+
+# Configuración para pruebas locales con serverless-offline
+custom:
+  serverless-offline:
+    httpPort: 3004
+    noPrependStageInUrl: true
+    lambdaPort: 3005
+    host: 0.0.0.0
+
+package:
+  patterns:
+    - '!node_modules/serverless/**'
+    - '!node_modules/serverless-offline/**'
+    - '!**/*.md'
+    - '!**/*.test.js'

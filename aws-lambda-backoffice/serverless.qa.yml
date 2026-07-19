@@ -1,0 +1,387 @@
+org: events
+service: aws-lambda-backoffice
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-2
+  stage: qa
+  environment:
+    CLIENT_TABLE: Client-qa
+    EVENTS_TABLE: Eventos-qa
+    ORDERS_TABLE: Orders-qa
+    VENUES_TABLE: Venues-qa
+    SERVICES_TABLE: ServiceProviders-qa
+    BACKOFFICE_TABLE: doevents-backoffice-qa-users
+    DYNAMODB_REGION: us-east-2
+    COGNITO_REGION: us-east-2
+    COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID, ''}
+    NOTIFICATIONS_API: https://api-qa.doeventsapp.com/notifications/trigger-notification
+    WEB_APP_BASE_URL: https://qa.doeventsapp.com
+    FAV_TABLE: userFavoriteEvents-qa
+    SERVICE_RATINGS_TABLE: ServiceCalification-qa
+    STAGE: qa
+    AI_INTERACTIONS_TABLE: AIInteractions-qa
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:DeleteItem
+        - dynamodb:UpdateItem
+        - dynamodb:Scan
+        - dynamodb:Query
+      Resource:
+        - arn:aws:dynamodb:us-east-2:*:table/Client-qa
+        - arn:aws:dynamodb:us-east-2:*:table/Eventos-qa
+        - arn:aws:dynamodb:us-east-2:*:table/Eventos-qa/index/*
+        - arn:aws:dynamodb:us-east-2:*:table/Orders-qa
+        - arn:aws:dynamodb:us-east-2:*:table/Orders-qa/index/*
+        - arn:aws:dynamodb:us-east-2:*:table/Venues-qa
+        - arn:aws:dynamodb:us-east-2:*:table/ServiceProviders-qa
+        - arn:aws:dynamodb:us-east-2:*:table/doevents-backoffice-qa-users
+        - arn:aws:dynamodb:us-east-2:*:table/doevents-backoffice-qa-users/index/*
+        - arn:aws:dynamodb:us-east-2:*:table/ServiceProviders-qa/index/*
+        - arn:aws:dynamodb:us-east-2:*:table/userFavoriteEvents-qa
+        - arn:aws:dynamodb:us-east-2:*:table/userFavoriteEvents-qa/index/*
+        - arn:aws:dynamodb:us-east-2:*:table/ServiceCalification-qa
+        - arn:aws:dynamodb:us-east-2:*:table/AIInteractions-qa
+        - arn:aws:dynamodb:us-east-2:*:table/AIInteractions-qa/index/*
+    - Effect: Allow
+      Action:
+        - cognito-idp:AdminSetUserPassword
+        - cognito-idp:AdminGetUser
+        - cognito-idp:AdminDisableUser
+        - cognito-idp:AdminEnableUser
+      Resource: '*'
+
+functions:
+  getDashboard:
+    handler: src/handler.getDashboard
+    events:
+      - http:
+          path: dashboard
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  getActivity:
+    handler: src/handler.getActivity
+    events:
+      - http:
+          path: activity
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  searchUsers:
+    handler: src/handler.searchUsers
+    events:
+      - http:
+          path: users/search
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  getUser:
+    handler: src/handler.getUser
+    events:
+      - http:
+          path: users/{userId}
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  patchUser:
+    handler: src/handler.patchUser
+    events:
+      - http:
+          path: users/{userId}
+          method: patch
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  getEvents:
+    handler: src/handler.getEvents
+    events:
+      - http:
+          path: events
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  getOrders:
+    handler: src/handler.getOrders
+    events:
+      - http:
+          path: orders
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  getVenues:
+    handler: src/handler.getVenues
+    events:
+      - http:
+          path: venues
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  getServices:
+    handler: src/handler.getServices
+    events:
+      - http:
+          path: services
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  getPayments:
+    handler: src/handler.getPayments
+    events:
+      - http:
+          path: payments
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  getNewUsers:
+    handler: src/handler.getNewUsers
+    events:
+      - http:
+          path: new-users
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  getStaffUsers:
+    handler: src/handler.getStaffUsers
+    events:
+      - http:
+          path: staff-users
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  getRoles:
+    handler: src/handler.getRoles
+    events:
+      - http:
+          path: roles
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  getEventById:
+    handler: src/handler.getEvent
+    events:
+      - http:
+          path: events/{eventId}
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  deleteEventById:
+    handler: src/handler.deleteEvent
+    events:
+      - http:
+          path: events/{eventId}
+          method: delete
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  getVenueById:
+    handler: src/handler.getVenue
+    events:
+      - http:
+          path: venues/{venueId}
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  deleteVenueById:
+    handler: src/handler.deleteVenue
+    events:
+      - http:
+          path: venues/{venueId}
+          method: delete
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  getServiceById:
+    handler: src/handler.getService
+    events:
+      - http:
+          path: services/{serviceId}
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  deleteServiceById:
+    handler: src/handler.deleteService
+    events:
+      - http:
+          path: services/{serviceId}
+          method: delete
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  getUserActivity:
+    handler: src/handler.getUserActivity
+    events:
+      - http:
+          path: users/{userId}/activity
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  deleteUser:
+    handler: src/handler.deleteUser
+    events:
+      - http:
+          path: users/{userId}
+          method: delete
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false
+
+  getAIMetrics:
+    handler: src/handler.getAIMetrics
+    events:
+      - http:
+          path: ai/metrics
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-User-Id
+              - x-user-id
+            allowCredentials: false

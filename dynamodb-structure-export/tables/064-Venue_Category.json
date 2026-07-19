@@ -1,0 +1,79 @@
+{
+  "tableName": "Venue_Category",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/Venue_Category",
+  "tableId": "51a13b11-a423-4b3a-93cb-795db3ca1be5",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 443,
+  "tableSizeBytes": 244055,
+  "creationDateTime": "2025-11-07T13:01:58.900000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "categoryId",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "categoryId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "floorId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "venueId",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "venueIdIndex",
+      "keySchema": [
+        {
+          "AttributeName": "venueId",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 443,
+      "indexSizeBytes": 244055
+    },
+    {
+      "indexName": "floorIdIndex",
+      "keySchema": [
+        {
+          "AttributeName": "floorId",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 304,
+      "indexSizeBytes": 178080
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

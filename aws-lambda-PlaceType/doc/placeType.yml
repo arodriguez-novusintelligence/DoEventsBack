@@ -1,0 +1,87 @@
+openapi: 3.0.1
+info:
+  title: Tipos de Lugar API
+  description: API para crear y consultar tipos de lugar utilizados en eventos.
+  version: "1.0.0"
+
+paths:
+  /placetype:
+    post:
+      summary: Crear tipo de lugar
+      description: Crea un nuevo tipo de lugar con nombre en español e inglés.
+      tags:
+        - PlaceType
+      requestBody:
+        description: Datos del tipo de lugar
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePlaceTypeRequest'
+      responses:
+        '200':
+          description: Tipo de lugar creado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Error al crear el tipo de lugar
+
+    get:
+      summary: Obtener todos los tipos de lugar
+      description: Devuelve todos los tipos de lugar registrados en la base de datos.
+      tags:
+        - PlaceType
+      responses:
+        '200':
+          description: Tipos de lugar obtenidos exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPlaceTypeResponse'
+        '404':
+          description: No se encontraron tipos de lugar
+        '500':
+          description: Error al consultar los tipos de lugar
+
+components:
+  schemas:
+    CreatePlaceTypeRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        PlaceType_EN:
+          type: string
+        PlaceType_ES:
+          type: string
+      required:
+        - id
+        - PlaceType_EN
+        - PlaceType_ES
+
+    PlaceType:
+      type: object
+      properties:
+        id:
+          type: string
+        PlaceType_EN:
+          type: string
+        PlaceType_ES:
+          type: string
+
+    GetPlaceTypeResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlaceType'

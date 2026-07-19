@@ -1,0 +1,216 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: events
+service: notifications
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs20.x # Cambiado temporalmente para serverless-offline (nodejs24.x no soportado)
+  region: us-east-1
+  stage: ${self:custom.stage}
+
+  # Function-level logging configuration
+  logRetentionInDays: 14
+
+  # CloudWatch settings
+  tracing:
+    lambda: true # Enable X-Ray tracing
+    apiGateway: true
+
+  environment:
+    EMAIL_FROM: ${env:EMAIL_FROM, 'notificaciones.doevents@doeventsapp.com'}
+    NOTIFICATIONS_TABLE: Notifications
+    USER_CHANNELS_TABLE: UserChannels
+    CLIENT_TABLE: Client
+    ORDERS_TABLE: Orders
+    FAVORITE_USERS_TABLE: FavoriteUsers
+    USER_TOKENS_TABLE: UserTokens
+    WEBHOOK_LOGS_TABLE: WhatsAppWebhookLogs
+    IMAGES_TABLE: imagenes
+    META_ACCESS_TOKEN: ${env:META_ACCESS_TOKEN, 'EAAGzrxZCbEf4BOyBzbItaVxHZB56DrIlxlv72c2fMljhdlrLkF8uY0Xmh00NIYkPaiQWcLM9ZBZCu7Oh4DAfh5UqZC0igUP2TZBYtx5TNlZAzn51NqtyIGOaEYKOESg4tRYNBXl8PuqGiAvCu5yfgYyTxAC3UWMsbjk1ml6zEgLgPL4TQq2x6EfZBfR2ZBYSsqILztQZDZD'}
+    WHATSAPP_PHONE_ID: ${env:WHATSAPP_PHONE_ID, '588313857701989'}
+    WHATSAPP_VERIFY_TOKEN: ${env:WHATSAPP_VERIFY_TOKEN, 'doevents_webhook_2026'}
+    STAGE: ${self:custom.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:*
+        - lambda:InvokeFunction
+        - sns:Publish
+        - logs:CreateLogGroup
+        - logs:CreateLogStream
+        - logs:PutLogEvents
+        - logs:DescribeLogStreams
+        - logs:DescribeLogGroups
+        - xray:PutTraceSegments
+        - xray:PutTelemetryRecords
+      Resource:
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Notifications
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Notifications/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/UserChannels
+        - arn:aws:dynamodb:us-east-1:519010577666:table/UserChannels/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Client
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Client/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Orders
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Orders/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/WhatsAppWebhookLogs
+        - arn:aws:dynamodb:us-east-1:519010577666:table/WhatsAppWebhookLogs/index/*
+        - arn:aws:lambda:us-east-1:519010577666:function:*
+        - arn:aws:sns:us-east-1:519010577666:emailNotificationTopic
+        - arn:aws:logs:us-east-1:519010577666:log-group:/aws/lambda/*
+        - "*"
+    - Effect: Allow
+      Action:
+        - ses:SendEmail
+        - ses:SendRawEmail
+      Resource:
+        - arn:aws:ses:us-east-1:519010577666:identity/kodeefy@gmail.com
+        - arn:aws:ses:us-east-1:519010577666:identity/notificaciones.doevents@doeventsapp.com
+        - "*"
+
+  iam:
+    role:
+      statements: # Cambiado de 'role' a 'statements' para la configuración de IAM
+        - Effect: Allow
+          Action:
+            - execute-api:ManageConnections
+            - lambda:InvokeFunction
+          Resource: "arn:aws:execute-api:${aws:region}:${aws:accountId}:*/@connections/*"
+
+#plugins:
+ # - serverless-offline # Para probar tu webhook localmente
+
+custom:
+  serverless-offline:
+    websocketPort: 3030
+    httpPort: 3031
+    lambdaPort: 3032
+    host: 0.0.0.0
+
+  stage: ${opt:stage, 'dev'}
+
+functions:
+  # APIS REST
+
+  getNotificationByUserId:
+    handler: src/apis/getNotificationsByUserId.handler
+    events:
+      - http:
+          path: notifications-by-user/{userId}
+          method: get
+
+  updateNotificationsById:
+    handler: src/apis/updateNotificationsById.handler
+    events:
+      - http:
+          path: update-notification/{id}
+          method: put
+
+  deleteNotificationById:
+    handler: src/apis/deleteNotificationById.handler
+    events:
+      - http:
+          path: notifications/{userId}/{notificationId}
+          method: delete
+
+  deleteAllNotificationsByUserId:
+    handler: src/apis/deleteAllNotificationsByUserId.handler
+    events:
+      - http:
+          path: notifications/{userId}/all
+          method: delete
+
+  getUserMessagingTokenByUserId:
+    handler: src/apis/getUserMessagingTokenByUserId.handler
+    events:
+      - http:
+          path: get-user-messaging-token/{userId}
+          method: get
+
+  createUserMessagingToken:
+    handler: src/apis/createUserMessagingToken.handler
+    events:
+      - http:
+          path: create-user-messaging-token
+          method: post
+
+  updateUserMessagingToken:
+    handler: src/apis/updateUserMessagingToken.handler
+    events:
+      - http:
+          path: update-user-messaging-token
+          method: post
+
+  deleteUserMessagingToken:
+    handler: src/apis/deleteUserMessagingToken.handler
+    events:
+      - http:
+          path: delete-user-messaging-token/{userId}
+          method: delete
+
+  triggerNotification:
+    handler: src/apis/triggerNotification.handler
+    events:
+      - http:
+          path: trigger-notification
+          method: post
+
+  # WebSocket Handlers
+
+  pushNotificationHandler:
+    handler: src/gateways/pushNotification.handler
+    timeout: 30
+    description: Enviar notificaciones push via Firebase FCM
+    events:
+      - websocket:
+          route: pushNotification
+
+  emailNotificationHandler:
+    handler: src/gateways/emailNotification.handler
+    timeout: 30
+    description: Enviar notificaciones por email via AWS SES
+    events:
+      - websocket:
+          route: emailNotification
+
+  inAppNotificationHandler:
+    handler: src/gateways/inAppNotification.handler
+    timeout: 30
+    description: Enviar notificaciones in-app via WebSocket
+    events:
+      - websocket:
+          route: inAppNotification
+
+  whatsappNotificationHandler:
+    handler: src/gateways/whatsappNotification.handler
+    timeout: 30
+    description: Enviar notificaciones WhatsApp via Meta Business API
+    events:
+      - websocket:
+          route: whatsappNotification
+
+  # Webhook de WhatsApp para recibir estados de mensajes
+  whatsappWebhook:
+    handler: src/webhooks/whatsappWebhook.handler
+    timeout: 30
+    description: Recibir webhooks de WhatsApp (estados de entrega, mensajes entrantes)
+    events:
+      - http:
+          path: webhooks/whatsapp
+          method: get
+          cors: true
+      - http:
+          path: webhooks/whatsapp
+          method: post
+          cors: true
+
+  # API REST para manejo directo
+  notifyEventAffectedUsers:
+    handler: src/apis/notifyEventAffectedUsers.handler
+    timeout: 29
+    description: Coordinar envío de notificaciones por todos los canales para eventos afectados
+    events:
+      - http:
+          path: notify-event-affected-users
+          method: post

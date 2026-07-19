@@ -1,0 +1,117 @@
+org: events
+app: hello
+service: aws-lambda-eventsLifecycleManager
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: dev
+  region: sa-east-1
+  memorySize: 256
+  timeout: 30
+  environment:
+    EVENTS_TABLE: Eventos-dev
+    VENUES_TABLE: Venues-dev
+    TICKETS_TABLE: Tickets-dev
+    ORDERS_TABLE: Orders-dev
+    NOTIFICATIONS_TABLE: Notifications-dev
+    FOLLOWERS_TABLE: Followers-dev
+    FAVORITE_EVENTS_TABLE: userFavoriteEvents-dev
+    STAGE: dev
+    NOTIFICATIONS_TRIGGER_FUNCTION: notifications-dev-triggerNotification
+    EVENT_SCHEDULE_TIMEZONE: America/Bogota
+    EVENT_LIFECYCLE_TRANSITION_FUNCTION: events-lifecycle-manager-transition-dev
+    EVENT_SCHEDULER_ROLE_ARN:
+      Fn::GetAtt:
+        - EventLifecycleSchedulerRole
+        - Arn
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:*
+          Resource:
+            - arn:aws:dynamodb:sa-east-1:*:table/Eventos-dev
+            - arn:aws:dynamodb:sa-east-1:*:table/Eventos-dev/index/*
+            - arn:aws:dynamodb:sa-east-1:*:table/Venues-dev
+            - arn:aws:dynamodb:sa-east-1:*:table/Venues-dev/index/*
+            - arn:aws:dynamodb:sa-east-1:*:table/Orders-dev
+            - arn:aws:dynamodb:sa-east-1:*:table/Orders-dev/index/*
+            - arn:aws:dynamodb:sa-east-1:*:table/Notifications-dev
+            - arn:aws:dynamodb:sa-east-1:*:table/Notifications-dev/index/*
+            - arn:aws:dynamodb:sa-east-1:*:table/Tickets-dev
+            - arn:aws:dynamodb:sa-east-1:*:table/Tickets-dev/index/*
+            - arn:aws:dynamodb:sa-east-1:*:table/Followers-dev
+            - arn:aws:dynamodb:sa-east-1:*:table/Followers-dev/index/*
+            - arn:aws:dynamodb:sa-east-1:*:table/userFavoriteEvents-dev
+            - arn:aws:dynamodb:sa-east-1:*:table/userFavoriteEvents-dev/index/*
+            - arn:aws:dynamodb:sa-east-1:*:table/Chats-dev
+            - arn:aws:dynamodb:sa-east-1:*:table/Chats-dev/index/*
+        - Effect: Allow
+          Action:
+            - lambda:InvokeFunction
+          Resource:
+            - arn:aws:lambda:sa-east-1:*:function:notifications-dev-triggerNotification
+            - arn:aws:lambda:sa-east-1:*:function:events-lifecycle-manager-transition-dev
+        - Effect: Allow
+          Action:
+            - ses:SendEmail
+            - ses:SendRawEmail
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - scheduler:CreateSchedule
+            - scheduler:UpdateSchedule
+            - scheduler:DeleteSchedule
+            - scheduler:GetSchedule
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - iam:PassRole
+          Resource:
+            - Fn::GetAtt:
+                - EventLifecycleSchedulerRole
+                - Arn
+
+functions:
+  checkAndProcessEvents:
+    handler: src/handler.handler
+    name: events-lifecycle-manager-dev
+    events:
+      - schedule: rate(12 hours)
+
+  upsertEventLifecycleSchedules:
+    handler: src/scheduler.upsertEventLifecycleSchedules
+    name: events-lifecycle-manager-scheduler-upsert-dev
+
+  processEventLifecycleTransition:
+    handler: src/scheduler.processEventLifecycleTransition
+    name: events-lifecycle-manager-transition-dev
+
+package:
+  individually: true
+
+resources:
+  Resources:
+    EventLifecycleSchedulerRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: event-lifecycle-scheduler-role-dev
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: scheduler.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: invoke-lifecycle-transition
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - lambda:InvokeFunction
+                  Resource:
+                    - arn:aws:lambda:sa-east-1:*:function:events-lifecycle-manager-transition-dev

@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1021.0",
+    "@aws-sdk/lib-dynamodb": "^3.1021.0",
+    "aws-sdk": "^2.1692.0",
+    "axios": "^1.6.0",
+    "qrcode": "^1.5.4",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "serverless-openapi-documentation": "^0.4.0",
+    "swagger-autogen": "^2.23.7"
+  },
+  "scripts": {
+    "gen:swagger": "node swagger.js"
+  }
+}

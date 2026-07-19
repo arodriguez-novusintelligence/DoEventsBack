@@ -1,0 +1,190 @@
+{
+  "tableName": "Eventos",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/Eventos",
+  "tableId": "82ac645b-6da9-4336-9997-b83995abffbe",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 1271,
+  "tableSizeBytes": 1043406,
+  "creationDateTime": "2025-04-30T08:24:23.487000-05:00",
+  "deletionProtectionEnabled": true,
+  "keySchema": [
+    {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "ciudad",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "estatus",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "fechaFin",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "fechaIni",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "slug",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "userId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "venueId",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "fechaFin-index",
+      "keySchema": [
+        {
+          "AttributeName": "fechaFin",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "fechaIni",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 1271,
+      "indexSizeBytes": 1043406
+    },
+    {
+      "indexName": "userIdIndex",
+      "keySchema": [
+        {
+          "AttributeName": "userId",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 636,
+      "indexSizeBytes": 583570
+    },
+    {
+      "indexName": "CiudadFechaIniIndex",
+      "keySchema": [
+        {
+          "AttributeName": "ciudad",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "fechaIni",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 1255,
+      "indexSizeBytes": 1033277
+    },
+    {
+      "indexName": "venueId-index",
+      "keySchema": [
+        {
+          "AttributeName": "venueId",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 246,
+      "indexSizeBytes": 270643
+    },
+    {
+      "indexName": "CityStartDateIndex",
+      "keySchema": [
+        {
+          "AttributeName": "ciudad",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "fechaIni",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 1255,
+      "indexSizeBytes": 1033277
+    },
+    {
+      "indexName": "EstatusFechaIndex",
+      "keySchema": [
+        {
+          "AttributeName": "estatus",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "fechaIni",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 1271,
+      "indexSizeBytes": 1043406
+    },
+    {
+      "indexName": "slug-index",
+      "keySchema": [
+        {
+          "AttributeName": "slug",
+          "KeyType": "HASH"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 1081,
+      "indexSizeBytes": 865711
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

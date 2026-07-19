@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
+  xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="x-apple-disable-message-reformatting" />
+  <title>{{title}}</title>
+  <!--[if mso]>
+      <xml>
+        <o:OfficeDocumentSettings>
+          <o:AllowPNG/>
+          <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
+      </xml>
+    <![endif]-->
+  <style>
+    body,
+    table,
+    td,
+    a {
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+    }
+
+    table,
+    td {
+      mso-table-lspace: 0pt;
+      mso-table-rspace: 0pt;
+    }
+
+    img {
+      -ms-interpolation-mode: bicubic;
+      border: 0;
+      height: auto;
+      line-height: 100%;
+      outline: none;
+      text-decoration: none;
+    }
+
+    table {
+      border-collapse: collapse !important;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100% !important;
+      height: 100% !important;
+      background-color: #f5f7fb;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .preheader {
+      display: none !important;
+      visibility: hidden;
+      opacity: 0;
+      color: transparent;
+      height: 0;
+      width: 0;
+      overflow: hidden;
+      mso-hide: all;
+    }
+
+    @media screen and (max-width: 600px) {
+      .container {
+        width: 100% !important;
+      }
+
+      .px-24 {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+      }
+
+      .py-24 {
+        padding-top: 16px !important;
+        padding-bottom: 16px !important;
+      }
+
+      .h1 {
+        font-size: 22px !important;
+        line-height: 28px !important;
+      }
+    }
+  </style>
+</head>
+
+<body style="background-color:#f5f7fb;">
+  <div class="preheader">{{invitedBy}} te invitó a unirte al chat del evento {{eventName}}. {{#if link}}Únete
+    ahora{{/if}}</div>
+
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f5f7fb;">
+    <tr>
+      <td align="center">
+        <!-- Container -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" class="container"
+          style="width:600px; max-width:100%; margin:24px auto; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 8px 24px rgba(28, 41, 61, 0.08);">
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #6C5CE7 0%, #8E79FF 100%); padding:28px 24px; color:#ffffff;"
+              class="px-24 py-24" align="left">
+              <table role="presentation" width="100%">
+                <tr>
+                  <td align="left" style="vertical-align: middle;">
+                    {{#if logoUrl}}
+                    <img src="{{logoUrl}}" alt="Logo" width="120" style="display:block; max-width:120px; border:0;">
+                    {{else}}
+                    <div
+                      style="font-family: 'Segoe UI', Arial, sans-serif; font-weight:700; font-size:18px; letter-spacing:0.5px;">
+                      DoEvents</div>
+                    {{/if}}
+                  </td>
+                  <td align="right"
+                    style="vertical-align: middle; font-family:'Segoe UI', Arial, sans-serif; font-size:12px; opacity:0.9;">
+                    {{#if eventName}}<span
+                      style="background:rgba(255,255,255,0.15); padding:6px 10px; border-radius:999px;">{{eventName}}</span>{{/if}}
+                  </td>
+                </tr>
+              </table>
+              <div class="h1"
+                style="margin-top:18px; font-family:'Segoe UI', Arial, sans-serif; font-weight:700; font-size:24px; line-height:32px;">
+                {{#if title}}{{title}}{{else}}Invitación al chat{{/if}}</div>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:28px 24px;" class="px-24 py-24" align="left">
+              <table role="presentation" width="100%">
+                <tr>
+                  <td
+                    style="font-family:'Segoe UI', Arial, sans-serif; color:#1c293d; font-size:16px; line-height:24px;">
+                    <p style="margin:0 0 12px 0;">Hola{{#if userName}} {{userName}}{{/if}},</p>
+                    <p style="margin:0 0 12px 0;">{{invitedBy}} te invitó a unirte al chat del evento
+                      <strong>{{eventName}}</strong>.</p>
+                    {{#if link}}
+                    <p style="margin:0 0 24px 0;">Haz clic en el botón para unirte de inmediato.</p>
+                    {{/if}}
+                  </td>
+                </tr>
+                {{#if link}}
+                <tr>
+                  <td align="center" style="padding: 12px 0 8px 0;">
+                    <!-- Button -->
+                    <a href="{{link}}" target="_blank"
+                      style="display:inline-block; background:#6C5CE7; color:#ffffff; font-family:'Segoe UI', Arial, sans-serif; font-weight:600; font-size:15px; line-height:20px; padding:12px 20px; border-radius:10px; text-decoration:none; box-shadow:0 6px 14px rgba(108,92,231,0.25);">Unirse
+                      al chat</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="font-family:'Segoe UI', Arial, sans-serif; color:#5a6880; font-size:13px; line-height:20px;"
+                    align="center">
+                    <div style="margin-top:8px;">Si el botón no funciona, copia y pega este enlace en tu navegador:
+                    </div>
+                    <div style="word-break: break-all; margin-top:4px;"><a href="{{link}}"
+                        style="color:#6C5CE7;">{{link}}</a></div>
+                  </td>
+                </tr>
+                {{/if}}
+
+                <!-- Divider -->
+                <tr>
+                  <td style="padding-top:24px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="border-top:1px dashed #e3e8f0; font-size:0; line-height:0;">&nbsp;</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Tips -->
+                <tr>
+                  <td
+                    style="padding-top:16px; font-family:'Segoe UI', Arial, sans-serif; color:#5a6880; font-size:13px; line-height:20px;">
+                    <p style="margin:0;">Consejo: mantén las notificaciones activadas para no perderte ninguna
+                      actualización del chat.</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#ffffff; padding:16px 24px 28px;" class="px-24" align="center">
+              <table role="presentation" width="100%">
+                <tr>
+                  <td
+                    style="font-family:'Segoe UI', Arial, sans-serif; color:#8a97a6; font-size:12px; line-height:18px;"
+                    align="center">
+                    <div style="margin-bottom:8px;">© {{year}} DoEvents. Todos los derechos reservados.</div>
+                    {{#if supportEmail}}
+                    <div>¿Necesitas ayuda? Escríbenos a <a href="mailto:{{supportEmail}}"
+                        style="color:#6C5CE7;">{{supportEmail}}</a></div>
+                    {{/if}}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+
+</html>

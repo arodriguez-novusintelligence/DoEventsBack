@@ -1,0 +1,63 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: events
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: events-feed
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: aws-lambda-eventsFeed
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:GetObject
+      Resource:
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Eventos
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Eventos/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/DeviceData
+        - arn:aws:dynamodb:us-east-1:519010577666:table/DeviceData/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/UserPreferences
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Followers
+        - arn:aws:dynamodb:us-east-1:519010577666:table/imagenes
+        - arn:aws:dynamodb:us-east-1:519010577666:table/imagenes/index/eventIdIndex
+        - arn:aws:dynamodb:us-east-1:519010577666:table/userFavoriteEvents
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Venues
+        - arn:aws:s3:::doeventimageeventbucket/*
+  environment:
+    STAGE: ${opt:stage, 'dev'}
+    EVENTS_TABLE: Eventos
+    DEVICE_TABLE: DeviceData
+    PREFS_TABLE: UserPreferences
+    FOLLOW_TABLE: Followers
+    FOLLOWERS_TABLE: Followers
+    FAV_TABLE: userFavoriteEvents
+    VENUES_TABLE: Venues
+    IMAGE_TABLE: imagenes
+    imageBucket: doeventimageeventbucket
+    imagesTable: imagenes
+    # Se rellena en el comando `sls deploy --param daxEndpoints=host:port`
+    #DAX_ENDPOINTS: ${self:custom.daxEndpoints}
+
+functions:
+  swaggerDocs:
+    handler: src/swaggerDocs.swaggerDocs
+    events:
+      - http:
+          path: doc
+          method: get
+      - http:
+          path: doc/swagger-events-feed.yml
+          method: get
+  getEvents:
+    handler: src/eventsFeed.handler
+    events:
+      - http:
+          path: /eventsFeed
+          method: POST
+#custom:
+# Valor por defecto vacío; se sobreescribe con --param daxEndpoints=
+#daxEndpoints: ${opt:daxEndpoints, ''}
+

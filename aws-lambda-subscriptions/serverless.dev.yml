@@ -1,0 +1,85 @@
+org: events
+service: aws-lambda-subscriptions
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: sa-east-1
+  stage: dev
+  environment:
+    CLIENT_TABLE: Client-dev
+    EVENTS_TABLE: Eventos-dev
+    ORDERS_TABLE: Orders-dev
+    SUBSCRIPTIONS_TABLE: Subscriptions-dev
+    DYNAMODB_REGION: sa-east-1
+    STAGE: dev
+    PRO_AMOUNT_USD: 70
+    WOMPI_PRIVATE_KEY: ${env:WOMPI_PRIVATE_KEY, ''}
+    WOMPI_PUBLIC_KEY: ${env:WOMPI_PUBLIC_KEY, ''}
+    WOMPI_REDIRECT_BASE_URL: ${env:WOMPI_REDIRECT_BASE_URL, 'https://dev.doeventsapp.com/payment-finally'}
+    WOMPI_API_BASE_URL: ${env:WOMPI_API_BASE_URL, 'https://sandbox.wompi.co/v1'}
+    WOMPI_WEBHOOK_URL: ${env:WOMPI_WEBHOOK_URL, ''}
+    NOTIFICATIONS_API: https://api-dev.doeventsapp.com/notifications/trigger-notification
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:Query
+        - dynamodb:Scan
+      Resource:
+        - arn:aws:dynamodb:sa-east-1:*:table/Client-dev
+        - arn:aws:dynamodb:sa-east-1:*:table/Eventos-dev
+        - arn:aws:dynamodb:sa-east-1:*:table/Eventos-dev/index/*
+        - arn:aws:dynamodb:sa-east-1:*:table/Subscriptions-dev
+        - arn:aws:dynamodb:sa-east-1:*:table/Subscriptions-dev/index/*
+
+functions:
+  getSubscriptionStatus:
+    handler: src/handler.getSubscriptionStatus
+    events:
+      - http:
+          path: status/{userId}
+          method: get
+          cors: true
+
+  checkPublishLimit:
+    handler: src/handler.checkPublishLimit
+    events:
+      - http:
+          path: check-limit
+          method: post
+          cors: true
+
+  createProCheckout:
+    handler: src/handler.createProCheckout
+    events:
+      - http:
+          path: pro/checkout
+          method: post
+          cors: true
+
+  proPaymentWebhook:
+    handler: src/handler.proPaymentWebhook
+    events:
+      - http:
+          path: pro/webhook
+          method: post
+          cors: true
+
+  confirmProPayment:
+    handler: src/handler.confirmProPayment
+    events:
+      - http:
+          path: pro/confirm
+          method: post
+          cors: true
+
+  cancelPro:
+    handler: src/handler.cancelPro
+    events:
+      - http:
+          path: pro/cancel
+          method: post
+          cors: true

@@ -1,0 +1,226 @@
+org: events
+service: aws-lambda-manageusers
+frameworkVersion: "4"
+
+package:
+  patterns:
+    - "!**"
+    - "src/**"
+    - "package.json"
+    - "node_modules/**"
+    - "!node_modules/serverless/**"
+    - "!node_modules/serverless-offline/**"
+    - "!node_modules/@esbuild/**"
+    - "!node_modules/java-invoke-local/**"
+    - "!node_modules/@types/**"
+    - "!node_modules/.bin/**"
+    - "!_lambda_patch/**"
+    - "!_patch_search/**"
+    - "!.deploy-getuser/**"
+    - "!**/*.zip"
+    - "!**/*.md"
+    - "!.serverless/**"
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: us-east-2
+  stage: qa
+  environment:
+    CLIENT_TABLE: Client-qa
+    FAVORITE_USERS_TABLE: FavoriteUsers-qa
+    IMAGE_TABLE: imagenes-qa
+    EVENTS_TABLE: Eventos-qa
+    ORDERS_TABLE: Orders-qa
+    EVENT_INVITATIONS_TABLE: EventInvitations-qa
+    BACKOFFICE_TABLE: doevents-backoffice-qa-users
+    BACKOFFICE_REGION: us-east-2
+    IMAGE_BUCKET: doeventimageeventbucket
+    PROFILE_BUCKET: doevents-profile-media-qa
+    PROFILE_BUCKET_REGION: us-east-2
+    CORS_ALLOWED_ORIGINS: https://qa.doeventsapp.com,http://localhost:5173,https://localhost,capacitor://localhost
+    JWT_SECRET: ${env:JWT_SECRET, ''}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:PutObject
+        - s3:GetObject
+        - s3:DeleteObject
+        - s3:CopyObject
+      Resource:
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Client-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Client-qa/index/*
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Eventos-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Eventos-qa/index/*
+        - arn:aws:dynamodb:us-east-2:519010577666:table/userFavoriteEvents-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Orders-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/Orders-qa/index/*
+        - arn:aws:dynamodb:us-east-2:519010577666:table/FavoriteUsers-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/FavoriteUsers-qa/index/*
+        - arn:aws:dynamodb:us-east-2:519010577666:table/EventInvitations-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/EventInvitations-qa/index/*
+        - arn:aws:dynamodb:us-east-2:519010577666:table/FeedPublications-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/FeedPublications-qa/index/*
+        - arn:aws:dynamodb:us-east-2:519010577666:table/FeedPublicationLikes-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/FeedPublicationLikes-qa/index/*
+        - arn:aws:dynamodb:us-east-2:519010577666:table/imagenes-qa
+        - arn:aws:dynamodb:us-east-2:519010577666:table/imagenes-qa/index/*
+        - arn:aws:dynamodb:us-east-2:519010577666:table/doevents-backoffice-qa-users
+        - arn:aws:dynamodb:us-east-2:519010577666:table/doevents-backoffice-qa-users/index/*
+        - arn:aws:s3:::doeventprofileimagesbucket
+        - arn:aws:s3:::doeventprofileimagesbucket/*
+        - arn:aws:s3:::doevents-profile-media-qa
+        - arn:aws:s3:::doevents-profile-media-qa/*
+        - arn:aws:s3:::doeventimageeventbucket/*
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource:
+        - arn:aws:lambda:us-east-2:519010577666:function:*
+
+functions:
+  createUser:
+    handler: src/addUser.addUser
+    events:
+      - httpApi:
+          path: /createUser
+          method: post
+  createUserRRSS:
+    handler: src/addUser.addUserRRSS
+    events:
+      - httpApi:
+          path: /createUserRRSS
+          method: post
+  getUser:
+    handler: src/getUser.getUser
+    events:
+      - httpApi:
+          path: /getUser/{id}
+          method: get
+  updateUser:
+    handler: src/updateUser.updateUser
+    events:
+      - httpApi:
+          path: /updateUser
+          method: post
+  getUserByEmail:
+    handler: src/getUserByEmail.getUser
+    events:
+      - httpApi:
+          path: /getUserByEmail/{email}
+          method: get
+  getUserStats:
+    handler: src/userStats.handler
+    events:
+      - httpApi:
+          path: /getUserStats/{userId}
+          method: get
+  updateUserProfileVisibility:
+    handler: src/updateUserProfileVisibility.updateUserProfileVisibility
+    events:
+      - httpApi:
+          path: /updateUserProfileVisibility
+          method: put
+  searchUsers:
+    handler: src/searchUsers.searchUsers
+    events:
+      - httpApi:
+          path: /searchUsers
+          method: get
+  getUserInvitations:
+    handler: src/getUserInvitations.getUserInvitations
+    events:
+      - httpApi:
+          path: /users/{userId}/invitations
+          method: get
+  createProfileImagesUploadUrls:
+    handler: src/profileMediaHandlers.createProfileImagesUploadUrls
+    events:
+      - httpApi:
+          path: /users/{userId}/profile-images/upload-urls
+          method: post
+  upsertProfileImages:
+    handler: src/profileMediaHandlers.upsertProfileImages
+    events:
+      - httpApi:
+          path: /users/{userId}/profile-images
+          method: put
+  listProfileImages:
+    handler: src/profileMediaHandlers.listProfileImages
+    events:
+      - httpApi:
+          path: /users/{userId}/profile-images
+          method: get
+  deleteProfileImage:
+    handler: src/profileMediaHandlers.deleteProfileImage
+    events:
+      - httpApi:
+          path: /users/{userId}/profile-images/{imageId}
+          method: delete
+  createAvatarUploadUrl:
+    handler: src/profileMediaHandlers.createAvatarUploadUrl
+    events:
+      - httpApi:
+          path: /users/{userId}/avatar/upload-url
+          method: post
+  upsertAvatarImage:
+    handler: src/profileMediaHandlers.upsertAvatarImage
+    events:
+      - httpApi:
+          path: /users/{userId}/avatar
+          method: put
+  setAvatarFromGallery:
+    handler: src/profileMediaHandlers.setAvatarFromGallery
+    events:
+      - httpApi:
+          path: /users/{userId}/avatar/from-gallery
+          method: post
+  createCoverUploadUrl:
+    handler: src/profileMediaHandlers.createCoverUploadUrl
+    events:
+      - httpApi:
+          path: /users/{userId}/cover/upload-url
+          method: post
+  upsertCoverImage:
+    handler: src/profileMediaHandlers.upsertCoverImage
+    events:
+      - httpApi:
+          path: /users/{userId}/cover
+          method: put
+  setCoverFromGallery:
+    handler: src/profileMediaHandlers.setCoverFromGallery
+    events:
+      - httpApi:
+          path: /users/{userId}/cover/from-gallery
+          method: post
+  deleteCoverImage:
+    handler: src/profileMediaHandlers.deleteCoverImage
+    events:
+      - httpApi:
+          path: /users/{userId}/cover
+          method: delete
+  setFavoriteProfile:
+    handler: src/profileFavoritesHandlers.setFavoriteProfile
+    events:
+      - httpApi:
+          path: /users/{userId}/favorite-profiles/{targetUserId}
+          method: put
+  listFavoriteProfiles:
+    handler: src/profileFavoritesHandlers.listFavoriteProfiles
+    events:
+      - httpApi:
+          path: /users/{userId}/favorite-profiles
+          method: get
+  listProfilesWhoFavoritedMe:
+    handler: src/profileFavoritesHandlers.listProfilesWhoFavoritedMe
+    events:
+      - httpApi:
+          path: /users/{userId}/favorited-by
+          method: get
+      - httpApi:
+          path: /users/{userId}/favorite-profiles/received
+          method: get
+      - httpApi:
+          path: /users/{userId}/likes-received
+          method: get

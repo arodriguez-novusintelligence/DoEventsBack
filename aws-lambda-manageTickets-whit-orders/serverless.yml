@@ -1,0 +1,261 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: events
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: manage-tickets
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: aws-lambda-manageTickets
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: us-east-1
+  environment:
+    # Tablas y bucket que usan las lambdas
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    ORDERS_TABLE: Orders
+    EVENTS_TABLE: Eventos
+    TICKETS_TABLE: CheckoutTicket
+    ACCESS_LOGS_TABLE: AccessLogs
+    SEATS_TABLE: Seats
+    RESERVATIONS_TABLE: Reservations
+    IMAGE_BUCKET: doeventimageeventbucket
+    IMAGE_TABLE: imagenes
+  iamRoleStatements:
+    # DynamoDB (tablas principales + índices)
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Orders
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Eventos
+        - arn:aws:dynamodb:us-east-1:519010577666:table/CheckoutTicket
+        - arn:aws:dynamodb:us-east-1:519010577666:table/CheckoutTicket/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Seats
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Seats/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Reservations
+        - arn:aws:dynamodb:us-east-1:519010577666:table/Reservations/index/*
+        - arn:aws:dynamodb:us-east-1:519010577666:table/AccessLogs
+        - arn:aws:dynamodb:us-east-1:519010577666:table/AccessLogs/index/*
+        - arn:aws:lambda:us-east-1:519010577666:function:aws-lambda-imagenes-dev-getImageByEventId
+        - arn:aws:s3:::doeventimageeventbucket/*
+    # S3 (bucket para las imágenes QR)
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:PutObject
+      Resource: arn:aws:s3:::${self:custom.qrBucket}/*
+
+custom:
+  qrBucket: ticket-qr-${sls:stage}
+
+functions:
+  # ────────── 1. Ticket Lambda ──────────
+  generateTickets:
+    handler: src/ticket/generateTickets.handler
+    description: Crear
+    events:
+      - http:
+          path: orders/tickets/generate
+          method: post
+  # 2. Obtener detalle de ticket
+  getTicketDetail:
+    handler: src/ticket/getTicketDetail.handler
+    description: Obtener detalles de un ticket
+    events:
+      - http:
+          path: tickets/{ticketId}
+          method: get
+
+  # 3. Listar tickets de usuario
+  listUserTickets:
+    handler: src/ticket/listUserTickets.handler
+    description: Listar tickets de un usuario
+    events:
+      - http:
+          path: users/{userId}/tickets
+          method: get
+
+  # 4. Listar tickets de evento
+  listEventTickets:
+    handler: src/ticket/listEventTickets.handler
+    description: Listar tickets de un evento
+    events:
+      - http:
+          path: events/{eventId}/tickets
+          method: get
+
+  # 5. Transferir ticket
+  transferTicket:
+    handler: src/ticket/transferTicket.handler
+    description: Transferir un ticket a otro usuario
+    events:
+      - http:
+          path: tickets/transfer
+          method: post
+
+  # 6. Cancelar ticket
+  cancelTicket:
+    handler: src/ticket/cancelTicket.handler
+    description: Cancelar un ticket
+    events:
+      - http:
+          path: tickets/cancel
+          method: post
+
+  # 7. Generar QR
+  generateQr:
+    handler: src/qr/generateQr.handler
+    description: Generar código QR para un ticket
+    events:
+      - http:
+          path: tickets/qr/generate
+          method: post
+
+  # 8. Obtener imagen QR
+  getQrImage:
+    handler: src/qr/getQrImage.handler
+    description: Obtener la imagen del QR desde S3
+    events:
+      - http:
+          path: tickets/qr/{ticketId}
+          method: get
+
+  # 9. Validar QR
+  validateQr:
+    handler: src/qr/validateQr.handler
+    description: Validar un código QR para acceso
+    events:
+      - http:
+          path: tickets/qr/validate
+          method: post
+
+  # 10. Obtener logs de acceso
+  getAccessLogs:
+    handler: src/access/getAccessLogs.handler
+    description: Obtener logs de acceso para un ticket
+    events:
+      - http:
+          path: access/logs
+          method: post
+
+  # 11. Obtener estadísticas de acceso
+  getAccessStats:
+    handler: src/access/getAccessStats.handler
+    description: Obtener estadísticas de acceso
+    events:
+      - http:
+          path: access/stats
+          method: get
+
+  # ────────── Seats Management ──────────
+  listEventSeats:
+    handler: src/seats/listEventSeats.handler
+    description: Listar sillas de un evento
+    events:
+      - http:
+          path: events/{eventId}/seats
+          method: get
+
+  getSeatDetail:
+    handler: src/seats/getSeatDetail.handler
+    description: Obtener detalle de una silla
+    events:
+      - http:
+          path: seats/{seatId}
+          method: get
+
+  listSectionSeats:
+    handler: src/seats/listSectionSeats.handler
+    description: Listar sillas por sección de un evento
+    events:
+      - http:
+          path: events/{eventId}/sections/{section}/seats
+          method: get
+
+  updateSeatStatus:
+    handler: src/seats/updateSeatStatus.handler
+    description: Actualizar estado de una silla
+    events:
+      - http:
+          path: seats/update-status
+          method: post
+
+  # ────────── Reservation Management ──────────
+  createReservation:
+    handler: src/reservation/createReservation.handler
+    description: Crear reserva temporal de silla
+    events:
+      - http:
+          path: reservations
+          method: post
+
+  getReservationDetail:
+    handler: src/reservation/getReservationDetail.handler
+    description: Obtener detalle de una reserva
+    events:
+      - http:
+          path: reservations/{reservationId}
+          method: get
+
+  cancelReservation:
+    handler: src/reservation/cancelReservation.handler
+    description: Cancelar reserva temporal
+    events:
+      - http:
+          path: reservations/cancel
+          method: post
+
+  extendReservation:
+    handler: src/reservation/extendReservation.handler
+    description: Extender tiempo de reserva
+    events:
+      - http:
+          path: reservations/extend
+          method: post
+  # ────────── Order & Payment Processing ──────────
+  createOrder:
+    handler: src/orders/createOrder.handler
+    description: Crear orden a partir de reserva
+    events:
+      - http:
+          path: orders
+          method: post
+
+  getOrderDetail:
+    handler: src/orders/getOrderDetail.handler
+    description: Obtener detalle de una orden
+    events:
+      - http:
+          path: orders/{orderId}
+          method: get
+  getOrderList:
+    handler: src/orders/getOrderList.handler
+    description: Obtener lista de ordernes de un usuario
+    events:
+      - http:
+          path: ordersList/{userId}
+          method: get
+
+  processPayment:
+    handler: src/orders/processPayment.handler
+    description: Procesar pago de una orden
+    events:
+      - http:
+          path: payments/process
+          method: post
+
+  cancelOrder:
+    handler: src/orders/cancelOrder.handler
+    description: Cancelar una orden
+    events:
+      - http:
+          path: orders/cancel
+          method: post
+resources:
+  Resources:
+    QrBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.qrBucket}
+        OwnershipControls:
+          Rules: [{ ObjectOwnership: BucketOwnerPreferred }]

@@ -1,0 +1,141 @@
+{
+  "tableName": "FavoriteUsers",
+  "tableArn": "arn:aws:dynamodb:us-east-1:519010577666:table/FavoriteUsers",
+  "tableId": "931def63-cc27-4d5d-9e0e-f5e0f19e227d",
+  "tableStatus": "ACTIVE",
+  "billingMode": "PAY_PER_REQUEST",
+  "itemCount": 88,
+  "tableSizeBytes": 34557,
+  "creationDateTime": "2025-11-03T15:19:18.728000-05:00",
+  "deletionProtectionEnabled": false,
+  "keySchema": [
+    {
+      "AttributeName": "userId",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "favoriteId",
+      "KeyType": "RANGE"
+    }
+  ],
+  "attributeDefinitions": [
+    {
+      "AttributeName": "email",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "favoriteId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "followingId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "phone",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "userId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "username",
+      "AttributeType": "S"
+    }
+  ],
+  "globalSecondaryIndexes": [
+    {
+      "indexName": "GSI-email",
+      "keySchema": [
+        {
+          "AttributeName": "email",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "userId",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 70,
+      "indexSizeBytes": 28243
+    },
+    {
+      "indexName": "GSI-followers",
+      "keySchema": [
+        {
+          "AttributeName": "followingId",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "userId",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 0,
+      "indexSizeBytes": 0
+    },
+    {
+      "indexName": "GSI-phone",
+      "keySchema": [
+        {
+          "AttributeName": "phone",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "userId",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 87,
+      "indexSizeBytes": 34252
+    },
+    {
+      "indexName": "GSI-username",
+      "keySchema": [
+        {
+          "AttributeName": "username",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "userId",
+          "KeyType": "RANGE"
+        }
+      ],
+      "projection": {
+        "ProjectionType": "ALL"
+      },
+      "indexStatus": "ACTIVE",
+      "itemCount": 64,
+      "indexSizeBytes": 26071
+    }
+  ],
+  "localSecondaryIndexes": [],
+  "streamSpecification": null,
+  "latestStreamArn": null,
+  "sseDescription": null,
+  "replicas": [],
+  "restoreSummary": null,
+  "archivalSummary": null,
+  "timeToLiveDescription": {
+    "TimeToLiveStatus": "DISABLED"
+  },
+  "continuousBackupsDescription": {
+    "ContinuousBackupsStatus": "ENABLED",
+    "PointInTimeRecoveryDescription": {
+      "PointInTimeRecoveryStatus": "DISABLED"
+    }
+  }
+}

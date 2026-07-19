@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva solicitud de reembolso - {{eventName}}</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; padding: 30px; text-align: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { padding: 30px; }
+        .info-box { background-color: #f8f9fa; border-left: 4px solid #2563eb; padding: 15px; margin: 20px 0; }
+        .ticket-detail { border-bottom: 1px solid #e9ecef; padding: 10px 0; }
+        .ticket-detail:last-child { border-bottom: none; }
+        .amount { font-size: 28px; font-weight: bold; color: #2563eb; text-align: center; margin: 20px 0; }
+        .footer { background-color: #f8f9fa; padding: 20px; text-align: center; font-size: 12px; color: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Nueva solicitud de reembolso</h1>
+        </div>
+        <div class="content">
+            <p>Hola{{#if organizerName}} <strong>{{organizerName}}</strong>{{/if}},</p>
+            <p>
+              <strong>{{requesterName}}</strong> solicitó un reembolso
+              <strong>{{refundType}}</strong> para tu evento
+              <strong>{{eventName}}</strong>.
+            </p>
+            <div class="amount">{{refundAmount}} {{currency}}</div>
+            <div class="info-box">
+                <h3 style="margin-top: 0;">Detalles</h3>
+                <p><strong>Radicación:</strong> {{filingId}}</p>
+                <p><strong>Solicitante:</strong> {{requesterName}}</p>
+                <p><strong>Boletas:</strong> {{ticketCount}}</p>
+                <p><strong>Monto:</strong> {{refundAmount}} {{currency}}</p>
+                <p><strong>Orden:</strong> {{orderID}}</p>
+                <p><strong>Motivo:</strong> {{reason}}</p>
+            </div>
+            {{#if ticketDetails}}
+            <h3>Boletas</h3>
+            {{#each ticketDetails}}
+            <div class="ticket-detail">
+                <strong>{{category}}</strong> - {{seat}}<br>
+                <span style="color: #6c757d;">{{price}} {{../currency}}</span>
+            </div>
+            {{/each}}
+            {{/if}}
+            <p style="margin-top: 24px;">
+              Puedes revisar el detalle en Mis Estadísticas → Reembolsos del evento.
+            </p>
+            <p>¡Gracias por usar DoEvents!</p>
+        </div>
+        <div class="footer">
+            <p>Este es un correo automático, por favor no respondas a este mensaje.</p>
+            <p>&copy; 2026 DoEvents. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>

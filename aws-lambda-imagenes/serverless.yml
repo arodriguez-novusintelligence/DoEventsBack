@@ -1,0 +1,95 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: events
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: aws-lambda-imagenes
+
+package:
+  patterns:
+    - '!.git/**'
+    - '!test*'
+    - '!doc/**'
+    - '!*.md'
+
+params:
+  default:
+    awsRegion: us-east-1
+    tableSuffix: ""
+  qa:
+    awsRegion: us-east-2
+    tableSuffix: "-qa"
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: ${param:awsRegion}
+  environment:
+    IMAGE_BUCKET: doeventimageeventbucket
+    IMAGE_BUCKET_REGION: us-east-1
+    IMAGE_TABLE: imagenes${param:tableSuffix}
+    TABLE_NAME: imagenes${param:tableSuffix}
+    EVENTS_TABLE: Eventos${param:tableSuffix}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:PutObject
+        - s3:DeleteObject
+        - s3:GetObject
+      Resource:
+        - arn:aws:dynamodb:*:519010577666:table/imagenes*
+        - arn:aws:dynamodb:*:519010577666:table/imagenes*/index/*
+        - arn:aws:dynamodb:*:519010577666:table/Eventos*
+        - arn:aws:s3:::doeventimageeventbucket/*
+functions:
+  createUploadUrls:
+    handler: src/createUploadUrls.handler
+    events:
+      - httpApi:
+          path: /createUploadUrls
+          method: post
+  addImage:
+    handler: src/addImage.addimagenes
+    events:
+      - httpApi:
+          path: /insertImage
+          method: post
+  getImageByEventId:
+    handler: src/getImage.getImage
+    events:
+      - httpApi:
+          path: /getImageById/{id_evento}
+          method: get
+  getImageByEventIdToUpd:
+    handler: src/getImageToUpdate.getImageToUpdate
+    events:
+      - httpApi:
+          path: /getImageByIdToUpdate/{id_evento}
+          method: get
+  updateImages:
+    handler: src/updateImage.getImage
+    events:
+      - httpApi:
+          path: /updateImages/{id_evento}
+          method: put
+resources:
+  Resources: {}
+#    TaskTable:
+#      Type: AWS::DynamoDB::Table
+#      Properties:
+#        TableName: imagenes
+#        BillingMode: PAY_PER_REQUEST
+#        AttributeDefinitions:
+#          - AttributeName: id
+#            AttributeType: S
+#          - AttributeName: id_evento
+#            AttributeType: S
+#        KeySchema:
+#          - AttributeName: id
+#            KeyType: HASH
+#        GlobalSecondaryIndexes:
+#          - IndexName: eventIdIndex
+#            KeySchema:
+#              - AttributeName: id_evento
+#                KeyType: HASH
+#            Projection:
+#              ProjectionType: ALL

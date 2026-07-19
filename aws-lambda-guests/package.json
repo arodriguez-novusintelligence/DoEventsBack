@@ -1,0 +1,30 @@
+{
+  "name": "aws-lambda-guests",
+  "version": "1.0.0",
+  "description": "Lambda for guest and group management in events",
+  "main": "src/handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "serverless deploy",
+    "deploy-dev": "serverless deploy --stage dev",
+    "deploy-prod": "serverless deploy --stage prod",
+    "logs": "serverless logs -f main -t"
+  },
+  "keywords": [
+    "lambda",
+    "aws",
+    "guests",
+    "groups",
+    "events"
+  ],
+  "author": "DoEvents",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1400.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "serverless": "^3.30.0",
+    "serverless-offline": "^12.0.4"
+  }
+}

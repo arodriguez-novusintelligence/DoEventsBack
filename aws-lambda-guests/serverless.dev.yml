@@ -1,0 +1,211 @@
+org: events
+service: aws-lambda-guests
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: sa-east-1
+  stage: dev
+  httpApi:
+    cors:
+      allowedOrigins:
+        - https://dev.doeventsapp.com
+        - http://localhost:5173
+        - https://localhost
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+        - Accept
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      allowCredentials: true
+  environment:
+    FAVORITE_USERS_TABLE: FavoriteUsers-dev
+    CLIENT_TABLE: Client-dev
+    EVENT_GROUPS_TABLE: EventGroups-dev
+    EVENT_GUESTS_TABLE: EventGuests-dev
+    EVENT_INVITATIONS_TABLE: EventInvitations-dev
+    EVENTS_TABLE: Eventos-dev
+    EVENTS_ALT_TABLE: Eventos-dev
+    FAVORITE_GROUPS_TABLE: FavoriteGroups-dev
+    FOLLOWERS_TABLE: Followers-dev
+    PROFILE_IMAGES_BUCKET: doeventprofileimagesbucket
+    IMAGE_BUCKET: doeventimageeventbucket
+    IMAGE_TABLE: imagenes-dev
+    NOTIFICATIONS_FUNCTION: notifications-dev-triggerNotification
+    STAGE: dev
+    WEB_APP_BASE_URL: https://dev.doeventsapp.com
+    CORS_ALLOWED_ORIGINS: https://dev.doeventsapp.com,http://localhost:5173,https://localhost,capacitor://localhost
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/FavoriteUsers-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/FavoriteUsers-dev/index/*
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/FavoriteGroups-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/FavoriteGroups-dev/index/*
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/EventGuests-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/EventGuests-dev/index/*
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/EventGroups-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/EventGroups-dev/index/*
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/EventInvitations-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/EventInvitations-dev/index/*
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/Client-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/Client-dev/index/*
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/Eventos-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/Eventos-dev/index/*
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/Followers-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/Followers-dev/index/*
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/imagenes-dev
+        - arn:aws:dynamodb:sa-east-1:519010577666:table/imagenes-dev/index/*
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource:
+        - arn:aws:lambda:sa-east-1:519010577666:function:notifications-dev-triggerNotification
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+      Resource:
+        - arn:aws:s3:::doeventprofileimagesbucket/*
+        - arn:aws:s3:::doeventimageeventbucket/*
+
+functions:
+  getFavorites:
+    handler: src/getFavoritesHandler.handler
+    events:
+      - httpApi:
+          path: /users/{userId}/favorites
+          method: get
+  getContacts:
+    handler: src/getContactsHandler.handler
+    events:
+      - httpApi:
+          path: /users/{userId}/contacts
+          method: get
+  addFavorite:
+    handler: src/addFavoriteHandler.handler
+    events:
+      - httpApi:
+          path: /users/{userId}/favorites
+          method: post
+  removeFavorite:
+    handler: src/removeFavoriteHandler.handler
+    events:
+      - httpApi:
+          path: /users/{userId}/favorites/{favoriteId}
+          method: delete
+  getOthers:
+    handler: src/getOthersHandler.handler
+    events:
+      - httpApi:
+          path: /users/{userId}/others
+          method: get
+  addUser:
+    handler: src/addUserHandler.handler
+    events:
+      - httpApi:
+          path: /users/{userId}/users
+          method: post
+  toggleFavorite:
+    handler: src/toggleFavoriteHandler.handler
+    events:
+      - httpApi:
+          path: /users/{userId}/users/{favoriteId}/favorite
+          method: put
+  updateFavoriteUser:
+    handler: src/updateFavoriteUserHandler.handler
+    events:
+      - httpApi:
+          path: /users/{userId}/favorites/{favoriteId}
+          method: put
+  getFavoriteGroups:
+    handler: src/getFavoriteGroupsHandler.handler
+    events:
+      - httpApi:
+          path: /users/{userId}/groups
+          method: get
+  addFavoriteGroup:
+    handler: src/addFavoriteGroupHandler.handler
+    events:
+      - httpApi:
+          path: /users/{userId}/groups
+          method: post
+  updateFavoriteGroup:
+    handler: src/updateFavoriteGroupHandler.handler
+    events:
+      - httpApi:
+          path: /users/{userId}/groups/{groupId}
+          method: put
+  removeFavoriteGroup:
+    handler: src/removeFavoriteGroupHandler.handler
+    events:
+      - httpApi:
+          path: /users/{userId}/groups/{groupId}
+          method: delete
+  getEventGuests:
+    handler: src/getEventGuestsHandler.handler
+    events:
+      - httpApi:
+          path: /events/{eventId}/guests
+          method: get
+  addEventGuest:
+    handler: src/addEventGuestHandler.handler
+    events:
+      - httpApi:
+          path: /events/{eventId}/guests
+          method: post
+  removeEventGuest:
+    handler: src/removeEventGuestHandler.handler
+    events:
+      - httpApi:
+          path: /events/{eventId}/guests/{guestId}
+          method: delete
+  getEventGroups:
+    handler: src/getEventGroupsHandler.handler
+    events:
+      - httpApi:
+          path: /events/{eventId}/groups
+          method: get
+  addEventGroup:
+    handler: src/addEventGroupHandler.handler
+    events:
+      - httpApi:
+          path: /events/{eventId}/groups
+          method: post
+  updateEventGroup:
+    handler: src/updateEventGroupHandler.handler
+    events:
+      - httpApi:
+          path: /events/{eventId}/groups/{groupId}
+          method: put
+  removeEventGroup:
+    handler: src/removeEventGroupHandler.handler
+    events:
+      - httpApi:
+          path: /events/{eventId}/groups/{groupId}
+          method: delete
+  sendEventInvitations:
+    handler: src/sendEventInvitationsHandler.handler
+    events:
+      - httpApi:
+          path: /events/{eventId}/invitations
+          method: post
+  getEventInvitations:
+    handler: src/getEventInvitationsHandler.handler
+    events:
+      - httpApi:
+          path: /events/{eventId}/invitations
+          method: get
+  updateInvitationStatus:
+    handler: src/updateInvitationStatusHandler.handler
+    events:
+      - httpApi:
+          path: /events/{eventId}/invitations/{invitationId}
+          method: put
