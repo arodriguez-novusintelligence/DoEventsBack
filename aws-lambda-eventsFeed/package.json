@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "test": "node src/nearbyEventHelpers.test.js"
+  },
   "dependencies": {
     "amazon-dax-client": "^1.2.9",
     "aws-sdk": "^2.1692.0"
