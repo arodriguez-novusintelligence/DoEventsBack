@@ -1,13 +1,22 @@
 # Parche DoEventsWEB — Issue #10 Eventos cercanos en Descubre
 
-Aplicar en `DoEventsWEB` sobre `feature/NovusAIDevelopmentFramework`:
+## Estado
+
+- **Backend (DoEventsBack):** merge en `feature/NovusAIDevelopmentFramework` (PR #3). Requiere deploy DEV:
+  ```bash
+  ./scripts/deploy-eventsFeed-dev.sh
+  ```
+- **Frontend (DoEventsWEB):** rama `cursor/fix-descubre-eventos-cercanos-issue-10-804f` con el parche aplicado.
+
+## Aplicar manualmente (alternativa)
 
 ```bash
 cd DoEventsWEB
-git checkout -b cursor/fix-descubre-eventos-cercanos-issue-10-d75e
+git checkout -b cursor/fix-descubre-eventos-cercanos-issue-10-804f
 git am /path/to/DoEventsBack/nadf/patches/doeventsweb-issue-10/*.patch
-npm run build
+npm run build:devaws
 node scripts/smoke-discover-marketplace.mjs
+node scripts/smoke-discover-nearby-events.mjs
 ```
 
 Archivos tocados (solo entidad **eventos**):
