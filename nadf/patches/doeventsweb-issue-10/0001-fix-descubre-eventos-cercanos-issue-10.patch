@@ -1,21 +1,25 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From 587711d6e1d795292415ac60c4fb46da27ae37cf Mon Sep 17 00:00:00 2001
 From: Cursor Agent <cursoragent@cursor.com>
-Date: Tue, 21 Jul 2026 14:45:00 +0000
-Subject: [PATCH] fix(descubre): eventos cercanos con ubicación efectiva (issue #10)
+Date: Tue, 21 Jul 2026 15:03:44 +0000
+Subject: [PATCH] =?UTF-8?q?fix(descubre):=20eventos=20cercanos=20con=20ubi?=
+ =?UTF-8?q?caci=C3=B3n=20efectiva=20(issue=20#10)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-- Mapear fechaFin y alias userId en el feed de eventos
-- Fallback apiRequest en fetchNearbyEvents cuando fetch directo falla (p.ej. CORS)
+- Mapear fechaFin y alias userId (user_id, createdBy) en el feed
+- Fallback apiRequest en fetchNearbyEvents ante fallo de fetch (CORS/red)
 - Geolocalización silenciosa si el permiso ya está concedido
 - No reutilizar caché con nearby vacío si hay coordenadas del usuario
 ---
- packages/shared/src/api/eventsService.ts | 45 ++++++++++++++++++++++----------
- packages/shared/src/lib/userLocation.ts  | 16 ++++++++++-
+ packages/shared/src/api/eventsService.ts | 63 ++++++++++++++++--------
+ packages/shared/src/lib/userLocation.ts  | 16 +++++-
  packages/shared/src/types/events.ts      |  1 +
  packages/shell/src/pages/EventsPage.tsx  |  1 +
- 4 files changed, 48 insertions(+), 15 deletions(-)
+ 4 files changed, 60 insertions(+), 21 deletions(-)
 
 diff --git a/packages/shared/src/api/eventsService.ts b/packages/shared/src/api/eventsService.ts
-index 82e034f..a1b2c3d 100644
+index bc8b412..b839304 100644
 --- a/packages/shared/src/api/eventsService.ts
 +++ b/packages/shared/src/api/eventsService.ts
 @@ -149,6 +149,7 @@ function mapRawEvent(raw: Record<string, unknown>): FeedEventItem {
@@ -39,28 +43,57 @@ index 82e034f..a1b2c3d 100644
      estatus: raw.estatus as string | undefined,
      Categoria: raw.Categoria as string | undefined,
      tipoEvento: raw.tipoEvento as string | undefined,
-@@ -265,21 +270,34 @@ export async function fetchNearbyEvents(
-     body: JSON.stringify(payload),
-   });
+@@ -259,28 +264,46 @@ export async function fetchNearbyEvents(
+     userLocation: { latitude, longitude },
+   };
  
--  if (!response.ok) {
+-  const response = await fetch(env.endpoints.eventsFeed, {
+-    method: 'POST',
+-    headers: authHeaders(),
+-    body: JSON.stringify(payload),
+-  });
 +  const applyNearbyPrivacy = async (data: Record<string, unknown>): Promise<FeedEventItem[]> => {
 +    const result = normalizeFeedResponse(data);
-+    const { filterByOwnerPrivacy } = await import('../lib/privacyVisibility');
-+    const visible = await filterByOwnerPrivacy(
++    const { filterByOwnerPrivacyFailOpen } = await import('../lib/privacyVisibility');
++    const visible = await filterByOwnerPrivacyFailOpen(
 +      result.items,
 +      (item) => item.userId,
 +      userId,
++      4000,
 +    );
 +    cacheEvents(visible);
 +    return visible;
 +  };
+ 
+-  if (!response.ok) {
+-    const errText = await response.text().catch(() => '');
+-    throw new Error(errText || `Error al cargar eventos cercanos (${response.status})`);
++  try {
++    const response = await fetch(env.endpoints.eventsFeed, {
++      method: 'POST',
++      headers: authHeaders(),
++      body: JSON.stringify(payload),
++    });
 +
-+  if (response.ok) {
-+    const data = await response.json() as Record<string, unknown>;
-+    return applyNearbyPrivacy(data);
-+  }
-+
++    if (response.ok) {
++      const data = await response.json() as Record<string, unknown>;
++      return applyNearbyPrivacy(data);
++    }
++  } catch {
++    // Red/CORS: intentar vía apiRequest (mismo patrón que requestEventsFeed).
+   }
+ 
+-  const data = await response.json() as Record<string, unknown>;
+-  const result = normalizeFeedResponse(data);
+-  const { filterByOwnerPrivacyFailOpen } = await import('../lib/privacyVisibility');
+-  const visible = await filterByOwnerPrivacyFailOpen(
+-    result.items,
+-    (item) => item.userId,
+-    userId,
+-    4000,
+-  );
+-  cacheEvents(visible);
+-  return visible;
 +  try {
 +    const data = await apiRequest<Record<string, unknown>>({
 +      method: 'POST',
@@ -68,21 +101,11 @@ index 82e034f..a1b2c3d 100644
 +      data: payload,
 +    });
 +    return applyNearbyPrivacy(data);
-+  } catch {
-     const errText = await response.text().catch(() => '');
-     throw new Error(errText || `Error al cargar eventos cercanos (${response.status})`);
-   }
--
--  const data = await response.json() as Record<string, unknown>;
--  const result = normalizeFeedResponse(data);
--  const { filterByOwnerPrivacy } = await import('../lib/privacyVisibility');
--  const visible = await filterByOwnerPrivacy(
--    result.items,
--    (item) => item.userId,
--    userId,
--  );
--  cacheEvents(visible);
--  return visible;
++  } catch (err) {
++    throw new Error(
++      err instanceof Error ? err.message : 'Error al cargar eventos cercanos',
++    );
++  }
  }
  
  export async function fetchEventsFeed(
@@ -133,16 +156,17 @@ index 14ebd75..c37a700 100644
    horaFin?: string;
    ciudad?: string;
 diff --git a/packages/shell/src/pages/EventsPage.tsx b/packages/shell/src/pages/EventsPage.tsx
-index f7d8398..49e967f 100644
+index 97a4193..0cf5510 100644
 --- a/packages/shell/src/pages/EventsPage.tsx
 +++ b/packages/shell/src/pages/EventsPage.tsx
-@@ -119,6 +119,7 @@ function shouldSkipDiscoverNetworkRefresh(
+@@ -137,6 +137,7 @@ function shouldSkipDiscoverNetworkRefresh(
    cacheFresh: boolean,
  ): boolean {
    if (!cacheFresh || !hasDiscoverContent(cached)) return false;
 +  if (loc && !(cached.nearby?.length)) return false;
+   // Con ubicación: no saltar si nunca se completó el fetch geo de lugares/servicios.
+   // Antes se saltaba solo por tener eventos sintetizados → Descubre sin marketplace.
    if (loc && !cached.locationBoundFetched) return false;
-   if (discoverNearbyLooksIncomplete(
-     cached.nearby || [],
 -- 
 2.43.0
+
