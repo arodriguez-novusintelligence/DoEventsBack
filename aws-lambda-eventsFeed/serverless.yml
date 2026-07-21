@@ -57,6 +57,7 @@ functions:
       - http:
           path: /eventsFeed
           method: POST
+          cors: true
 #custom:
 # Valor por defecto vacío; se sobreescribe con --param daxEndpoints=
 #daxEndpoints: ${opt:daxEndpoints, ''}

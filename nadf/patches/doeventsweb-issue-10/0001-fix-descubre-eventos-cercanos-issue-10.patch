@@ -1,0 +1,148 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Tue, 21 Jul 2026 14:45:00 +0000
+Subject: [PATCH] fix(descubre): eventos cercanos con ubicación efectiva (issue #10)
+
+- Mapear fechaFin y alias userId en el feed de eventos
+- Fallback apiRequest en fetchNearbyEvents cuando fetch directo falla (p.ej. CORS)
+- Geolocalización silenciosa si el permiso ya está concedido
+- No reutilizar caché con nearby vacío si hay coordenadas del usuario
+---
+ packages/shared/src/api/eventsService.ts | 45 ++++++++++++++++++++++----------
+ packages/shared/src/lib/userLocation.ts  | 16 ++++++++++-
+ packages/shared/src/types/events.ts      |  1 +
+ packages/shell/src/pages/EventsPage.tsx  |  1 +
+ 4 files changed, 48 insertions(+), 15 deletions(-)
+
+diff --git a/packages/shared/src/api/eventsService.ts b/packages/shared/src/api/eventsService.ts
+index 82e034f..a1b2c3d 100644
+--- a/packages/shared/src/api/eventsService.ts
++++ b/packages/shared/src/api/eventsService.ts
+@@ -149,6 +149,7 @@ function mapRawEvent(raw: Record<string, unknown>): FeedEventItem {
+     id: String(raw.id || ''),
+     nombre: String(raw.nombre || raw.name || 'Evento'),
+     fechaIni: raw.fechaIni as string | undefined,
++    fechaFin: raw.fechaFin as string | undefined,
+     horaIni: raw.horaIni as string | undefined,
+     ciudad: raw.ciudad as string | undefined,
+     departamento: raw.departamento as string | undefined,
+@@ -159,7 +160,11 @@ function mapRawEvent(raw: Record<string, unknown>): FeedEventItem {
+     horaFin: raw.horaFin as string | undefined,
+     direccion: raw.direccion as string | undefined,
+     pais: raw.pais as string | undefined,
+-    userId: raw.userId as string | undefined,
++    userId: (
++      raw.userId
++      || raw.user_id
++      || raw.createdBy
++    ) as string | undefined,
+     estatus: raw.estatus as string | undefined,
+     Categoria: raw.Categoria as string | undefined,
+     tipoEvento: raw.tipoEvento as string | undefined,
+@@ -265,21 +270,34 @@ export async function fetchNearbyEvents(
+     body: JSON.stringify(payload),
+   });
+ 
+-  if (!response.ok) {
++  const applyNearbyPrivacy = async (data: Record<string, unknown>): Promise<FeedEventItem[]> => {
++    const result = normalizeFeedResponse(data);
++    const { filterByOwnerPrivacy } = await import('../lib/privacyVisibility');
++    const visible = await filterByOwnerPrivacy(
++      result.items,
++      (item) => item.userId,
++      userId,
++    );
++    cacheEvents(visible);
++    return visible;
++  };
++
++  if (response.ok) {
++    const data = await response.json() as Record<string, unknown>;
++    return applyNearbyPrivacy(data);
++  }
++
++  try {
++    const data = await apiRequest<Record<string, unknown>>({
++      method: 'POST',
++      url: env.endpoints.eventsFeed,
++      data: payload,
++    });
++    return applyNearbyPrivacy(data);
++  } catch {
+     const errText = await response.text().catch(() => '');
+     throw new Error(errText || `Error al cargar eventos cercanos (${response.status})`);
+   }
+-
+-  const data = await response.json() as Record<string, unknown>;
+-  const result = normalizeFeedResponse(data);
+-  const { filterByOwnerPrivacy } = await import('../lib/privacyVisibility');
+-  const visible = await filterByOwnerPrivacy(
+-    result.items,
+-    (item) => item.userId,
+-    userId,
+-  );
+-  cacheEvents(visible);
+-  return visible;
+ }
+ 
+ export async function fetchEventsFeed(
+diff --git a/packages/shared/src/lib/userLocation.ts b/packages/shared/src/lib/userLocation.ts
+index ab34716..a8793fa 100644
+--- a/packages/shared/src/lib/userLocation.ts
++++ b/packages/shared/src/lib/userLocation.ts
+@@ -84,6 +84,16 @@ export async function applyProfileCityAsLocation(
+   return resolveManualUserLocation(query);
+ }
+ 
++async function isGeolocationPermissionGranted(): Promise<boolean> {
++  if (typeof navigator === 'undefined' || !navigator.permissions?.query) return false;
++  try {
++    const status = await navigator.permissions.query({ name: 'geolocation' });
++    return status.state === 'granted';
++  } catch {
++    return false;
++  }
++}
++
+ export async function resolveUserLocation(options?: {
+   fallbackCity?: string;
+   profileCity?: string;
+@@ -94,7 +104,11 @@ export async function resolveUserLocation(options?: {
+   const cached = getStoredUserLocation();
+   if (!options?.force && cached && Date.now() - cached.updatedAt < 1000 * 60 * 30) return cached;
+ 
+-  const tryGeolocation = options?.prompt !== false && typeof navigator !== 'undefined' && navigator.geolocation;
++  const hasGeolocation = typeof navigator !== 'undefined' && Boolean(navigator.geolocation);
++  let tryGeolocation = hasGeolocation && options?.prompt !== false;
++  if (hasGeolocation && options?.prompt === false) {
++    tryGeolocation = await isGeolocationPermissionGranted();
++  }
+ 
+   if (tryGeolocation) {
+     try {
+diff --git a/packages/shared/src/types/events.ts b/packages/shared/src/types/events.ts
+index 14ebd75..c37a700 100644
+--- a/packages/shared/src/types/events.ts
++++ b/packages/shared/src/types/events.ts
+@@ -7,6 +7,7 @@ export interface FeedEventItem {
+   id: string;
+   nombre: string;
+   fechaIni?: string;
++  fechaFin?: string;
+   horaIni?: string;
+   horaFin?: string;
+   ciudad?: string;
+diff --git a/packages/shell/src/pages/EventsPage.tsx b/packages/shell/src/pages/EventsPage.tsx
+index f7d8398..49e967f 100644
+--- a/packages/shell/src/pages/EventsPage.tsx
++++ b/packages/shell/src/pages/EventsPage.tsx
+@@ -119,6 +119,7 @@ function shouldSkipDiscoverNetworkRefresh(
+   cacheFresh: boolean,
+ ): boolean {
+   if (!cacheFresh || !hasDiscoverContent(cached)) return false;
++  if (loc && !(cached.nearby?.length)) return false;
+   if (loc && !cached.locationBoundFetched) return false;
+   if (discoverNearbyLooksIncomplete(
+     cached.nearby || [],
+-- 
+2.43.0

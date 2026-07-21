@@ -63,3 +63,4 @@ functions:
       - http:
           path: /eventsFeed
           method: POST
+          cors: true

@@ -86,6 +86,9 @@ function normalizeFeedEventItem(item) {
   if (!item.userId && item.user_id) {
     item.userId = item.user_id;
   }
+  if (!item.userId && item.createdBy) {
+    item.userId = item.createdBy;
+  }
   const coords = readCoords(item.ubicacion || item);
   if (coords.lat != null && coords.lon != null) {
     item.latitude = coords.lat;
