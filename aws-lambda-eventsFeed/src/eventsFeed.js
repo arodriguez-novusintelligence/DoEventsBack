@@ -1,4 +1,12 @@
 const AWS = require("aws-sdk");
+const {
+  extractRequestUserId,
+  extractRequestUserLocation,
+  mergeDeviceLocationCoords,
+  shouldApplyDistanceFilter,
+  formatEventDateForFeed,
+  normalizeFeedEventItem,
+} = require("./nearbyEventHelpers");
 
 function stageSuffix() {
   const fn = process.env.AWS_LAMBDA_FUNCTION_NAME || "";
@@ -132,11 +140,6 @@ const toDate = (v) => {
   return isNaN(d) ? null : d;
 };
 
-// Función para validar si el userID es válido
-const isValidUserID = (userID) => {
-  return userID && typeof userID === "string" && userID.trim().length > 0;
-};
-
 //Categories no se esta utilizando para filtros
 const W = (() => {
   // Pesos para score según contexto:
@@ -218,22 +221,18 @@ exports.handler = async (ev) => {
 
     /* -------- parámetros entrada -------- */
     const {
-      userID: rawUserID,
       offset = 0,
       limit = 50,
       category,
       type,
       maxDistanceKm = 500,
       fechaActual,
-      userLocation = {},
     } = body;
 
-    // Validar y limpiar userID - solo usar si es realmente válido
-    const userID = isValidUserID(rawUserID) ? rawUserID.trim() : null;
+    const userID = extractRequestUserId(body);
 
     console.log("=== INICIO DEBUG ===");
     console.log("Request body completo:", JSON.stringify(body));
-    console.log("Raw userID:", JSON.stringify(rawUserID));
     console.log("Processed userID:", JSON.stringify(userID));
     console.log("UserID es válido:", !!userID);
     console.log("Parámetros:", {
@@ -243,11 +242,13 @@ exports.handler = async (ev) => {
       type,
       maxDistanceKm,
       fechaActual,
-      userLocation,
+      userLocation: body.userLocation,
     });
 
     /* -------- ubicación -------- */
-    let { latitude: lat, longitude: lon } = userLocation;
+    const requestCoords = extractRequestUserLocation(body);
+    let lat = requestCoords.lat;
+    let lon = requestCoords.lon;
     if ((lat == null || lon == null) && userID) {
       try {
         console.log("Buscando ubicación para userID:", userID);
@@ -271,9 +272,13 @@ exports.handler = async (ev) => {
             : latest;
         }, null);
 
-        const loc = mostRecentDevice?.location || {};
-        lat = lat ?? loc.latitude;
-        lon = lon ?? loc.longitude;
+        const mergedDeviceCoords = mergeDeviceLocationCoords(
+          lat,
+          lon,
+          mostRecentDevice?.location || {},
+        );
+        lat = mergedDeviceCoords.lat;
+        lon = mergedDeviceCoords.lon;
       } catch (error) {
         console.log("Error obteniendo ubicación del device:", error.message);
       }
@@ -314,10 +319,7 @@ exports.handler = async (ev) => {
       lon: toCoord(lon),
       hasLocation,
       pref,
-      userLocationProvided:
-        userLocation.latitude != null &&
-        userLocation.longitude != null &&
-        maxDistanceKm > 0,
+      userLocationProvided: requestCoords.explicitInRequest && maxDistanceKm > 0,
     };
     ctx.hasLocation = ctx.lat != null && ctx.lon != null;
     console.log("Contexto:", {
@@ -478,11 +480,10 @@ exports.handler = async (ev) => {
     );
 
     let base;
-    const distanceFilterApplied =
-      hasLocation &&
-      userLocation.latitude != null &&
-      userLocation.longitude != null &&
-      maxDistanceKm > 0;
+    const distanceFilterApplied = shouldApplyDistanceFilter(
+      hasLocation,
+      maxDistanceKm,
+    );
 
     if (distanceFilterApplied) {
       const itemsWithDistance = qItems.map((item) => {
@@ -563,17 +564,14 @@ exports.handler = async (ev) => {
           });
 
     console.log("Eventos después del ordenamiento:", ordered.length);
-    // Formatear fechaIni en DD/MM/YYYY
     ordered.forEach((ev) => {
       if (ev.fechaIni) {
-        const d = toDate(ev.fechaIni);
-        if (d) {
-          const dd = String(d.getDate()).padStart(2, "0");
-          const mm = String(d.getMonth() + 1).padStart(2, "0");
-          const yyyy = d.getFullYear();
-          ev.fechaIni = `${dd}/${mm}/${yyyy}`;
-        }
+        ev.fechaIni = formatEventDateForFeed(ev.fechaIni);
       }
+      if (ev.fechaFin) {
+        ev.fechaFin = formatEventDateForFeed(ev.fechaFin);
+      }
+      normalizeFeedEventItem(ev);
     });
     /* -------- paginación -------- */
     const paged = ordered.slice(offset, offset + limit);
@@ -630,7 +628,7 @@ exports.handler = async (ev) => {
         filtersApplied: {
           category: category !== undefined,
           type: type !== undefined,
-          distance: hasLocation && userLocation.latitude != null,
+          distance: distanceFilterApplied,
         },
       },
     });
