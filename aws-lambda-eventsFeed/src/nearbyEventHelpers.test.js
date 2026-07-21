@@ -43,4 +43,21 @@ assert.strictEqual(normalized.userId, "owner-1");
 assert.strictEqual(normalized.latitude, 4.71);
 assert.strictEqual(normalized.longitude, -74.07);
 
+const fromCreatedBy = normalizeFeedEventItem({
+  createdBy: "owner-2",
+  ubicacion: { latitude: 4.65, longitude: -74.05 },
+});
+assert.strictEqual(fromCreatedBy.userId, "owner-2");
+
+assert.strictEqual(isNearbyRadiusRequest("100"), true);
+
+const topLevelCoords = extractRequestUserLocation({
+  lat: 4.61,
+  lng: -74.08,
+  maxDistanceKm: 100,
+});
+assert.strictEqual(topLevelCoords.lat, 4.61);
+assert.strictEqual(topLevelCoords.lon, -74.08);
+assert.strictEqual(topLevelCoords.explicitInRequest, true);
+
 console.log("nearbyEventHelpers.test.js: OK");
