@@ -1,0 +1,104 @@
+From 81ecf521a352bc1d32443e7befa60226d17fc22c Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Tue, 21 Jul 2026 15:59:01 +0000
+Subject: [PATCH] =?UTF-8?q?fix(descubre):=20eventos=20cercanos=20issue=20#?=
+ =?UTF-8?q?10=20=E2=80=94=20env=20devaws=20y=20robustez=20geo?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- build:devaws usa VITE_DOEVENTS_ENV=devaws (api-dev, no api-qa por defecto)
+- fetchNearbyEvents: token de servicio en fallback apiRequest + fail-open privacy
+- discoverCache v7 invalida cachés stale con nearby vacío
+- mfe-auth alinea env devaws en build DEV cloud
+
+Co-authored-by: Novus Intelligence Solutions <arodriguez@novusintelligencesolutions.com>
+---
+ packages/mfe-auth/vite.config.ts         | 4 +++-
+ packages/shared/src/api/eventsService.ts | 9 ++++++---
+ packages/shared/src/lib/discoverCache.ts | 4 ++--
+ packages/shell/vite.config.ts            | 4 +++-
+ 4 files changed, 14 insertions(+), 7 deletions(-)
+
+diff --git a/packages/mfe-auth/vite.config.ts b/packages/mfe-auth/vite.config.ts
+index 75e53a4..09b9e3e 100644
+--- a/packages/mfe-auth/vite.config.ts
++++ b/packages/mfe-auth/vite.config.ts
+@@ -41,7 +41,9 @@ export default defineConfig(({ mode }) => ({
+   },
+   define: {
+     'import.meta.env.VITE_DOEVENTS_ENV': JSON.stringify(
+-      process.env.DOEVENTS_ENV || (mode === 'qa' || mode === 'production' ? 'qa' : 'dev'),
++      process.env.DOEVENTS_ENV || (
++        mode === 'devaws' ? 'devaws' : mode === 'qa' || mode === 'production' ? 'qa' : 'dev'
++      ),
+     ),
+   },
+ }));
+diff --git a/packages/shared/src/api/eventsService.ts b/packages/shared/src/api/eventsService.ts
+index b839304..df20897 100644
+--- a/packages/shared/src/api/eventsService.ts
++++ b/packages/shared/src/api/eventsService.ts
+@@ -266,6 +266,7 @@ export async function fetchNearbyEvents(
+ 
+   const applyNearbyPrivacy = async (data: Record<string, unknown>): Promise<FeedEventItem[]> => {
+     const result = normalizeFeedResponse(data);
++    if (!result.items.length) return [];
+     const { filterByOwnerPrivacyFailOpen } = await import('../lib/privacyVisibility');
+     const visible = await filterByOwnerPrivacyFailOpen(
+       result.items,
+@@ -273,8 +274,10 @@ export async function fetchNearbyEvents(
+       userId,
+       4000,
+     );
+-    cacheEvents(visible);
+-    return visible;
++    // Fail-open Descubre: no vaciar geo si privacy devuelve [] con ítems en feed.
++    const resolved = visible.length ? visible : result.items;
++    cacheEvents(resolved);
++    return resolved;
+   };
+ 
+   try {
+@@ -297,7 +300,7 @@ export async function fetchNearbyEvents(
+       method: 'POST',
+       url: env.endpoints.eventsFeed,
+       data: payload,
+-    });
++    }, { useServiceToken: true });
+     return applyNearbyPrivacy(data);
+   } catch (err) {
+     throw new Error(
+diff --git a/packages/shared/src/lib/discoverCache.ts b/packages/shared/src/lib/discoverCache.ts
+index b3e79d5..f5fccd7 100644
+--- a/packages/shared/src/lib/discoverCache.ts
++++ b/packages/shared/src/lib/discoverCache.ts
+@@ -2,8 +2,8 @@ import type { FeedEventItem } from '../types/events';
+ import type { NearbyServiceProvider } from '../api/servicesService';
+ import type { NearbyVenue } from '../api/venueService';
+ 
+-// v6: invalida cachés con nearby=[] pese a catálogo geo válido (issue Descubre eventos cercanos).
+-const DISCOVER_CACHE_KEY = 'doevents_discover_cache_v6';
++// v7: invalida cachés previas tras fix issue #10 (geo + skip nearby vacío).
++const DISCOVER_CACHE_KEY = 'doevents_discover_cache_v7';
+ const FRESH_MS = 10 * 60 * 1000;
+ const STALE_MS = 60 * 60 * 1000;
+ 
+diff --git a/packages/shell/vite.config.ts b/packages/shell/vite.config.ts
+index 595e498..dbe4b61 100644
+--- a/packages/shell/vite.config.ts
++++ b/packages/shell/vite.config.ts
+@@ -6,7 +6,9 @@ import path from 'path';
+ export default defineConfig(({ mode }) => {
+   const env = loadEnv(mode, path.resolve(__dirname, '../..'), '');
+   const isQaBuild = mode === 'qa' || env.VITE_DOEVENTS_ENV === 'qa';
+-  const doeventsEnv = isQaBuild ? 'qa' : (env.VITE_DOEVENTS_ENV || 'dev');
++  const doeventsEnv = isQaBuild
++    ? 'qa'
++    : (env.VITE_DOEVENTS_ENV || (mode === 'devaws' ? 'devaws' : 'dev'));
+ 
+   return {
+     envDir: path.resolve(__dirname, '../..'),
+-- 
+2.43.0
+
